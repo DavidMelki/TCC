@@ -1,16 +1,9 @@
 # TCC
 Trabalho de conclusão de curso por Bruna, Julia, David e Alexandre
 
-TEMA 1 
-- Um Software de denúncias de violência domestica, racial ou por orientação sexual.
+TEMA 1 (Ideia Principal)
+- Plataforma para alunos enviarem problemas para a Etec Professor Camargo Aranha com o objetivo de chegar nos superiores.
+- Muitos alunos tem problemas de comunicação com os coordenadores, isso ajudaria a resolver os problemas que o coordenadores não conseguem resolver.
 
-TEMA 2 (Ideia Principal)
-- Plataforma de denúncia de problemas urbanos
-- estilo aplicativo parecido com a uber
-- geolocalização em tempo real
-- status do chamado
-
-TEMA 3
-- Plataforma de conexão entre doadores e famílias vulneráveis
 
   
