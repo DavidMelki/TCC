@@ -20,3 +20,7 @@ Alexandre, Bruna Melquíades e Julia
 09/04/2026
 Alexandre, Bruna, David Melquíades, JUlia e Henrique.
 -Conversamos sobre como melhorar o nosso tema e deixa-lo mais robusto. Decisão de frame work para inicio do projeto e corpo do software.
+Decisão:
+Linguagens:c#
+banco de Dados:	sql lite
+framework: Asp .NET (Back end) Vue (front-end)
