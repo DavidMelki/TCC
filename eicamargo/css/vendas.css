@@ -36,7 +36,7 @@ body {
 .app-container {
     display: flex;
     width: 100%;
-    max-width: 1360px;
+    max-width: 100%;
     gap: 30px;
 }
 
