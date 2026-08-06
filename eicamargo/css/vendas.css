@@ -48,7 +48,7 @@ body {
     flex-direction: column;
 }
 
- .logo {
+.logo {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -78,6 +78,19 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.nav-menu a:hover {
+    text-decoration: none;
+    color: inherit;
 }
 
 .nav-item {
@@ -263,7 +276,7 @@ body {
 }
 
 .product-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .product-user {

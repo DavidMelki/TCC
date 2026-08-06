@@ -3,331 +3,299 @@
     src: url(fonts/Chirp-Regular.ttf);
 }
 
+:root {
+    --red-primary: #e63c3c;
+    --red-hover: #c91f1f;
+    --red-light: #fff5f5;
+    --bg-gray: #f7f8fa;
+    --text-dark: #1a1a1a;
+    --text-gray: #8c8c8c;
+    --border-color: #efefef;
+    --white: #ffffff;
+    --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-main);
 }
 
 body {
-    height: 180vh;
-    display: flex;
-}
-
-nav.menu1 {
-    width: 350px;
-    height: 100%;
-    background-color: rgb(255, 255, 255);
-    padding: 10px 1 10px 1.5%;
-    box-shadow: 1px 0 0 #918e8e;
-    position: fixed;
-    top: 0;
-    left: 0;
-    overflow: hidden;
-    transition: 1s;
-
-}
-
-
-ul {
-    height: 100%;
-
-}
-
-a {
-    color: rgb(0, 0, 0);
-    font-size: 20px;
-    padding: 20px 4%;
-    display: flex;
-    margin-bottom: -5px;
-    line-height: 40px;
-    font-family: 'font1';
-    text-decoration: none;
-    margin-left: 20px;
-}
-
-
-i {
-    color: rgb(0, 0, 0);
-    font-size: 30px;
-}
-
-li a:hover {
-    color: red;
-    transition: 0.5;
-}
-
-.linktexto {
-    margin-right: -50px;
-    font-family: font1;
-    margin-left: 25px;
-}
-
-
-.linkbutao {
-    color: white;
-    margin-left: 10px;
+    background-color: var(--bg-gray);
+    color: var(--text-dark);
     display: flex;
     justify-content: center;
-    margin-top: -9px;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px;
 }
 
-.perfil {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
+/* CONTAINER PRINCIPAL */
+.app-container {
+    display: flex;
+    width: 100%;
+    max-width: 1360px;
+    gap: 20px;
+    height: calc(100vh - 40px);
+}
 
-    width: 300px;
-    height: 70px;
+/* ==================== COLUNA 1: MENU LATERAL ==================== */
+.sidebar-left {
+    width: 240px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
 
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.logo img {
+    width: 40px;
+    height: auto;
+}
+
+.logo span {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.nav-menu {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    color: var(--text-dark);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.nav-item:hover {
+    background-color: var(--white);
+}
+
+.nav-item.active {
+    background-color: var(--red-light);
+    color: var(--red-primary);
+    font-weight: 600;
+}
+
+.profile-footer {
+    margin-top: auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     padding: 10px;
-    border-radius: 40px;
-
+    border-radius: 30px;
     cursor: pointer;
 }
 
-.perfil:hover {
-    background-color: #f2f2f2;
+.profile-footer:hover {
+    background-color: #ebebeb;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .avatar {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background-color: #cfd4dc;
+    background-color: #d1d5db;
 }
 
 .dados {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    margin-left: 12px;
 }
 
 .nome {
-    font-family: font1;
-    font-size: 15px;
-    font-weight: bold;
-    color: #000;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 .usuario {
-    font-family: font1;
-    font-size: 14px;
-    color: #536471;
+    font-size: 12px;
+    color: var(--text-gray);
 }
 
-.perfil i {
-    font-size: 18px;
-    color: #000;
-}
-
-.perfil i:hover {
-    color: red;
-    transition: 0.5;
-}
-
-nav.menu1 {
-    position: fixed;
-}
-
-.menu1 {
-    width: 280px;
-}
-
+/* ==================== COLUNA 2: FEED CENTRAL ==================== */
 .feed {
-    position: absolute;
-    left: 350px;
-    width: 850px;
-    min-height: 100vh;
-    border-left: 1px solid #536471;
-    border-right: 1px solid #536471;
-    background: #fff;
+    flex: 1;
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .top-feed {
-    height: 70px;
-    display: flex;
-    align-items: center;
-    padding-left: 25px;
-    border-bottom: 1px solid #536471;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .top-feed h2 {
-    font-family: font1;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
-    margin-left: 300px;
 }
 
-.avatar-post {
-    width: 55px;
-    height: 55px;
-
-    border-radius: 50%;
-
-    background: #d8d8d8;
-
-    flex-shrink: 0;
-}
-
-.area-post {
+.lista-posts {
     flex: 1;
-    margin-left: 15px;
+    overflow-y: auto;
 }
-
-
-
-
-.footer-post {
-    display: flex;
-    justify-content: flex-end;
-
-    margin-top: 20px;
-}
-
-.footer-post button {
-    width: 130px;
-    height: 42px;
-
-    border: none;
-    border-radius: 30px;
-
-    background: #DC2626;
-    color: white;
-
-    font-family: font1;
-    font-size: 15px;
-
-    cursor: pointer;
-}
-
-.footer-post button:hover {
-    background: #c91f1f;
-}
-
-
 
 .post {
     display: flex;
+    gap: 15px;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+    transition: 0.2s;
+}
 
-    padding: 20px 25px;
+.post:hover {
+    background-color: #fcfcfc;
+}
 
-    border-bottom: 1px solid #536471;
+.avatar-post {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #d1d5db;
+    flex-shrink: 0;
 }
 
 .conteudo-post {
-    margin-left: 15px;
+    flex: 1;
 }
 
-.conteudo-post h4 {
-    font-family: font1;
-    font-size: 16px;
+.post-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
 }
 
-.conteudo-post span {
-    color: #666;
+.post-header h4 {
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.verificado {
+    color: var(--red-primary);
     font-size: 14px;
 }
 
-.conteudo-post p {
-    margin-top: 10px;
-
-    font-size: 15px;
-    line-height: 1.6;
+.post-header span {
+    font-size: 13px;
+    color: var(--text-gray);
 }
 
+.conteudo-post p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333333;
+}
+
+.post-acoes {
+    display: flex;
+    gap: 20px;
+    margin-top: 14px;
+}
+
+.post-acoes button {
+    background: transparent;
+    border: none;
+    color: var(--text-gray);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.post-acoes button:hover {
+    color: var(--red-primary);
+}
+
+/* ==================== COLUNA 3: BARRA DIREITA ==================== */
 .right-bar {
-    position: absolute;
+    width: 300px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
 
-    left: 1200px;
-    top: 0;
+.card-info {
+    background: var(--white);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+}
 
-    width: 650px;
-    min-height: 100vh;
+.card-info h3 {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
 
-    padding: 35px;
+.card-info p {
+    font-size: 13px;
+    color: var(--text-gray);
+    line-height: 1.4;
 }
 
 .links {
     display: flex;
     flex-wrap: wrap;
-
-    gap: 12px;
+    gap: 10px;
+    padding: 0 5px;
 }
 
 .links a {
-    color: #666;
-
+    color: var(--text-gray);
     text-decoration: none;
-
-    font-size: 14px;
-
-    padding: 0;
-    margin: 0;
-
-    font-family: font1;
+    font-size: 12px;
 }
 
 .links a:hover {
     text-decoration: underline;
 }
 
-.right-bar p {
-    margin-top: 20px;
-
-    color: #666;
-
-    font-size: 14px;
-
-    font-family: font1;
-}
-
-.circulo-vermelho {
-    width: 45px;
-    height: 45px;
-
-    border-radius: 50%;
-
-    background: #DC2626;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    flex-shrink: 0;
-    margin-right: 12px;
-
-    cursor: pointer;
-}
-
-.circulo-vermelho i {
-    color: white;
-    font-size: 22px;
-    font-weight: bold;
+.copyright {
+    font-size: 12px;
+    color: var(--text-gray);
+    padding: 0 5px;
 }
 
 .eicamargologo {
-    width: 100px;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
+    width: 80px;
     height: auto;
-}
-
-.circulo-vermelho label {
-    cursor: pointer;
-    color: white;
-}
-
-#preview-imagem {
-    display: none;
-    max-width: 300px;
-    margin-top: 15px;
-    border-radius: 12px;
+    opacity: 0.8;
+    margin-top: 10px;
+    padding: 0 5px;
 }

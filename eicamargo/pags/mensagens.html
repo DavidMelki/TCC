@@ -1,202 +1,335 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eicamargo</title>
-    <link rel="stylesheet" type="text/css" href="../css/mensagens.css">
+    <title>Eicamargo - Mensagens</title>
+
+    <!-- Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="icon" type="image/icon" href="../css/img/logoeicamargo.png">
-    <meta name="author" content="Alexandre Castello, David Melquiades, Bruna de Mello e Julia Akemi">
+
+    <!-- CSS Externo -->
+    <link rel="stylesheet" href="../css/mensagens.css">
+    <link rel="icon" href="../css/img/logoeicamargo.png">
 </head>
 
 <body>
-    <nav class="menu1">
-        <ul>
-            <li class="pag ativo">
-                <a href="sugestoes.html" id="link">
-                    <span class="icon"><i class="bi bi-house-door"></i></span>
-                    <span class="linktexto">Sugestões</span>
-                </a>
-            </li>
 
-            <li class="pag">
-                <a href="../pags/vendas.html" id="link">
-                    <span class="icon"><i class="bi bi-cart3"></i></span>
-                    <span class="linktexto">Vendas</span>
-                </a>
-            </li>
+    <div class="app-container">
 
-            <li class="pag">
-                <a href="../pags/comunicados.html" id="link>
-                    <span class=" icon"><i class="bi bi-megaphone"></i></span>
-                    <span class="linktexto">Comunicados</span>
-                </a>
-            </li>
-            <li class="pag">
-                <a href="../pags/mensagens.html" id="link">
-                    <span class="icon"><i class="bi bi-envelope"></i></span>
-                    <span class="linktexto">Mensagens</span>
-                </a>
-            </li>
-            <li class="pag">
-                <a href="../pags/curso.html" id="link">
-                    <span class="icon"><i class="bi bi-mortarboard"></i></span>
-                    <span class="linktexto">Curso</span>
-                </a>
+        <!-- ==================== COLUNA ESQUERDA (MENU) ==================== -->
+        <aside class="sidebar-left">
+            <div class="logo">
+                <div class="logo-icon"><img class="logo-icon" src="../css/img/logoeicamargo.png"></div>
+                <div class="logo-text"></div>
+            </div>
 
-            </li>
-            <li class="pag">
-                <a href="../pags/curso.html" id="link">
-                    <span class="icon"><i class="bi bi-person"></i></span>
-                    <span class="linktexto">Perfil</span>
-                </a>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="sugestoes.html" id="link">
+                        <i class="fa-solid fa-house"></i> Sugestões
+                    </a>
+                </li>
 
-            </li>
+                <li class="nav-item">
+                    <a href="vendas.html" id="link">
+                        <i class="fa-solid fa-cart-shopping"></i> Vendas
+                    </a>
+                </li>
 
-            <div class="perfil">
+                <li class="nav-item">
+                    <a href="comunicados.html" id="link">
+                        <i class="fa-solid fa-bullhorn"></i> Comunicados
+                    </a>
+                </li>
 
-                <div class="avatar"></div>
+                <li class="nav-item active">
+                    <a href="mensagens.html" id="link">
+                        <i class="fa-regular fa-envelope"></i> Mensagens
+                    </a>
+                </li>
 
-                <div class="dados">
-                    <span class="nome">
-                        Nome do Usuário
-                    </span>
+                <li class="nav-item">
+                    <a href="curso.html" id="link">
+                        <i class="fa-solid fa-graduation-cap"></i> Curso
+                    </a>
+                </li>
 
-                    <span class="usuario">
-                        @usuario
-                    </span>
+                <li class="nav-item">
+                    <a href="perfil.html" id="link">
+                        <i class="fa-regular fa-user"></i> Perfil
+                    </a>
+                </li>
+            </ul>
+
+            <div class="profile-footer">
+                <div class="profile-info">
+                    <div class="profile-avatar"></div>
+                    <div>
+                        <div class="profile-name">Nome do Usuário</div>
+                        <div class="profile-username">@usuario</div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-ellipsis menu-dots"></i>
+            </div>
+        </aside>
+
+        <!-- ================= TELA DE MENSAGENS ================= -->
+        <div class="mensagens">
+            <!-- ================= LISTA DE CONVERSAS ================= -->
+            <section class="lista-conversas">
+                <div class="topo-conversas">
+                    <h2>Mensagens</h2>
+                    <div class="pesquisa">
+                        <i class="bi bi-search"></i>
+                        <input type="text" placeholder="Pesquisar conversa">
+                    </div>
+
+                    <div class="filtros">
+                        <button class="ativo">
+                            Todas
+                        </button>
+                        <button>
+                            Não lidas
+                        </button>
+                        <button>
+                            Favoritas
+                        </button>
+                    </div>
                 </div>
 
-                <i class="bi bi-three-dots" id="icone-menu">
+                <div class="conversas">
+                    <!-- Conversa 1 -->
+                    <div class="conversa ativa">
+                        <div class="avatar-post"></div>
+                        <div class="texto">
+                            <h4>Bruno Cano</h4>
+                            <p>Você tomou uma advertência.</p>
+                        </div>
+                        <span>5h</span>
+                    </div>
 
-                </i>
-            </div>
-        </ul>
-    </nav>
+                    <!-- Conversa 2 -->
 
-    <main class="feed">
+                    <div class="conversa">
+                        <div class="avatar-post"></div>
+                        <div class="texto">
+                            <h4>Davi Afonso</h4>
+                            <p>Venha para a direção...</p>
+                        </div>
+                        <span>2d</span>
+                    </div>
 
-        <div class="top-feed">
-            <h2>Mensagens</h2>
+                    <!-- Conversa 3 -->
+                    <div class="conversa">
+                        <div class="avatar-post"></div>
+                        <div class="texto">
+                            <h4>Davi Villar</h4>
+                            <p>Vou comunicar o pessoal do laboratório.</p>
+                        </div>
+                        <span>8h</span>
+                    </div>
+
+                    <!-- Conversa 4 -->
+                    <div class="conversa">
+                        <div class="avatar-post"></div>
+                        <div class="texto">
+                            <h4>Pichuru</h4>
+                            <p>Pode entregar o atestado semana que vem.</p>
+                        </div>
+                        <span>2h</span>
+                    </div>
+
+                    <!-- Conversa 5 -->
+
+                    <div class="conversa">
+                        <div class="avatar-post"></div>
+                        <div class="texto">
+                            <h4>João Silles</h4>
+                            <p>Pode encaminhar o arquivo ainda hoje.</p>
+                        </div>
+                        <span>30min</span>
+                    </div>
+
+                    <!-- Conversa 6 -->
+                    <div class="conversa">
+                        <div class="avatar-post"></div>
+                        <div class="texto">
+                            <h4>Maria Oliveira</h4>
+                            <p>Recebi seu trabalho!</p>
+                        </div>
+                        <span>Ontem</span>
+                    </div>
+
+                    <!-- Conversa 7 -->
+                    <div class="conversa">
+                        <div class="avatar-post"></div>
+                        <div class="texto">
+                            <h4>Secretaria</h4>
+                            <p>Seu documento foi aprovado.</p>
+                        </div>
+                        <span>3d</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ================= CHAT ================= -->
+            <section class="chat">
+                <div class="chat-topo">
+                    <div class="usuario-chat">
+                        <div class="avatar-post"></div>
+                        <div>
+                            <h3>Bruno Cano</h3>
+                            <span>@brunocanodd</span>
+                        </div>
+                    </div>
+
+                    <div class="icones-chat">
+                        <i class="bi bi-telephone"></i>
+                        <i class="bi bi-camera-video"></i>
+                        <i class="bi bi-info-circle"></i>
+                    </div>
+
+                </div>
+
+                <div class="chat-mensagens">
+                    <div class="msg recebida">
+                        <p>Olá! Tudo bem?</p>
+                        <span class="hora">09:20</span>
+                    </div>
+
+                    <div class="msg enviada">
+                        <p>Olá, professor! Tudo sim.</p>
+                        <span class="hora">09:21</span>
+                    </div>
+
+                    <div class="msg recebida">
+                        <p>Gostaria de conversar com você sobre a advertência registrada no sistema.</p>
+                        <span class="hora">09:22</span>
+                    </div>
+
+                    <div class="msg enviada">
+                        <p>Claro. O que aconteceu exatamente?</p>
+                        <span class="hora">09:23</span>
+                    </div>
+
+                    <div class="msg recebida">
+                        <p>Foi identificado um atraso recorrente nas últimas semanas.</p>
+                        <span class="hora">09:24</span>
+                    </div>
+
+                    <div class="msg recebida">
+                        <p>Precisamos conversar para regularizar essa situação.</p>
+                        <span class="hora">09:24</span>
+                    </div>
+
+                    <div class="msg enviada">
+                        <p>Entendi. Posso passar na direção amanhã?</p>
+                        <span class="hora">09:26</span>
+                    </div>
+
+                    <div class="msg recebida">
+                        <p>Sim! Amanhã às 10h será um bom horário.</p>
+                        <span class="hora">09:27</span>
+                    </div>
+
+                    <div class="msg enviada">
+                        <p>Perfeito. Muito obrigado!</p>
+                        <span class="hora">09:28</span>
+                    </div>
+
+                </div>
+
+                <!-- Campo para enviar mensagem -->
+
+                <div class="enviar">
+                    <i class="bi bi-emoji-smile"></i>
+                    <i class="bi bi-paperclip"></i>
+                    <input type="text" placeholder="Digite uma mensagem...">
+                    <i class="bi bi-image"></i>
+                    <i class="bi bi-heart"></i>
+
+                    <button class="botao-enviar">
+                        <i class="bi bi-send-fill"></i>
+                    </button>
+
+                </div>
+
+            </section>
+
         </div>
 
-
-        </label>
-
-
-        </div>
-
-        <div class="area-post">
-
-
-            <img id="preview-imagem">
-
-
-        </div>
-
-        </div>
-
-        <div class="post"> <!--Classe das mensagens relacionadas aos professores-->
-            <div class="avatar-post"></div>
-
-            <div class="conteudo-post">
-                <h4>Bruno Cano</h4>
-                <span>@brunocanodd · 5h</span>
-
-                <p>
-                    Você tomou uma advertência.
-
-                </p>
-            </div>
-        </div>
-        <div class="post">
-            <div class="avatar-post"></div>
-
-            <div class="conteudo-post">
-                <h4>Davi Afonso</h4>
-                <span>@AfonsoDavi · 2d</span>
-
-                <p>
-                    Venha para a direção por gentileza, para conseguirmos resolver o seu problema.
-                </p>
-            </div>
-        </div>
-
-        <div class="post">
-            <div class="avatar-post"></div>
-
-            <div class="conteudo-post">
-                <h4>Davi Villar</h4>
-                <span>@VillarDavi123 · 8h</span>
-
-                <p>
-                    Comunucarei o pessoal responsável pelo laboratório para baixarem os programas desejados.
-                </p>
-            </div>
-
-        </div>
-        <div class="post">
-            <div class="avatar-post"></div>
-
-            <div class="conteudo-post">
-                <h4>Pichuru</h4>
-                <span>@pichuru · 2h</span>
-
-                <p>
-                    Você pode me entregar o atestado referente ao dia da atividade, na semana que vem.
-
-                </p>
-            </div>
-
-        </div>
-
-        <div class="post">
-            <div class="avatar-post"></div>
-
-            <div class="conteudo-post">
-                <h4>João Silles</h4>
-                <span>@Joãozinho1234 · 30min</span>
-
-                <p>
-                    Tudo bem, você pode encaminhar o seu arquivo ainda hoje e eu irei olhá-lo.
-                </p>
-            </div>
-    </main>
     </div>
 
-    </main>
+    <!-- ================= SCRIPTS ================= -->
+    <script>
+        // Seleciona a conversa clicada
+        const conversas = document.querySelectorAll(".conversa");
 
+        conversas.forEach(conversa => {
 
+            conversa.addEventListener("click", () => {
 
+                conversas.forEach(c => c.classList.remove("ativa"));
 
-    <div id="listaSugestoes"></div>
-    </main>
+                conversa.classList.add("ativa");
 
+            });
 
-    <div class="right-bar">
+        });
 
-        <div class="links">
+        // Enviar mensagem
 
-            <a href="#">Termos de Serviço</a>
-            <a href="#">Política de Privacidade</a>
-            <a href="#">Política de Cookies</a>
-            <a href="#">Acessibilidade</a>
-            <a href="#">Informações de Anúncios</a>
-            <a href="#">Mais</a>
+        const input = document.querySelector(".enviar input");
+        const botao = document.querySelector(".botao-enviar");
+        const chat = document.querySelector(".chat-mensagens");
 
+        function enviarMensagem() {
 
-        </div>
+            if (input.value.trim() === "")
+                return;
 
-        <p>© 2026 Camargo aranha.</p>
-        <img class="eicamargologo" src="../css/img/logoeicamargo.png">
+            const mensagem = document.createElement("div");
 
-    </div>
-    <!--PARTE DA JULIA QUE COLOCAMOS EM UM ARQUIVO JS SEPARADO -->
-    <script src="../js/postadd.js"></script>
-    <script src="../js/addimagem.js"></script>
+            mensagem.className = "msg enviada";
+
+            const agora = new Date();
+
+            const hora =
+                String(agora.getHours()).padStart(2, "0") +
+                ":" +
+                String(agora.getMinutes()).padStart(2, "0");
+
+            mensagem.innerHTML = `
+                <p>${input.value}</p>
+                <span class="hora">${hora}</span>
+            `;
+
+            chat.appendChild(mensagem);
+
+            chat.scrollTop = chat.scrollHeight;
+
+            input.value = "";
+
+        }
+
+        botao.addEventListener("click", enviarMensagem);
+
+        input.addEventListener("keydown", function (e) {
+
+            if (e.key === "Enter") {
+
+                enviarMensagem();
+
+            }
+
+        });
+
+    </script>
 
 </body>
 
