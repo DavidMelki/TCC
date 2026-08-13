@@ -28,8 +28,13 @@
 
             <ul class="nav-menu">
                 <li>
+                    <a href="inicio.html" class="nav-item">
+                        <i class="fa-solid fa-house"></i> Início
+                    </a>
+                </li>
+                <li>
                     <a href="sugestoes.html" class="nav-item active">
-                        <i class="fa-solid fa-house"></i> Sugestões
+                        <i class="bi bi-lightbulb-fill"></i> Sugestões
                     </a>
                 </li>
                 <li>
@@ -75,18 +80,92 @@
             </div>
         </aside>
 
+        
+        <!-- ==================== DETALHES DA SUGESTÃO ==================== -->
+        <main class="detalhe-sugestao">
+
+            <!-- Topo do Autor -->
+            <div class="detalhe-header">
+                <div class="autor-box">
+                    <div class="avatar-lg"></div>
+                    <div class="autor-dados">
+                        <h3>Felipe Rocha</h3>
+                        <span class="autor-tag">@feliperocha</span>
+                        <div class="meta-info">Enviado há 2h </div>
+                    </div>
+                </div>
+                <div class="acoes-header">
+                    <i class="bi bi-three-dots"></i>
+                </div>
+            </div>
+            
+            <!-- Conteúdo Principal das Sugestões -->
+            <div class="detalhe-body">
+                <h2>Sugiro a implementação de um sistema para facilitar a comunicação entre os setores.</h2>
+
+                <div class="secao-descricao">
+                    <h4>Descrição</h4>
+                    <p>Acredito que teremos mais agilidade e organização se tivermos um sistema centralizado para
+                        comunicação interna.</p>
+                </div>
+
+                <div class="curtidas-bar">
+                    <button class="btn-like"><i class="bi bi-hand-thumbs-up"></i> 12</button>
+                    <button class="btn-coment"><i class="bi bi-chat-dots"></i></button>
+                    
+                </div>
+                
+                <!-- fechamento do conteudo Principal das Sugestões -->
+
+                  <!-- Topo do Autor -->
+                <div class="detalhe-header">
+                    <div class="autor-box">
+                        <div class="avatar-lg"></div>
+                        <div class="autor-dados">
+                            <h3>Julia Akemi</h3>
+                            <span class="autor-tag">@akemiJulia</span>
+                            <div class="meta-info">Enviado há 5h </div>
+                        </div>
+                    </div>
+                    <div class="acoes-header">
+                        <i class="bi bi-three-dots"></i>
+                    </div>
+                </div>
+                 <!-- Conteúdo Principal das Sugestões -->
+                <div class="detalhe-body">
+                    <h2>Sugiro a reforma dos banheiros</h2>
+    
+                    <div class="secao-descricao">
+                        <h4>Descrição</h4>
+                        <p>Acredito que teremos maior privacidade, pois hoje vemos cabines sem porta e sem papel higienico.</p>
+                    </div>
+    
+                    <div class="curtidas-bar">
+                        <button class="btn-like"><i class="bi bi-hand-thumbs-up"></i> 12</button>
+                        <button class="btn-coment"><i class="bi bi-chat-dots"></i></button> 
+                    </div>
+                    <!-- fechamento do conteudo Principal das Sugestões -->
+                <!-- Seção de Comentários -->
+               
+                </div>
+            </div>
+            
+
+            <!-- Campo de Inserir Comentário -->
+            <div class="comentario-input-bar">
+                <i class="bi bi-emoji-smile"></i>
+                <input type="text" placeholder="Adicionar um comentário...">
+                <button class="btn-send"><i class="bi bi-send-fill"></i></button>
+            </div>
+
+        </main>
+
         <!-- ==================== COLUNA 2: LISTA DE SUGESTÕES ==================== -->
         <section class="painel-sugestoes">
 
             <div class="top-sugestoes">
-                <h2>Sugestões</h2>
-                <i class="bi bi-pencil-square icon-acao"></i>
-            </div>
-
-            <!-- Busca -->
-            <div class="pesquisa-box">
-                <i class="bi bi-search"></i>
-                <input type="text" placeholder="Buscar sugestões">
+                <h2>Sugestões Favoritas</h2>
+                
             </div>
 
             <!-- Lista de Cards -->
@@ -150,77 +229,6 @@
             </div>
         </section>
 
-        <!-- ==================== COLUNA 3: DETALHES DA SUGESTÃO ==================== -->
-        <main class="detalhe-sugestao">
-
-            <!-- Topo do Autor -->
-            <div class="detalhe-header">
-                <div class="autor-box">
-                    <div class="avatar-lg"></div>
-                    <div class="autor-dados">
-                        <h3>Felipe Rocha</h3>
-                        <span class="autor-tag">@feliperocha</span>
-                        <div class="meta-info">Enviado há 2h </div>
-                    </div>
-                </div>
-                <div class="acoes-header">
-                    <i class="bi bi-three-dots"></i>
-                </div>
-            </div>
-
-            <!-- Conteúdo Principal da Sugestão -->
-            <div class="detalhe-body">
-                <h2>Sugiro a implementação de um sistema para facilitar a comunicação entre os setores.</h2>
-
-                <div class="secao-descricao">
-                    <h4>Descrição</h4>
-                    <p>Acredito que teremos mais agilidade e organização se tivermos um sistema centralizado para
-                        comunicação interna.</p>
-                </div>
-
-                <div class="curtidas-bar">
-                    <button class="btn-like"><i class="bi bi-hand-thumbs-up"></i> 12</button>
-                    <span>Você e outras 11 pessoas curtiram esta sugestão</span>
-                </div>
-
-                <!-- Seção de Comentários -->
-                <div class="secao-comentarios">
-                    <h4>Comentários <span>2</span></h4>
-
-                    <div class="comentario">
-                        <div class="avatar-sm"></div>
-                        <div class="comentario-conteudo">
-                            <div class="comentario-autor">Bruno Cano <i class=""></i></div>
-                            <p>Ótima sugestão! Isso vai ajudar muito no dia a dia.</p>
-                            <div class="comentario-acoes">
-                                <span>1h</span> · <a href="#">Curtir</a> · <a href="#">Responder</a>
-                            </div>
-                        </div>
-                        <div class="comentario-likes"><i class="bi bi-heart"></i> 3</div>
-                    </div>
-
-                    <div class="comentario">
-                        <div class="avatar-sm"></div>
-                        <div class="comentario-conteudo">
-                            <div class="comentario-autor">Davi Afonso</div>
-                            <p>Concordo! Podemos avaliar algumas ferramentas que já usamos em outras áreas.</p>
-                            <div class="comentario-acoes">
-                                <span>45min</span> · <a href="#">Curtir</a> · <a href="#">Responder</a>
-                            </div>
-                        </div>
-                        <div class="comentario-likes"><i class="bi bi-heart"></i> 2</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Campo de Inserir Comentário -->
-            <div class="comentario-input-bar">
-                <i class="bi bi-emoji-smile"></i>
-                <input type="text" placeholder="Adicionar um comentário...">
-                <button class="btn-send"><i class="bi bi-send-fill"></i></button>
-            </div>
-
-        </main>
 
     </div>
 

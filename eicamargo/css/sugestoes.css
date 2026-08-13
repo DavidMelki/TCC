@@ -175,7 +175,7 @@ body {
 
 /* ==================== COLUNA 2: PAINEL DE SUGESTÕES ==================== */
 .painel-sugestoes {
-    width: 380px;
+    width: 480px;
     background: var(--white);
     border: 1px solid var(--border-color);
     border-radius: 16px;
@@ -251,11 +251,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 4px;
+    margin-top: -12px;
+    height: 50px;
 }
 
 .item-nome {
-    font-size: 13px;
+    font-size: 1rem;
     font-weight: 600;
 }
 
@@ -265,12 +266,10 @@ body {
 }
 
 .item-resumo {
-    font-size: 12px;
+    font-size: 0.8rem;
     color: var(--text-gray);
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    align-items: center;
+    margin-top: -12px;
 }
 
 /* ==================== COLUNA 3: DETALHES ==================== */
@@ -282,6 +281,7 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    
 }
 
 .detalhe-header {
@@ -377,6 +377,17 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
+}
+.btn-coment{
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-gray);
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .curtidas-bar span {
