@@ -261,7 +261,7 @@
                     const formData = new FormData();
                     formData.append('descricao', descricao);
 
-                    return fetch('sugestao.php', {
+                    return fetch('php/sugestao.php', {
                         method: 'POST',
                         body: formData
                     })
