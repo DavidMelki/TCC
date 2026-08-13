@@ -563,3 +563,43 @@ body {
 .rank-hearts i {
     color: var(--text-gray);
 }
+
+/* --- ESTILOS DO MODAL SWEETALERT (PUBLICAR VENDA) --- */
+.upload-area-box {
+    border: 2px dashed #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: #fafafa;
+    transition: all 0.2s ease;
+}
+
+.upload-area-box:hover {
+    border-color: var(--red-primary);
+    background-color: var(--red-light-bg);
+}
+
+.custom-swal-input {
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    padding: 10px 12px !important;
+    box-shadow: none !important;
+    outline: none !important;
+    font-family: var(--font-main);
+}
+
+.custom-swal-input:focus {
+    border-color: var(--red-primary) !important;
+}
+
+.swal2-actions button {
+    border-radius: 30px !important;
+    padding: 10px 24px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+}

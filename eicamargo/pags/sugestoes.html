@@ -8,6 +8,10 @@
     <!-- Ícones FontAwesome e Bootstrap -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Library SweetAlert2 (JS) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <link rel="stylesheet" href="../css/sugestoes.css">
     <link rel="icon" type="image/icon" href="../css/img/logoeicamargo.png">
 </head>
@@ -16,7 +20,7 @@
 
     <div class="app-container">
 
-        <!-- ==================== COLUNA 1: MENU LATERAL ==================== -->
+        <!-- ==================== MENU LATERAL ==================== -->
         <aside class="sidebar-left">
             <div class="logo">
                 <img src="../css/img/logoeicamargo.png" alt="Logo">
@@ -55,7 +59,7 @@
                 </li>
             </ul>
 
-            <button class="btn-nova-sugestao">
+            <button class="btn-nova-sugestao" id="btnNovaSugestao">
                 <i class="bi bi-plus-lg"></i> Nova sugestão
             </button>
 
@@ -73,7 +77,7 @@
 
         <!-- ==================== COLUNA 2: LISTA DE SUGESTÕES ==================== -->
         <section class="painel-sugestoes">
-            
+
             <div class="top-sugestoes">
                 <h2>Sugestões</h2>
                 <i class="bi bi-pencil-square icon-acao"></i>
@@ -87,7 +91,7 @@
 
             <!-- Lista de Cards -->
             <div class="lista-items">
-                
+
                 <div class="item-sugestao active">
                     <div class="avatar"></div>
                     <div class="item-info">
@@ -148,7 +152,7 @@
 
         <!-- ==================== COLUNA 3: DETALHES DA SUGESTÃO ==================== -->
         <main class="detalhe-sugestao">
-            
+
             <!-- Topo do Autor -->
             <div class="detalhe-header">
                 <div class="autor-box">
@@ -167,10 +171,11 @@
             <!-- Conteúdo Principal da Sugestão -->
             <div class="detalhe-body">
                 <h2>Sugiro a implementação de um sistema para facilitar a comunicação entre os setores.</h2>
-                
+
                 <div class="secao-descricao">
                     <h4>Descrição</h4>
-                    <p>Acredito que teremos mais agilidade e organização se tivermos um sistema centralizado para comunicação interna.</p>
+                    <p>Acredito que teremos mais agilidade e organização se tivermos um sistema centralizado para
+                        comunicação interna.</p>
                 </div>
 
                 <div class="curtidas-bar">
@@ -218,6 +223,63 @@
         </main>
 
     </div>
+
+    <script>
+        document.getElementById('btnNovaSugestao').addEventListener('click', function () {
+            Swal.fire({
+                title: '<strong>Nova Sugestão</strong>',
+                html: `
+            <form id="formSugestao">
+                <div>
+                    <textarea id="swal-descricao" class="swal2-textarea" placeholder="Descreva sua sugestão em detalhes..." style="width: 100%; margin: 0; height: 120px; resize: none;" required></textarea>
+                </div>
+            </form>
+        `,
+                showCancelButton: true,
+                confirmButtonText: 'Enviar Sugestão',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#e63c3c',
+                cancelButtonColor: '#8c8c8c',
+                focusConfirm: false,
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    const descricao = document.getElementById('swal-descricao').value;
+
+                    if (!descricao) {
+                        Swal.showValidationMessage('Por favor, escreva sua sugestão!');
+                        return false;
+                    }
+
+                    const formData = new FormData();
+                    formData.append('descricao', descricao);
+
+                    return fetch('sugestao.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(response.statusText);
+                            }
+                            return response.json();
+                        })
+                        .catch(error => {
+                            Swal.showValidationMessage(`Erro ao enviar: ${error}`);
+                        });
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed && result.value && result.value.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Sucesso!',
+                        text: result.value.message,
+                        confirmButtonColor: '#02d569'
+                    });
+                }
+            });
+        });
+    </script>
 
 </body>
 

@@ -57,7 +57,7 @@ body {
 }
 
 .logo img {
-     color: var(--red-primary);
+    color: var(--red-primary);
     border-radius: 50%;
     width: 70px;
     height: 70px;
@@ -90,6 +90,7 @@ body {
     font-size: 15px;
     transition: all 0.2s ease;
 }
+
 .nav-menu a {
     text-decoration: none;
     color: inherit;
@@ -344,7 +345,8 @@ body {
     margin-bottom: 20px;
 }
 
-.secao-descricao h4, .secao-comentarios h4 {
+.secao-descricao h4,
+.secao-comentarios h4 {
     font-size: 13px;
     font-weight: 700;
     margin-bottom: 8px;
@@ -484,4 +486,35 @@ body {
 .btn-send i {
     color: var(--red-primary);
     font-size: 14px;
+}
+
+/* Customização do Modal SweetAlert2 */
+.swal2-popup {
+    border-radius: 16px !important;
+    font-family: var(--font-main) !important;
+    padding: 25px !important;
+}
+
+.swal2-title {
+    font-size: 20px !important;
+    color: var(--text-dark) !important;
+}
+
+.swal2-input, .swal2-textarea {
+    border-radius: 10px !important;
+    border: 1px solid var(--border-color) !important;
+    background-color: var(--bg-gray) !important;
+    font-size: 14px !important;
+    box-shadow: none !important;
+}
+
+.swal2-input:focus, .swal2-textarea:focus {
+    border-color: var(--red-primary) !important;
+}
+
+.swal2-styled {
+    border-radius: 20px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    padding: 10px 24px !important;
 }
