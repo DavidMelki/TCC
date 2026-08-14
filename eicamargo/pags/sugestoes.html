@@ -28,11 +28,6 @@
 
             <ul class="nav-menu">
                 <li>
-                    <a href="inicio.html" class="nav-item">
-                        <i class="fa-solid fa-house"></i> Início
-                    </a>
-                </li>
-                <li>
                     <a href="sugestoes.html" class="nav-item active">
                         <i class="bi bi-lightbulb-fill"></i> Sugestões
                     </a>
@@ -80,7 +75,7 @@
             </div>
         </aside>
 
-        
+
         <!-- ==================== DETALHES DA SUGESTÃO ==================== -->
         <main class="detalhe-sugestao">
 
@@ -98,7 +93,7 @@
                     <i class="bi bi-three-dots"></i>
                 </div>
             </div>
-            
+
             <!-- Conteúdo Principal das Sugestões -->
             <div class="detalhe-body">
                 <h2>Sugiro a implementação de um sistema para facilitar a comunicação entre os setores.</h2>
@@ -112,44 +107,32 @@
                 <div class="curtidas-bar">
                     <button class="btn-like"><i class="bi bi-hand-thumbs-up"></i> 12</button>
                     <button class="btn-coment"><i class="bi bi-chat-dots"></i></button>
-                    
+
                 </div>
-                
+
                 <!-- fechamento do conteudo Principal das Sugestões -->
 
-                  <!-- Topo do Autor -->
-                <div class="detalhe-header">
-                    <div class="autor-box">
-                        <div class="avatar-lg"></div>
-                        <div class="autor-dados">
-                            <h3>Julia Akemi</h3>
-                            <span class="autor-tag">@akemiJulia</span>
-                            <div class="meta-info">Enviado há 5h </div>
-                        </div>
-                    </div>
-                    <div class="acoes-header">
-                        <i class="bi bi-three-dots"></i>
-                    </div>
-                </div>
-                 <!-- Conteúdo Principal das Sugestões -->
+
+                <!-- Conteúdo Principal das Sugestões -->
                 <div class="detalhe-body">
                     <h2>Sugiro a reforma dos banheiros</h2>
-    
+
                     <div class="secao-descricao">
                         <h4>Descrição</h4>
-                        <p>Acredito que teremos maior privacidade, pois hoje vemos cabines sem porta e sem papel higienico.</p>
+                        <p>Acredito que teremos maior privacidade, pois hoje vemos cabines sem porta e sem papel
+                            higienico.</p>
                     </div>
-    
+
                     <div class="curtidas-bar">
                         <button class="btn-like"><i class="bi bi-hand-thumbs-up"></i> 12</button>
-                        <button class="btn-coment"><i class="bi bi-chat-dots"></i></button> 
+                        <button class="btn-coment"><i class="bi bi-chat-dots"></i></button>
                     </div>
                     <!-- fechamento do conteudo Principal das Sugestões -->
-                <!-- Seção de Comentários -->
-               
+                    <!-- Seção de Comentários -->
+
                 </div>
             </div>
-            
+
 
             <!-- Campo de Inserir Comentário -->
             <div class="comentario-input-bar">
@@ -165,7 +148,7 @@
 
             <div class="top-sugestoes">
                 <h2>Sugestões Favoritas</h2>
-                
+
             </div>
 
             <!-- Lista de Cards -->
@@ -232,26 +215,46 @@
 
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        document.getElementById('btnNovaSugestao').addEventListener('click', function () {
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Limpa os cards e itens de demonstração do HTML
+            const detalheBody = document.querySelector('.detalhe-body');
+            const listaItems = document.querySelector('.painel-sugestoes .lista-items');
+
+            if (detalheBody) detalheBody.innerHTML = '';
+            if (listaItems) listaItems.innerHTML = '';
+
+            // 2. Mapeia o botão "+ Nova sugestão"
+            const botoes = Array.from(document.querySelectorAll('button, a'));
+            const btnTarget = botoes.find(el => el.textContent.includes('Nova sugestão')) || document.querySelector('.btn-nova-sugestao');
+
+            if (btnTarget) {
+                btnTarget.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    abrirModalSugestao();
+                });
+            }
+        });
+
+        function abrirModalSugestao() {
             Swal.fire({
-                title: '<strong>Nova Sugestão</strong>',
+                title: 'Criar Nova Sugestão',
                 html: `
-            <form id="formSugestao">
-                <div>
-                    <textarea id="swal-descricao" class="swal2-textarea" placeholder="Descreva sua sugestão em detalhes..." style="width: 100%; margin: 0; height: 120px; resize: none;" required></textarea>
+            <form id="formSugestao" style="text-align: left;">
+                <div style="margin-top: 10px;">
+                    <label for="swal-descricao" style="display:block; margin-bottom: 8px; font-weight: bold; color: #333;">Sua sugestão:</label>
+                    <textarea id="swal-descricao" class="swal2-textarea" placeholder="Escreva aqui a sua sugestão..." style="width: 100%; margin: 0; height: 120px; box-sizing: border-box; resize: vertical;"></textarea>
                 </div>
             </form>
         `,
+                focusConfirm: false,
                 showCancelButton: true,
                 confirmButtonText: 'Enviar Sugestão',
                 cancelButtonText: 'Cancelar',
-                confirmButtonColor: '#e63c3c',
-                cancelButtonColor: '#8c8c8c',
-                focusConfirm: false,
-                showLoaderOnConfirm: true,
+                confirmButtonColor: '#e63946', // Cor vermelha do tema
                 preConfirm: () => {
-                    const descricao = document.getElementById('swal-descricao').value;
+                    const descricao = document.getElementById('swal-descricao').value.trim();
 
                     if (!descricao) {
                         Swal.showValidationMessage('Por favor, escreva sua sugestão!');
@@ -261,32 +264,90 @@
                     const formData = new FormData();
                     formData.append('descricao', descricao);
 
-                    return fetch('php/sugestao.php', {
+                    return fetch('../php/sugestao.php', {
                         method: 'POST',
                         body: formData
                     })
                         .then(response => {
                             if (!response.ok) {
-                                throw new Error(response.statusText);
+                                throw new Error('Erro na resposta do servidor.');
                             }
                             return response.json();
                         })
+                        .then(data => {
+                            if (data.status === 'error') {
+                                throw new Error(data.message || 'Erro ao salvar sugestão.');
+                            }
+                            return { descricao, id: data.id };
+                        })
                         .catch(error => {
-                            Swal.showValidationMessage(`Erro ao enviar: ${error}`);
+                            Swal.showValidationMessage(`Falha ao enviar: ${error.message}`);
                         });
-                },
-                allowOutsideClick: () => !Swal.isLoading()
+                }
             }).then((result) => {
-                if (result.isConfirmed && result.value && result.value.status === 'success') {
+                if (result.isConfirmed && result.value) {
+                    const { descricao } = result.value;
+
+                    // Renderiza no Feed Central
+                    const detalheBody = document.querySelector('.detalhe-body');
+                    if (detalheBody) {
+                        const novoPostHTML = `
+                    <div class="card-sugestao-post" style="margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
+                        <div class="detalhe-header" style="padding-left:0; padding-right:0;">
+                            <div class="autor-box" style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                <div class="avatar-lg" style="width: 45px; height: 45px; border-radius: 50%; background-color: #ccc;"></div>
+                                <div class="autor-dados">
+                                    <h3 style="margin:0; font-size: 16px;">Você</h3>
+                                    <span class="autor-tag" style="color: #777; font-size: 13px;">@usuario</span>
+                                    <div class="meta-info" style="color: #aaa; font-size: 12px;">Enviado agora</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="secao-descricao" style="margin-bottom: 15px;">
+                            <p style="color: #333; line-height: 1.5; font-size: 15px;">${descricao}</p>
+                        </div>
+                        <div class="curtidas-bar" style="display: flex; gap: 10px;">
+                            <button class="btn-like" style="border: 1px solid #ddd; padding: 5px 12px; border-radius: 15px; background: #fff; cursor: pointer;">
+                                <i class="bi bi-hand-thumbs-up"></i> 0
+                            </button>
+                            <button class="btn-coment" style="border: 1px solid #ddd; padding: 5px 12px; border-radius: 15px; background: #fff; cursor: pointer;">
+                                <i class="bi bi-chat-dots"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                        detalheBody.insertAdjacentHTML('afterbegin', novoPostHTML);
+                    }
+
+                    // Renderiza no Painel Lateral ("Sugestões Favoritas")
+                    const listaItems = document.querySelector('.painel-sugestoes .lista-items');
+                    if (listaItems) {
+                        const novoCardLateralHTML = `
+                    <div class="item-sugestao active" style="display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
+                        <div class="avatar" style="width: 35px; height: 35px; border-radius: 50%; background-color: #ccc; flex-shrink: 0;"></div>
+                        <div class="item-info" style="flex-grow: 1;">
+                            <div class="item-header" style="display: flex; justify-content: space-between; font-size: 12px; color: #777;">
+                                <span class="item-nome" style="font-weight: bold; color: #333;">Você</span>
+                                <span class="item-tempo">Agora</span>
+                            </div>
+                            <p class="item-resumo" style="font-size: 13px; color: #555; margin: 3px 0 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
+                                ${descricao}
+                            </p>
+                        </div>
+                    </div>
+                `;
+                        listaItems.insertAdjacentHTML('afterbegin', novoCardLateralHTML);
+                    }
+
                     Swal.fire({
                         icon: 'success',
-                        title: 'Sucesso!',
-                        text: result.value.message,
-                        confirmButtonColor: '#02d569'
+                        title: 'Sugestão Enviada!',
+                        text: 'Sua sugestão foi cadastrada com sucesso.',
+                        confirmButtonColor: '#e63946'
                     });
                 }
             });
-        });
+        }
     </script>
 
 </body>

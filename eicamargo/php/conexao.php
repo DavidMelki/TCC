@@ -1,7 +1,7 @@
 <?php
 
 $host = "localhost";
-$banco = "ei_camargo";
+$banco = "eicamargo";
 $usuario = "root";
 $senha = "";
 
@@ -17,4 +17,3 @@ try {
 } catch (PDOException $e) {
     die("Erro na conexão com o banco: " . $e->getMessage());
 }
-require_once 'conexao.php';

@@ -12,37 +12,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // =========================================================================
-    // FUTURO BANCO DE DADOS:
-    // Aqui você fará o INSERT apenas da descrição (e usuário/data se houver).
     require_once "conexao.php";
 
-try {
-    $sql = "INSERT INTO sugestoes (descricao) VALUES (:descricao)";
+    try {
+        $sql = "INSERT INTO sugestoes (descricao) VALUES (:descricao)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(":descricao", $descricao);
+        $stmt->execute();
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(":descricao", $descricao);
-    $stmt->execute();
+        // Pega o ID gerado para inclusão na tela
+        $idInserido = $pdo->lastInsertId();
 
-    echo json_encode([
-        'status' => 'success',
-        'message' => 'Sugestão cadastrada com sucesso!'
-    ]);
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Sugestão cadastrada com sucesso!',
+            'dados' => [
+                'id' => $idInserido,
+                'descricao' => $descricao,
+                'tempo' => 'Agora'
+            ]
+        ]);
+        exit;
 
-} catch (PDOException $e) {
-
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Erro ao cadastrar sugestão.'
-    ]);
-}
-    // =========================================================================
-
-    echo json_encode([
-        'status' => 'success',
-        'message' => 'Sugestão cadastrada com sucesso!'
-    ]);
-    exit;
+    } catch (PDOException $e) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Erro ao cadastrar sugestão no banco de dados.'
+        ]);
+        exit;
+    }
 }
 
 echo json_encode([
