@@ -150,7 +150,97 @@ body {
     align-items: center;
     gap: 10px;
 }
+.secao-comentarios {
+    max-height: 0;
+    opacity: 0;
+    overflow: visible; /* Alterado de hidden para visible para não cortar popups */
+    transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out, margin-top 0.3s ease;
+    display: none;
+}
 
+.secao-comentarios.ativo {
+    max-height: 2000px; /* Aumentado para garantir espaço dinâmico */
+    opacity: 1;
+    margin-top: 15px;
+   display: block !important;
+}
+
+/* Ajuste de posicionamento e tema do Emoji Picker */
+.emoji-picker-container {
+    position: absolute;
+    bottom: 45px; /* Abre para cima do campo de texto */
+    left: 0;
+    z-index: 9999;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+}
+
+/* =========================================================
+   2. ESTILO E ANIMAÇÃO DO BOTÃO DE COMENTÁRIO (BALÃOZINHO)
+   ========================================================= */
+.btn-coment {
+    transition: all 0.25s ease-in-out;
+}
+
+.btn-coment:hover {
+    border-color: #e63946 !important;
+    color: #e63946;
+    transform: translateY(-2px);
+}
+
+.btn-coment.comentario-ativo {
+    background-color: #e63946 !important;
+    color: #ffffff !important;
+    border-color: #e63946 !important;
+    box-shadow: 0 4px 10px rgba(230, 57, 70, 0.3);
+    transform: scale(1.05);
+}
+
+/* =========================================================
+   3. ESTILO E ANIMAÇÃO DO BOTÃO DE LIKE (CURTIR)
+   ========================================================= */
+.btn-like {
+    transition: all 0.25s ease-in-out;
+}
+
+/* Hover no botão de Like */
+.btn-like:hover {
+    border-color: #e63946 !important;
+    color: #e63946;
+    transform: translateY(-2px);
+}
+
+/* Estado ativado/curtido (Fundo vermelho e texto branco) */
+.btn-like.liked {
+    background-color: #e63946 !important;
+    color: #ffffff !important;
+    border-color: #e63946 !important;
+    box-shadow: 0 4px 10px rgba(230, 57, 70, 0.3);
+    transform: scale(1.05);
+    animation: pulseLike 0.3s ease-in-out;
+}
+
+/* Animação de pulso leve ao curtir */
+@keyframes pulseLike {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1.05); }
+}
+.btn-excluir-post {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.btn-excluir-post:hover {
+    color: #e63946;
+    background-color: #ffe6e6;
+}
 .avatar {
     width: 40px;
     height: 40px;
@@ -224,6 +314,7 @@ body {
 .lista-items {
     flex: 1;
     overflow-y: auto;
+    grid-column: 3;
 }
 
 .item-sugestao {

@@ -5,14 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eicamargo - Sugestões</title>
-    <!-- Ícones FontAwesome e Bootstrap -->
+
+    <!-- Ícones de bibliotecas externas -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Library SweetAlert2 (JS) -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- Library Emoji Mart (Seletor de Emojis) -->
+    <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
+
+    <!-- Folhas de Estilo CSS -->
     <link rel="stylesheet" href="../css/sugestoes.css">
+    <link rel="stylesheet" href="../css/animacoes-sugestoes.css">
+
     <link rel="icon" type="image/icon" href="../css/img/logoeicamargo.png">
 </head>
 
@@ -20,43 +27,53 @@
 
     <div class="app-container">
 
-        <!-- ==================== MENU LATERAL ==================== -->
+        <!-- =========================================================
+             MENU LATERAL DA ESQUERDA (SIDEBAR)
+             ========================================================= -->
         <aside class="sidebar-left">
+
             <div class="logo">
                 <img src="../css/img/logoeicamargo.png" alt="Logo">
             </div>
 
             <ul class="nav-menu">
+
                 <li>
                     <a href="sugestoes.html" class="nav-item active">
                         <i class="bi bi-lightbulb-fill"></i> Sugestões
                     </a>
                 </li>
+
                 <li>
                     <a href="vendas.html" class="nav-item">
                         <i class="fa-solid fa-cart-shopping"></i> Vendas
                     </a>
                 </li>
+
                 <li>
                     <a href="comunicados.html" class="nav-item">
                         <i class="fa-solid fa-bullhorn"></i> Comunicados
                     </a>
                 </li>
+
                 <li>
                     <a href="mensagens.html" class="nav-item">
                         <i class="fa-regular fa-envelope"></i> Mensagens
                     </a>
                 </li>
+
                 <li>
                     <a href="curso.html" class="nav-item">
                         <i class="fa-solid fa-graduation-cap"></i> Curso
                     </a>
                 </li>
+
                 <li>
                     <a href="perfil.html" class="nav-item">
                         <i class="fa-regular fa-user"></i> Perfil
                     </a>
                 </li>
+
             </ul>
 
             <button class="btn-nova-sugestao" id="btnNovaSugestao">
@@ -73,282 +90,50 @@
                 </div>
                 <i class="bi bi-three-dots"></i>
             </div>
+
         </aside>
 
 
-        <!-- ==================== DETALHES DA SUGESTÃO ==================== -->
+        <!-- =========================================================
+             ÁREA CENTRAL DE SUGESTÕES (FEED)
+             ========================================================= -->
         <main class="detalhe-sugestao">
 
-            <!-- Topo do Autor -->
             <div class="detalhe-header">
-                <div class="autor-box">
-                    <div class="avatar-lg"></div>
-                    <div class="autor-dados">
-                        <h3>Felipe Rocha</h3>
-                        <span class="autor-tag">@feliperocha</span>
-                        <div class="meta-info">Enviado há 2h </div>
-                    </div>
-                </div>
-                <div class="acoes-header">
-                    <i class="bi bi-three-dots"></i>
-                </div>
+                <h1 style="text-align: center;">Sugestões</h1>
             </div>
 
-            <!-- Conteúdo Principal das Sugestões -->
             <div class="detalhe-body">
-                <h2>Sugiro a implementação de um sistema para facilitar a comunicação entre os setores.</h2>
-
-                <div class="secao-descricao">
-                    <h4>Descrição</h4>
-                    <p>Acredito que teremos mais agilidade e organização se tivermos um sistema centralizado para
-                        comunicação interna.</p>
-                </div>
-
-                <div class="curtidas-bar">
-                    <button class="btn-like"><i class="bi bi-hand-thumbs-up"></i> 12</button>
-                    <button class="btn-coment"><i class="bi bi-chat-dots"></i></button>
-
-                </div>
-
-                <!-- fechamento do conteudo Principal das Sugestões -->
-
-
-                <!-- Conteúdo Principal das Sugestões -->
-                <div class="detalhe-body">
-                    <h2>Sugiro a reforma dos banheiros</h2>
-
-                    <div class="secao-descricao">
-                        <h4>Descrição</h4>
-                        <p>Acredito que teremos maior privacidade, pois hoje vemos cabines sem porta e sem papel
-                            higienico.</p>
-                    </div>
-
-                    <div class="curtidas-bar">
-                        <button class="btn-like"><i class="bi bi-hand-thumbs-up"></i> 12</button>
-                        <button class="btn-coment"><i class="bi bi-chat-dots"></i></button>
-                    </div>
-                    <!-- fechamento do conteudo Principal das Sugestões -->
-                    <!-- Seção de Comentários -->
-
-                </div>
-            </div>
-
-
-            <!-- Campo de Inserir Comentário -->
-            <div class="comentario-input-bar">
-                <i class="bi bi-emoji-smile"></i>
-                <input type="text" placeholder="Adicionar um comentário...">
-                <button class="btn-send"><i class="bi bi-send-fill"></i></button>
+                <!-- Posts de Sugestão serão inseridos aqui via JavaScript -->
             </div>
 
         </main>
 
-        <!-- ==================== COLUNA 2: LISTA DE SUGESTÕES ==================== -->
+
+        <!-- =========================================================
+             PAINEL LATERAL DIREITO (FAVORITAS - APENAS COM LIKES)
+             ========================================================= -->
         <section class="painel-sugestoes">
 
             <div class="top-sugestoes">
                 <h2>Sugestões Favoritas</h2>
-
             </div>
 
-            <!-- Lista de Cards -->
             <div class="lista-items">
-
-                <div class="item-sugestao active">
-                    <div class="avatar"></div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <span class="item-nome">Felipe Rocha</span>
-                            <span class="item-tempo">2h</span>
-                        </div>
-                        <p class="item-resumo">Sugiro a implementação de um sistema...</p>
-                    </div>
-                </div>
-
-                <div class="item-sugestao">
-                    <div class="avatar"></div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <span class="item-nome">Leonardo Buso</span>
-                            <span class="item-tempo">2h</span>
-                        </div>
-                        <p class="item-resumo">Seria legal fazer...</p>
-                    </div>
-                </div>
-
-                <div class="item-sugestao">
-                    <div class="avatar"></div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <span class="item-nome">João Silles</span>
-                            <span class="item-tempo">1d</span>
-                        </div>
-                        <p class="item-resumo">Sugestão de melhoria na plataforma...</p>
-                    </div>
-                </div>
-
-                <div class="item-sugestao">
-                    <div class="avatar"></div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <span class="item-nome">Bruno Cano</span>
-                            <span class="item-tempo">3d</span>
-                        </div>
-                        <p class="item-resumo">Integração com o calendário institutional.</p>
-                    </div>
-                </div>
-
-                <div class="item-sugestao">
-                    <div class="avatar"></div>
-                    <div class="item-info">
-                        <div class="item-header">
-                            <span class="item-nome">Davi Afonso</span>
-                            <span class="item-tempo">5d</span>
-                        </div>
-                        <p class="item-resumo">Melhorar a comunicação entre os setores.</p>
-                    </div>
-                </div>
-
+                <!-- Preenchido dinamicamente via JS apenas com sugestões que receberam curtidas -->
             </div>
-        </section>
 
+        </section>
 
     </div>
 
+
+    <!-- =========================================================
+         SCRIPTS E LÓGICA JAVASCRIPT
+         ========================================================= -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // 1. Limpa os cards e itens de demonstração do HTML
-            const detalheBody = document.querySelector('.detalhe-body');
-            const listaItems = document.querySelector('.painel-sugestoes .lista-items');
 
-            if (detalheBody) detalheBody.innerHTML = '';
-            if (listaItems) listaItems.innerHTML = '';
-
-            // 2. Mapeia o botão "+ Nova sugestão"
-            const botoes = Array.from(document.querySelectorAll('button, a'));
-            const btnTarget = botoes.find(el => el.textContent.includes('Nova sugestão')) || document.querySelector('.btn-nova-sugestao');
-
-            if (btnTarget) {
-                btnTarget.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    abrirModalSugestao();
-                });
-            }
-        });
-
-        function abrirModalSugestao() {
-            Swal.fire({
-                title: 'Criar Nova Sugestão',
-                html: `
-            <form id="formSugestao" style="text-align: left;">
-                <div style="margin-top: 10px;">
-                    <label for="swal-descricao" style="display:block; margin-bottom: 8px; font-weight: bold; color: #333;">Sua sugestão:</label>
-                    <textarea id="swal-descricao" class="swal2-textarea" placeholder="Escreva aqui a sua sugestão..." style="width: 100%; margin: 0; height: 120px; box-sizing: border-box; resize: vertical;"></textarea>
-                </div>
-            </form>
-        `,
-                focusConfirm: false,
-                showCancelButton: true,
-                confirmButtonText: 'Enviar Sugestão',
-                cancelButtonText: 'Cancelar',
-                confirmButtonColor: '#e63946', // Cor vermelha do tema
-                preConfirm: () => {
-                    const descricao = document.getElementById('swal-descricao').value.trim();
-
-                    if (!descricao) {
-                        Swal.showValidationMessage('Por favor, escreva sua sugestão!');
-                        return false;
-                    }
-
-                    const formData = new FormData();
-                    formData.append('descricao', descricao);
-
-                    return fetch('../php/sugestao.php', {
-                        method: 'POST',
-                        body: formData
-                    })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Erro na resposta do servidor.');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data.status === 'error') {
-                                throw new Error(data.message || 'Erro ao salvar sugestão.');
-                            }
-                            return { descricao, id: data.id };
-                        })
-                        .catch(error => {
-                            Swal.showValidationMessage(`Falha ao enviar: ${error.message}`);
-                        });
-                }
-            }).then((result) => {
-                if (result.isConfirmed && result.value) {
-                    const { descricao } = result.value;
-
-                    // Renderiza no Feed Central
-                    const detalheBody = document.querySelector('.detalhe-body');
-                    if (detalheBody) {
-                        const novoPostHTML = `
-                    <div class="card-sugestao-post" style="margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
-                        <div class="detalhe-header" style="padding-left:0; padding-right:0;">
-                            <div class="autor-box" style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                                <div class="avatar-lg" style="width: 45px; height: 45px; border-radius: 50%; background-color: #ccc;"></div>
-                                <div class="autor-dados">
-                                    <h3 style="margin:0; font-size: 16px;">Você</h3>
-                                    <span class="autor-tag" style="color: #777; font-size: 13px;">@usuario</span>
-                                    <div class="meta-info" style="color: #aaa; font-size: 12px;">Enviado agora</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="secao-descricao" style="margin-bottom: 15px;">
-                            <p style="color: #333; line-height: 1.5; font-size: 15px;">${descricao}</p>
-                        </div>
-                        <div class="curtidas-bar" style="display: flex; gap: 10px;">
-                            <button class="btn-like" style="border: 1px solid #ddd; padding: 5px 12px; border-radius: 15px; background: #fff; cursor: pointer;">
-                                <i class="bi bi-hand-thumbs-up"></i> 0
-                            </button>
-                            <button class="btn-coment" style="border: 1px solid #ddd; padding: 5px 12px; border-radius: 15px; background: #fff; cursor: pointer;">
-                                <i class="bi bi-chat-dots"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                        detalheBody.insertAdjacentHTML('afterbegin', novoPostHTML);
-                    }
-
-                    // Renderiza no Painel Lateral ("Sugestões Favoritas")
-                    const listaItems = document.querySelector('.painel-sugestoes .lista-items');
-                    if (listaItems) {
-                        const novoCardLateralHTML = `
-                    <div class="item-sugestao active" style="display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0;">
-                        <div class="avatar" style="width: 35px; height: 35px; border-radius: 50%; background-color: #ccc; flex-shrink: 0;"></div>
-                        <div class="item-info" style="flex-grow: 1;">
-                            <div class="item-header" style="display: flex; justify-content: space-between; font-size: 12px; color: #777;">
-                                <span class="item-nome" style="font-weight: bold; color: #333;">Você</span>
-                                <span class="item-tempo">Agora</span>
-                            </div>
-                            <p class="item-resumo" style="font-size: 13px; color: #555; margin: 3px 0 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;">
-                                ${descricao}
-                            </p>
-                        </div>
-                    </div>
-                `;
-                        listaItems.insertAdjacentHTML('afterbegin', novoCardLateralHTML);
-                    }
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Sugestão Enviada!',
-                        text: 'Sua sugestão foi cadastrada com sucesso.',
-                        confirmButtonColor: '#e63946'
-                    });
-                }
-            });
-        }
-    </script>
+    <script src="../js/jssugestoes/sugestoes.js"></script>
 
 </body>
 
