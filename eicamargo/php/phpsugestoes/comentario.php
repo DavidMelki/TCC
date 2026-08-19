@@ -26,7 +26,13 @@ try {
         ':comentario' => $comentario
     ]);
 
-    echo json_encode(['status' => 'success']);
+    // PEGA O ID DO COMENTÁRIO CRIADO E ENVIA JUNTO NO JSON
+    $novoId = $pdo->lastInsertId();
+
+    echo json_encode([
+        'status' => 'success',
+        'id' => $novoId // <--- ISSO RESOLVE O ERRO DA LIXEIRA
+    ]);
 
 } catch (Exception $e) {
     echo json_encode(['status' => 'error', 'message' => 'Erro ao salvar comentário: ' . $e->getMessage()]);
