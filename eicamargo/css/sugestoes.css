@@ -203,6 +203,11 @@ body {
     transition: all 0.25s ease-in-out;
 }
 
+/* Contador de likes dentro do botão curtido fica branco */
+.btn-like.liked .like-count {
+    color: #ffffff !important;
+}
+
 /* Hover no botão de Like */
 .btn-like:hover {
     border-color: #e63946 !important;
@@ -400,6 +405,13 @@ body {
     font-weight: 600;
 }
 
+.autor-dados {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Espaçamento entre o nome e o @usuario */
+    flex-wrap: wrap;
+}
+
 .autor-tag {
     font-size: 13px;
     color: var(--text-gray);
@@ -453,9 +465,8 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin: 25px 0;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
+    margin: 20px 0 10px 0;
+    padding-bottom: 0;
 }
 
 .btn-like {

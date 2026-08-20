@@ -37,13 +37,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         method: 'POST',
                         body: formData
                     })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (cardPost) cardPost.remove();
-                        atualizarFavoritas();
-                        Swal.fire('Excluído!', 'A sugestão foi removida.', 'success');
-                    })
-                    .catch(err => console.error('Erro ao excluir:', err));
+                        .then(res => res.json())
+                        .then(data => {
+                            if (cardPost) cardPost.remove();
+                            atualizarFavoritas();
+
+                            // Substitua o Swal.fire por este formato com confirmButtonColor:
+                            Swal.fire({
+                                title: 'Excluído!',
+                                text: 'A sugestão foi removida.',
+                                icon: 'success',
+                                confirmButtonColor: '#e63946'
+                            });
+                        })
+                        .catch(err => console.error('Erro ao excluir:', err));
                 }
             });
             return;
@@ -74,15 +81,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         method: 'POST',
                         body: formData
                     })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            if (itemComentario) itemComentario.remove();
-                        } else {
-                            Swal.fire('Erro', data.message || 'Não foi possível excluir', 'error');
-                        }
-                    })
-                    .catch(err => console.error('Erro ao excluir comentário:', err));
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                if (itemComentario) itemComentario.remove();
+                            } else {
+                                Swal.fire('Erro', data.message || 'Não foi possível excluir', 'error');
+                            }
+                        })
+                        .catch(err => console.error('Erro ao excluir comentário:', err));
                 }
             });
             return;
@@ -230,10 +237,10 @@ function enviarComentario(cardPost) {
         method: 'POST',
         body: formData
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === 'success') {
-            const novoComentarioHTML = `
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const novoComentarioHTML = `
                 <div class="item-comentario" data-comentario-id="${data.id}" style="background: #f8f9fa; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 13px; color: #333; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <strong style="color: #e63946;">Você:</strong> ${comentarioTexto}
@@ -243,24 +250,24 @@ function enviarComentario(cardPost) {
                     </button>
                 </div>
             `;
-            
-            const listaComentarios = cardPost.querySelector('.lista-comentarios');
-            if (listaComentarios) {
-                listaComentarios.insertAdjacentHTML('beforeend', novoComentarioHTML);
-            }
-            
-            // Mantém a seção de comentários aberta e ativa
-            const secaoComentarios = cardPost.querySelector('.secao-comentarios');
-            const btnCom = cardPost.querySelector('.btn-coment');
-            if (secaoComentarios) secaoComentarios.classList.add('ativo');
-            if (btnCom) btnCom.classList.add('comentario-ativo');
 
-            if (input) input.value = '';
-        } else {
-            Swal.fire({ icon: 'error', title: 'Erro', text: data.message || 'Erro ao enviar' });
-        }
-    })
-    .catch(err => console.error('Erro na requisição do comentário:', err));
+                const listaComentarios = cardPost.querySelector('.lista-comentarios');
+                if (listaComentarios) {
+                    listaComentarios.insertAdjacentHTML('beforeend', novoComentarioHTML);
+                }
+
+                // Mantém a seção de comentários aberta e ativa
+                const secaoComentarios = cardPost.querySelector('.secao-comentarios');
+                const btnCom = cardPost.querySelector('.btn-coment');
+                if (secaoComentarios) secaoComentarios.classList.add('ativo');
+                if (btnCom) btnCom.classList.add('comentario-ativo');
+
+                if (input) input.value = '';
+            } else {
+                Swal.fire({ icon: 'error', title: 'Erro', text: data.message || 'Erro ao enviar' });
+            }
+        })
+        .catch(err => console.error('Erro na requisição do comentário:', err));
 }
 
 async function carregarSugestoes() {
@@ -304,13 +311,18 @@ function criarHTMLPost(post) {
 
     return `
         <div class="card-sugestao-post" data-id="${post.id}" style="margin-bottom: 30px; border: 1px solid #eee; padding: 20px; border-radius: 12px; background: #fff;">
-            <div class="detalhe-header" style="padding-left:0; padding-right:0; display: flex; justify-content: space-between; align-items: flex-start;">
+            <div class="detalhe-header" style="padding-left:0; padding-right:0; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: none;">
                 <div class="autor-box" style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
                     <div class="avatar-lg" style="width: 45px; height: 45px; border-radius: 50%; background-color: #ccc;"></div>
-                    <div class="autor-dados">
-                        <h3 style="margin:0; font-size: 16px;">${post.nome || 'Usuário'}</h3>
-                        <span class="autor-tag" style="color: #777; font-size: 13px;">${post.usuario || '@usuario'}</span>
-                        <div class="meta-info" style="color: #aaa; font-size: 12px;">${post.tempo || 'Recente'}</div>
+                    <div class="autor-dados" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center;">
+                       <div style="display: flex; align-items: center; gap: 8px;">
+                         <h3 style="margin: 0; font-size: 15px; font-weight: 600;">${post.nome || 'Você'}</h3>
+                         <span class="autor-tag" style="color: #777; font-size: 13px; line-height: 1;">${post.usuario || '@usuario'}</span>
+                        </div>
+
+                        <div class="meta-info" style="color: #aaa; font-size: 12px; margin-top: 3px;">
+                          ${post.tempo || 'Recente'}
+                        </div>
                     </div>
                 </div>
                 <button class="btn-excluir-post" title="Excluir sugestão" style="border: none; background: transparent; color: #aaa; cursor: pointer; font-size: 16px;">
@@ -320,7 +332,7 @@ function criarHTMLPost(post) {
             <div class="secao-descricao" style="margin-bottom: 15px;">
                 <p style="color: #333; line-height: 1.5; font-size: 15px;">${post.descricao}</p>
             </div>
-            <div class="curtidas-bar" style="display: flex; gap: 10px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;">
+            <div class="curtidas-bar" style="display: flex; gap: 10px; margin-bottom: 15px;">
                 <button class="btn-like ${curtidoClasse}" style="border: 1px solid #ddd; padding: 5px 12px; border-radius: 15px; background: #fff; cursor: pointer;">
                     <i class="bi ${iconeLike}"></i> <span class="like-count">${post.likes || 0}</span>
                 </button>
@@ -373,14 +385,14 @@ function abrirModalSugestao() {
                 method: 'POST',
                 body: formData
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'error') throw new Error(data.message);
-                return data;
-            })
-            .catch(error => {
-                Swal.showValidationMessage(`Falha ao enviar: ${error.message}`);
-            });
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'error') throw new Error(data.message);
+                    return data;
+                })
+                .catch(error => {
+                    Swal.showValidationMessage(`Falha ao enviar: ${error.message}`);
+                });
         }
     }).then((result) => {
         if (result.isConfirmed && result.value) {
