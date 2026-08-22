@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
-                        window.location.href = 'pags/sugestoes.html';
+                        window.location.href = 'pags/sugestoes.php';
                     });
                 } else {
                     Swal.fire({

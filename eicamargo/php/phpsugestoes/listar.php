@@ -1,34 +1,44 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 header('Content-Type: application/json; charset=utf-8');
 
-$host = 'localhost';
-$dbname = 'eicamargo'; 
-$username = 'root';
-$password = '';
+include_once '../conexao.php';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // 1. Busca todas as sugestões
-    $stmt = $pdo->query("SELECT id, nome, usuario, descricao, likes FROM sugestoes ORDER BY id DESC");
+    $sql = "SELECT s.id, s.descricao, s.likes, s.usuario_id, 
+                   u.nome, u.foto_perfil 
+            FROM sugestoes s 
+            JOIN usuarios u ON s.usuario_id = u.id 
+            ORDER BY s.id DESC";
+            
+    $stmt = $pdo->query($sql);
     $sugestoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // 2. Para cada sugestão, busca os seus respectivos comentários e ajusta o liked
     foreach ($sugestoes as &$sugestao) {
-        $stmtC = $pdo->prepare("SELECT id, nome, comentario FROM comentarios WHERE sugestao_id = :sugestao_id ORDER BY id ASC");
-        $stmtC->execute([':sugestao_id' => $sugestao['id']]);
+        $stmtC = $pdo->query("SELECT id, nome, comentario FROM comentarios WHERE sugestao_id = " . (int)$sugestao['id'] . " ORDER BY id ASC");
         $sugestao['comentarios'] = $stmtC->fetchAll(PDO::FETCH_ASSOC);
 
-        // Garante que o número de likes seja um número inteiro
-        $sugestao['likes'] = (int)($sugestao['likes'] ?? 0);
+        $sugestao['usuario'] = '@' . strtolower(str_replace(' ', '', $sugestao['nome']));
 
-        // Define 'liked' como true se os likes forem maior que 0 (ou você pode ajustar conforme sua lógica de sessão de usuário)
-        // Se você tiver uma tabela de curtidas por usuário, o ideal é checar se o ID do usuário logado curtiu aqui.
+        // FORÇA A LIMPEZA DE QUALQUER ESPAÇO NO NOME DO ARQUIVO ANTES DE MANDAR PRO JS
+        $foto = trim($sugestao['foto_perfil'] ?? '');
+        if (!empty($foto)) {
+            // Corrige caso o banco tenha salvo espaço antes do png ou espaços no nome
+            $fotoCorrigida = str_replace([' ', ' png'], ['.', '.png'], $foto);
+            $sugestao['foto_perfil'] = '/TCC/uploads/' . $fotoCorrigida;
+        } else {
+            $sugestao['foto_perfil'] = '';
+        }
+
+        $sugestao['likes'] = (int)($sugestao['likes'] ?? 0);
         $sugestao['liked'] = ($sugestao['likes'] > 0); 
     }
-    unset($sugestao);
+    unset($sugestao); // Fechado corretamente fora do foreach
 
+    // ENVIA OS DADOS COM SUCESSO PARA O JS:
     echo json_encode([
         'status' => 'success',
         'sugestoes' => $sugestoes

@@ -1,3 +1,35 @@
+<?php
+session_start();
+// Se o usuário não estiver logado, redireciona para a tela de login
+if (!isset($_SESSION['usuario_id'])) {
+    header('Location: login.php');
+    exit;
+}
+
+$host = 'localhost';
+$dbname = 'eicamargo';
+$username = 'root';
+$password = '';
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Busca os dados atualizados do usuário no banco
+    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE id = :id");
+    $stmt->execute([':id' => $_SESSION['usuario_id']]);
+    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$usuario) {
+        // Se por acaso o usuário não existir, destrói a sessão e manda pro login
+        session_destroy();
+        header('Location: login.php');
+        exit;
+    }
+} catch (PDOException $e) {
+    die("Erro ao carregar perfil: " . $e->getMessage());
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -25,32 +57,32 @@
 
             <ul class="nav-menu">
                 <li>
-                    <a href="sugestoes.html" class="nav-item">
+                    <a href="sugestoes.php" class="nav-item">
                         <i class="bi bi-lightbulb-fill"></i> Sugestões
                     </a>
                 </li>
                 <li>
-                    <a href="vendas.html" class="nav-item">
+                    <a href="vendas.php" class="nav-item">
                         <i class="fa-solid fa-cart-shopping"></i> Vendas
                     </a>
                 </li>
                 <li>
-                    <a href="comunicados.html" class="nav-item">
+                    <a href="comunicados.php" class="nav-item">
                         <i class="fa-solid fa-bullhorn"></i> Comunicados
                     </a>
                 </li>
                 <li>
-                    <a href="mensagens.html" class="nav-item">
+                    <a href="mensagens.php" class="nav-item">
                         <i class="fa-regular fa-envelope"></i> Mensagens
                     </a>
                 </li>
                 <li>
-                    <a href="curso.html" class="nav-item">
+                    <a href="curso.php" class="nav-item">
                         <i class="fa-solid fa-graduation-cap"></i> Curso
                     </a>
                 </li>
                 <li>
-                    <a href="perfil.html" class="nav-item active">
+                    <a href="perfil.php" class="nav-item active">
                         <i class="fa-regular fa-user"></i> Perfil
                     </a>
                 </li>
@@ -58,10 +90,10 @@
 
             <div class="profile-footer">
                 <div class="profile-info">
-                    <div class="avatar"></div>
+                    <div class="avatar" style="background-image: url('../uploads/<?php echo !empty($usuario['foto_perfil']) ? htmlspecialchars($usuario['foto_perfil']) : 'default.png'; ?>'); background-size: cover; background-position: center;"></div>
                     <div class="dados">
-                        <span class="nome">Nome do Usuário</span>
-                        <span class="usuario">@usuario</span>
+                        <span class="nome"><?php echo htmlspecialchars($usuario['nome']); ?></span>
+                        <span class="usuario">@<?php echo strtolower(str_replace(' ', '', $usuario['nome'])); ?></span>
                     </div>
                 </div>
                 <i class="bi bi-three-dots"></i>
@@ -75,33 +107,33 @@
             <div class="capa"></div>
 
             <div class="perfil-header">
-                <div class="foto-perfil"></div>
+                <div class="foto-perfil" style="background-image: url('../uploads/<?php echo !empty($usuario['foto_perfil']) ? htmlspecialchars($usuario['foto_perfil']) : 'default.png'; ?>'); background-size: cover; background-position: center;"></div>
                 <button class="btn-editar">Editar Perfil</button>
             </div>
 
             <!-- Informações do Usuário -->
             <div class="info-perfil">
-                <h2>Nome do Aluno</h2>
-                <span class="usuario">@usuario</span>
+                <h2><?php echo htmlspecialchars($usuario['nome']); ?></h2>
+                <span class="usuario">@<?php echo strtolower(str_replace(' ', '', $usuario['nome'])); ?></span>
                 <p class="descricao">
-                    Terceiro ano do curso Análise e Desenvolvimento de Sistemas.
+                    <?php echo htmlspecialchars($usuario['biografia'] ?? 'Nenhuma biografia informada.'); ?>
                 </p>
             </div>
 
             <!-- Abas do Perfil -->
             <div class="abas">
                 <div class="aba ativa">Sugestões</div>
-                <div class="aba"></div> <!-- espaço para aba de vendas (tirei pois nao esta pronta a tela ainda)-->
+                <div class="aba"></div> 
             </div>
 
             <!-- Conteúdo das Abas (Feed do usuário) -->
             <div class="lista-posts">
                 <div class="post">
-                    <div class="avatar-post"></div>
+                    <div class="avatar-post" style="background-image: url('../uploads/<?php echo !empty($usuario['foto_perfil']) ? htmlspecialchars($usuario['foto_perfil']) : 'default.png'; ?>'); background-size: cover; background-position: center;"></div>
                     <div class="conteudo-post">
                         <div class="post-header">
-                            <h4>Nome do Aluno</h4>
-                            <span>@usuario · 2d</span>
+                            <h4><?php echo htmlspecialchars($usuario['nome']); ?></h4>
+                            <span>@<?php echo strtolower(str_replace(' ', '', $usuario['nome'])); ?> · 2d</span>
                         </div>
                         <p>Minha primeira sugestão enviada na plataforma!</p>
                         <div class="post-acoes">

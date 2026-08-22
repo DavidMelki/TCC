@@ -1,3 +1,4 @@
+<?php include '../php/sessao.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -39,37 +40,37 @@
             <ul class="nav-menu">
 
                 <li>
-                    <a href="sugestoes.html" class="nav-item active">
+                    <a href="sugestoes.php" class="nav-item active">
                         <i class="bi bi-lightbulb-fill"></i> Sugestões
                     </a>
                 </li>
 
                 <li>
-                    <a href="vendas.html" class="nav-item">
+                    <a href="vendas.php" class="nav-item">
                         <i class="fa-solid fa-cart-shopping"></i> Vendas
                     </a>
                 </li>
 
                 <li>
-                    <a href="comunicados.html" class="nav-item">
+                    <a href="comunicados.php" class="nav-item">
                         <i class="fa-solid fa-bullhorn"></i> Comunicados
                     </a>
                 </li>
 
                 <li>
-                    <a href="mensagens.html" class="nav-item">
+                    <a href="mensagens.php" class="nav-item">
                         <i class="fa-regular fa-envelope"></i> Mensagens
                     </a>
                 </li>
 
                 <li>
-                    <a href="curso.html" class="nav-item">
+                    <a href="curso.php" class="nav-item">
                         <i class="fa-solid fa-graduation-cap"></i> Curso
                     </a>
                 </li>
 
                 <li>
-                    <a href="perfil.html" class="nav-item">
+                    <a href="perfil.php" class="nav-item">
                         <i class="fa-regular fa-user"></i> Perfil
                     </a>
                 </li>
@@ -80,12 +81,13 @@
                 <i class="bi bi-plus-lg"></i> Nova sugestão
             </button>
 
+            <!-- Rodapé da Sidebar Dinâmico -->
             <div class="profile-footer">
                 <div class="profile-info">
-                    <div class="avatar"></div>
+                    <div class="avatar" style="background-image: url('../uploads/<?php echo !empty($usuarioLogado['foto_perfil']) ? htmlspecialchars($usuarioLogado['foto_perfil']) : 'default.png'; ?>'); background-size: cover; background-position: center;"></div>
                     <div class="dados">
-                        <span class="nome">Nome do Usuário</span>
-                        <span class="usuario">@usuario</span>
+                        <span class="nome"><?php echo htmlspecialchars($usuarioLogado['nome']); ?></span>
+                        <span class="usuario">@<?php echo strtolower(str_replace(' ', '', $usuarioLogado['nome'])); ?></span>
                     </div>
                 </div>
                 <i class="bi bi-three-dots"></i>
@@ -132,8 +134,8 @@
          SCRIPTS E LÓGICA JAVASCRIPT
          ========================================================= -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script src="../js/jssugestoes/sugestoes.js"></script>
+    
+    <script src="../js/jssugestoes/sugestoes.js?v=<?php echo time(); ?>"></script>
 
 </body>
 

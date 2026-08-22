@@ -23,10 +23,13 @@ try {
         exit;
     }
 
-    // Se passou, o login deu certo! (Pode iniciar sessão se quiser salvar dados do usuário)
+    // Inicia a sessão e guarda os dados essenciais
     session_start();
     $_SESSION['usuario_id'] = $usuario['id'];
     $_SESSION['usuario_nome'] = $usuario['nome'];
+    
+    // IMPORTANTE: Salvamos o array completo ou a foto na sessão para o uso imediato
+    $_SESSION['usuario'] = $usuario; 
 
     echo json_encode([
         'status' => 'success',

@@ -1,3 +1,4 @@
+<?php include '../php/sessao.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -14,7 +15,7 @@
 
     <!-- Importando o CSS externo -->
     <link rel="icon" type="image/icon" href="../css/img/logoeicamargo.png">
-    <link rel="stylesheet" href="..//css/vendas.css">
+    <link rel="stylesheet" href="../css/vendas.css">
 </head>
 
 <body>
@@ -24,45 +25,43 @@
         <!-- ==================== COLUNA ESQUERDA (MENU) ==================== -->
         <aside class="sidebar-left">
             <div class="logo">
-                <div class="logo-icon"><img class="logo-icon" src="../css/img/logoeicamargo.png"></div>
-                <div class="logo-text">
-
-                </div>
+                <div class="logo-icon"><img class="logo-icon" src="../css/img/logoeicamargo.png" alt="Logo"></div>
+                <div class="logo-text"></div>
             </div>
 
             <ul class="nav-menu">
                 <li>
-                    <a href="sugestoes.html" class="nav-item">
+                    <a href="sugestoes.php" class="nav-item">
                         <i class="bi bi-lightbulb-fill"></i> Sugestões
                     </a>
                 </li>
 
                 <li class="nav-item active">
-                    <a href="vendas.html" id="link">
+                    <a href="vendas.php" id="link">
                         <i class="fa-solid fa-cart-shopping"></i> Vendas
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="comunicados.html" id="link">
+                    <a href="comunicados.php" id="link">
                         <i class="fa-solid fa-bullhorn"></i> Comunicados
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="mensagens.html" id="link">
+                    <a href="mensagens.php" id="link">
                         <i class="fa-regular fa-envelope"></i> Mensagens
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="curso.html" id="link">
+                    <a href="curso.php" id="link">
                         <i class="fa-solid fa-graduation-cap"></i> Curso
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="perfil.html" id="link">
+                    <a href="perfil.php" id="link">
                         <i class="fa-regular fa-user"></i> Perfil
                     </a>
                 </li>
@@ -70,12 +69,13 @@
 
             <button class="btn-publish btn-abrir-modal-venda"><i class="fa-solid fa-plus"></i> Publicar venda</button>
 
+            <!-- Rodapé da Sidebar Dinâmico -->
             <div class="profile-footer">
                 <div class="profile-info">
-                    <div class="profile-avatar"></div>
+                    <div class="profile-avatar" style="background-image: url('../uploads/<?php echo !empty($usuarioLogado['foto_perfil']) ? htmlspecialchars($usuarioLogado['foto_perfil']) : 'default.png'; ?>'); background-size: cover; background-position: center;"></div>
                     <div>
-                        <div class="profile-name">Nome do Usuário</div>
-                        <div class="profile-username">@usuario</div>
+                        <div class="profile-name"><?php echo htmlspecialchars($usuarioLogado['nome']); ?></div>
+                        <div class="profile-username">@<?php echo strtolower(str_replace(' ', '', $usuarioLogado['nome'])); ?></div>
                     </div>
                 </div>
                 <i class="fa-solid fa-ellipsis menu-dots"></i>
@@ -99,10 +99,8 @@
                         <p>Compartilhe seus produtos caseiros com a comunidade.</p>
                     </div>
                 </div>
-                <button class="btn-publish-small" onclick="alert('Função de abrir modal aqui!')">Publicar</button>
+                <button class="btn-publish-small btn-abrir-modal-venda">Publicar</button>
             </div>
-
-
 
             <!-- Lista de Produtos -->
             <div class="products-list">
@@ -118,8 +116,7 @@
 
                     <div class="product-info">
                         <h3 class="product-title">Cookies de Chocolate 🍪</h3>
-                        <p class="product-desc">Cookies macios por dentro e crocantes por fora. Feitos com muito amor!
-                        </p>
+                        <p class="product-desc">Cookies macios por dentro e crocantes por fora. Feitos com muito amor!</p>
                         <div class="product-tags">
                             <span class="tag">Cookies</span>
                         </div>
@@ -154,8 +151,7 @@
 
                     <div class="product-info">
                         <h3 class="product-title">Bolo de Cenoura com Chocolate 🥕</h3>
-                        <p class="product-desc">Fofinho e com cobertura de brigadeiro. Perfeito para o café da tarde!
-                        </p>
+                        <p class="product-desc">Fofinho e com cobertura de brigadeiro. Perfeito para o café da tarde!</p>
                         <div class="product-tags">
                             <span class="tag">Bolos</span>
                         </div>
@@ -190,8 +186,7 @@
 
                     <div class="product-info">
                         <h3 class="product-title">Torta de Limão 🍋</h3>
-                        <p class="product-desc">Cremosa, leve e com o toque perfeito de limão. Base crocante que derrete
-                            na boca!</p>
+                        <p class="product-desc">Cremosa, leve e com o toque perfeito de limão. Base crocante que derrete na boca!</p>
                         <div class="product-tags">
                             <span class="tag">Tortas</span>
                         </div>
@@ -226,8 +221,7 @@
 
                     <div class="product-info">
                         <h3 class="product-title">Brownie com Nozes 🍫</h3>
-                        <p class="product-desc">Fudgy, chocolatudo e com nozes crocantes. Ideal para matar a vontade!
-                        </p>
+                        <p class="product-desc">Fudgy, chocolatudo e com nozes crocantes. Ideal para matar a vontade!</p>
                         <div class="product-tags">
                             <span class="tag">Doces</span>
                         </div>
@@ -307,7 +301,7 @@
                 <div class="ranking-item">
                     <div class="rank-num">1</div>
                     <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&h=100&fit=crop"
-                        class="rank-img">
+                        alt="Bolo" class="rank-img">
                     <div class="rank-info">
                         <strong>Bolo de Chocolate</strong>
                         <span>por Fernando F.</span>
@@ -318,7 +312,7 @@
                 <div class="ranking-item">
                     <div class="rank-num">2</div>
                     <img src="https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=100&h=100&fit=crop"
-                        class="rank-img">
+                        alt="Cookie" class="rank-img">
                     <div class="rank-info">
                         <strong>Cookie Red Velvet</strong>
                         <span>por Matheus H.</span>
@@ -329,7 +323,7 @@
                 <div class="ranking-item">
                     <div class="rank-num">3</div>
                     <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=100&h=100&fit=crop"
-                        class="rank-img">
+                        alt="Torta" class="rank-img">
                     <div class="rank-info">
                         <strong>Torta de Morango</strong>
                         <span>por Vinicius</span>

@@ -1,3 +1,4 @@
+<?php include '../php/sessao.php'; ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -28,51 +29,52 @@
 
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="sugestoes.html" id="link">
+                    <a href="sugestoes.php" id="link">
                         <i class="bi bi-lightbulb-fill"></i> Sugestões
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="vendas.html" id="link">
+                    <a href="vendas.php" id="link">
                         <i class="fa-solid fa-cart-shopping"></i> Vendas
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="comunicados.html" id="link">
+                    <a href="comunicados.php" id="link">
                         <i class="fa-solid fa-bullhorn"></i> Comunicados
                     </a>
                 </li>
 
                 <li class="nav-item active">
-                    <a href="mensagens.html" id="link">
+                    <a href="mensagens.php" id="link">
                         <i class="fa-regular fa-envelope"></i> Mensagens
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="curso.html" id="link">
+                    <a href="curso.php" id="link">
                         <i class="fa-solid fa-graduation-cap"></i> Curso
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="perfil.html" id="link">
+                    <a href="perfil.php" id="link">
                         <i class="fa-regular fa-user"></i> Perfil
                     </a>
                 </li>
             </ul>
 
-            <div class="profile-footer">
+            <!-- Rodapé da Sidebar fixado na parte inferior -->
+            <div class="profile-footer" style="margin-top: auto;">
                 <div class="profile-info">
-                    <div class="profile-avatar"></div>
-                    <div>
-                        <div class="profile-name">Nome do Usuário</div>
-                        <div class="profile-username">@usuario</div>
+                    <div class="avatar" style="width: 40px; height: 40px; border-radius: 50%; background-image: url('../uploads/<?php echo !empty($usuarioLogado['foto_perfil']) ? htmlspecialchars($usuarioLogado['foto_perfil']) : 'default.png'; ?>'); background-size: cover; background-position: center;"></div>
+                    <div class="dados">
+                        <span class="nome" style="font-weight: bold; font-size: 14px; display: block;"><?php echo htmlspecialchars($usuarioLogado['nome']); ?></span>
+                        <span class="usuario" style="font-size: 12px; color: #666; display: block;">@<?php echo strtolower(str_replace(' ', '', $usuarioLogado['nome'])); ?></span>
                     </div>
                 </div>
-                <i class="fa-solid fa-ellipsis menu-dots"></i>
+                <i class="bi bi-three-dots"></i>
             </div>
         </aside>
 
@@ -109,7 +111,6 @@
                     </div>
 
                     <!-- Conversa 2 -->
-
                     <div class="conversa">
                         <div class="avatar-post"></div>
                         <div class="texto">
@@ -140,7 +141,6 @@
                     </div>
 
                     <!-- Conversa 5 -->
-
                     <div class="conversa">
                         <div class="avatar-post"></div>
                         <div class="texto">
@@ -242,7 +242,6 @@
                 </div>
 
                 <!-- Campo para enviar mensagem -->
-
                 <div class="enviar">
                     <i class="bi bi-emoji-smile"></i>
                     <i class="bi bi-paperclip"></i>
@@ -252,7 +251,6 @@
                     <button class="botao-enviar">
                         <i class="bi bi-send-fill"></i>
                     </button>
-
                 </div>
 
             </section>
@@ -267,34 +265,25 @@
         const conversas = document.querySelectorAll(".conversa");
 
         conversas.forEach(conversa => {
-
             conversa.addEventListener("click", () => {
-
                 conversas.forEach(c => c.classList.remove("ativa"));
-
                 conversa.classList.add("ativa");
-
             });
-
         });
 
         // Enviar mensagem
-
         const input = document.querySelector(".enviar input");
         const botao = document.querySelector(".botao-enviar");
         const chat = document.querySelector(".chat-mensagens");
 
         function enviarMensagem() {
-
             if (input.value.trim() === "")
                 return;
 
             const mensagem = document.createElement("div");
-
             mensagem.className = "msg enviada";
 
             const agora = new Date();
-
             const hora =
                 String(agora.getHours()).padStart(2, "0") +
                 ":" +
@@ -306,25 +295,17 @@
             `;
 
             chat.appendChild(mensagem);
-
             chat.scrollTop = chat.scrollHeight;
-
             input.value = "";
-
         }
 
         botao.addEventListener("click", enviarMensagem);
 
         input.addEventListener("keydown", function (e) {
-
             if (e.key === "Enter") {
-
                 enviarMensagem();
-
             }
-
         });
-
     </script>
 
 </body>

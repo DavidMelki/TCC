@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     carregarSugestoes();
 
-    const btnTarget = document.querySelector('.btn-nova-sugestao') || Array.from(document.querySelectorAll('button, a')).find(el => el.textContent.includes('Nova sugestão'));
+    const btnTarget = document.getElementById('btnNovaSugestao') || document.querySelector('.btn-nova-sugestao') || Array.from(document.querySelectorAll('button, a')).find(el => el.textContent.includes('Nova sugestão'));
 
     if (btnTarget) {
         btnTarget.addEventListener('click', (e) => {
@@ -42,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (cardPost) cardPost.remove();
                             atualizarFavoritas();
 
-                            // Substitua o Swal.fire por este formato com confirmButtonColor:
                             Swal.fire({
                                 title: 'Excluído!',
                                 text: 'A sugestão foi removida.',
@@ -256,7 +255,6 @@ function enviarComentario(cardPost) {
                     listaComentarios.insertAdjacentHTML('beforeend', novoComentarioHTML);
                 }
 
-                // Mantém a seção de comentários aberta e ativa
                 const secaoComentarios = cardPost.querySelector('.secao-comentarios');
                 const btnCom = cardPost.querySelector('.btn-coment');
                 if (secaoComentarios) secaoComentarios.classList.add('ativo');
@@ -309,16 +307,25 @@ function criarHTMLPost(post) {
         `).join('');
     }
 
+   const nomeSeguro = encodeURIComponent(post.nome || 'Usuário');
+    let fotoPerfil = `https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff&size=128`;
+
+    if (post.foto_perfil && post.foto_perfil.trim() !== '') {
+        // O PHP já mandou pronto ex: "/TCC/uploads/perfil_3_1787402235.png"
+        fotoPerfil = post.foto_perfil;
+    }
     return `
         <div class="card-sugestao-post" data-id="${post.id}" style="margin-bottom: 30px; border: 1px solid #eee; padding: 20px; border-radius: 12px; background: #fff;">
             <div class="detalhe-header" style="padding-left:0; padding-right:0; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: none;">
-                <div class="autor-box" style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                    <div class="avatar-lg" style="width: 45px; height: 45px; border-radius: 50%; background-color: #ccc;"></div>
+                <div class="autor-box" style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                    
+                    <img src="${fotoPerfil}" alt="Foto de perfil" style="width: 45px !important; height: 45px !important; min-width: 45px !important; min-height: 45px !important; border-radius: 50% !important; object-fit: cover !important; display: block !important; border: 1px solid #ddd;" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff';">
+                    
                     <div class="autor-dados" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center;">
                        <div style="display: flex; align-items: center; gap: 8px;">
                          <h3 style="margin: 0; font-size: 15px; font-weight: 600;">${post.nome || 'Você'}</h3>
                          <span class="autor-tag" style="color: #777; font-size: 13px; line-height: 1;">${post.usuario || '@usuario'}</span>
-                        </div>
+                       </div>
 
                         <div class="meta-info" style="color: #aaa; font-size: 12px; margin-top: 3px;">
                           ${post.tempo || 'Recente'}
@@ -358,46 +365,57 @@ function criarHTMLPost(post) {
 
 function abrirModalSugestao() {
     Swal.fire({
-        title: 'Criar Nova Sugestão',
+        title: '<strong>Nova Sugestão</strong>',
         html: `
-            <form id="formSugestao" style="text-align: left;">
-                <div style="margin-top: 10px;">
-                    <label for="swal-descricao" style="display:block; margin-bottom: 8px; font-weight: bold; color: #333;">Sua sugestão:</label>
-                    <textarea id="swal-descricao" class="swal2-textarea" placeholder="Escreva aqui a sua sugestão..." style="width: 100%; margin: 0; height: 120px; box-sizing: border-box; resize: vertical;"></textarea>
+            <form id="formSugestao">
+                <div>
+                    <textarea id="swal-descricao" class="swal2-textarea" placeholder="Descreva sua sugestão em detalhes..." style="width: 100%; margin: 0; height: 120px; resize: none;" required></textarea>
                 </div>
             </form>
         `,
-        focusConfirm: false,
         showCancelButton: true,
         confirmButtonText: 'Enviar Sugestão',
         cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#e63946',
+        confirmButtonColor: '#e63c3c',
+        cancelButtonColor: '#8c8c8c',
+        focusConfirm: false,
+        showLoaderOnConfirm: true,
         preConfirm: () => {
             const descricao = document.getElementById('swal-descricao').value.trim();
+
             if (!descricao) {
                 Swal.showValidationMessage('Por favor, escreva sua sugestão!');
                 return false;
             }
+
             const formData = new FormData();
             formData.append('descricao', descricao);
 
+            // Ajustado para apontar para o local correto do backend de salvamento
             return fetch('../php/phpsugestoes/sugestao.php', {
                 method: 'POST',
                 body: formData
             })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'error') throw new Error(data.message);
-                    return data;
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(response.statusText);
+                    }
+                    return response.json();
                 })
                 .catch(error => {
-                    Swal.showValidationMessage(`Falha ao enviar: ${error.message}`);
+                    Swal.showValidationMessage(`Erro ao enviar: ${error}`);
                 });
-        }
+        },
+        allowOutsideClick: () => !Swal.isLoading()
     }).then((result) => {
-        if (result.isConfirmed && result.value) {
+        if (result.isConfirmed && result.value && result.value.status === 'success') {
             carregarSugestoes();
-            Swal.fire({ icon: 'success', title: 'Sugestão Enviada!', text: 'Sua sugestão foi cadastrada com sucesso.', confirmButtonColor: '#e63946' });
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucesso!',
+                text: result.value.message || 'Sua sugestão foi cadastrada com sucesso.',
+                confirmButtonColor: '#02d569'
+            });
         }
     });
 }
