@@ -12,4 +12,14 @@ Trabalho de conclusão de curso por Bruna, Julia, David e Alexandre
 -Imagem do primeiro protótipo já upada com as instruções sobre o software.
 
 
+
+
+
+
+
+
+
+cu
+
+
   
