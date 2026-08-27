@@ -294,7 +294,9 @@ function criarHTMLPost(post) {
     const iconeLike = post.liked ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up';
 
     let comentariosHTML = '';
-    if (post.comentarios && Array.isArray(post.comentarios)) {
+    const temComentarios = post.comentarios && Array.isArray(post.comentarios) && post.comentarios.length > 0;
+
+    if (temComentarios) {
         comentariosHTML = post.comentarios.map(c => `
             <div class="item-comentario" data-comentario-id="${c.id}" style="background: #f8f9fa; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 13px; color: #333; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
                 <div>
@@ -307,18 +309,21 @@ function criarHTMLPost(post) {
         `).join('');
     }
 
-   const nomeSeguro = encodeURIComponent(post.nome || 'Usuário');
+    const nomeSeguro = encodeURIComponent(post.nome || 'Usuário');
     let fotoPerfil = `https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff&size=128`;
 
     if (post.foto_perfil && post.foto_perfil.trim() !== '') {
-        // O PHP já mandou pronto ex: "/TCC/uploads/perfil_3_1787402235.png"
         fotoPerfil = post.foto_perfil;
     }
+
+    // Se já existem comentários salvos, mantém a seção aberta (classe "ativo" ou display block)
+    const classeAtivo = temComentarios ? 'ativo' : '';
+    const displaySecao = temComentarios ? 'block' : 'none';
+
     return `
         <div class="card-sugestao-post" data-id="${post.id}" style="margin-bottom: 30px; border: 1px solid #eee; padding: 20px; border-radius: 12px; background: #fff;">
             <div class="detalhe-header" style="padding-left:0; padding-right:0; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: none;">
                 <div class="autor-box" style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
-                    
                     <img src="${fotoPerfil}" alt="Foto de perfil" style="width: 45px !important; height: 45px !important; min-width: 45px !important; min-height: 45px !important; border-radius: 50% !important; object-fit: cover !important; display: block !important; border: 1px solid #ddd;" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff';">
                     
                     <div class="autor-dados" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center;">
@@ -343,11 +348,12 @@ function criarHTMLPost(post) {
                 <button class="btn-like ${curtidoClasse}" style="border: 1px solid #ddd; padding: 5px 12px; border-radius: 15px; background: #fff; cursor: pointer;">
                     <i class="bi ${iconeLike}"></i> <span class="like-count">${post.likes || 0}</span>
                 </button>
-                <button class="btn-coment" style="border: 1px solid #ddd; padding: 5px 12px; border-radius: 15px; background: #fff; cursor: pointer;">
+                <button class="btn-coment ${temComentarios ? 'comentario-ativo' : ''}" style="border: 1px solid #ddd; padding: 5px 12px; border-radius: 15px; background: #fff; cursor: pointer;">
                     <i class="bi bi-chat-dots"></i>
                 </button>
             </div>
-            <div class="secao-comentarios" style="display: block;">
+            
+            <div class="secao-comentarios ${classeAtivo}" style="display: ${displaySecao};">
                 <div class="lista-comentarios" style="margin-bottom: 10px;">
                     ${comentariosHTML}
                 </div>

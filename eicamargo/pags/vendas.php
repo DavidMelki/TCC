@@ -86,20 +86,8 @@
         <main class="feed-area">
 
             <div class="page-header">
-                <h1>Vendas</h1>
+                <h1>Vendas/Reservas</h1>
                 <p>Compre de colegas, apoie a escola e fortaleça nossa comunidade.</p>
-            </div>
-
-            <!-- Card para Postar Venda -->
-            <div class="publish-card">
-                <div class="publish-card-content">
-                    <div class="publish-icon"><i class="fa-solid fa-plus"></i></div>
-                    <div class="publish-text">
-                        <h3>O que você gostaria de vender hoje?</h3>
-                        <p>Compartilhe seus produtos caseiros com a comunidade.</p>
-                    </div>
-                </div>
-                <button class="btn-publish-small btn-abrir-modal-venda">Publicar</button>
             </div>
 
             <!-- Lista de Produtos -->
@@ -296,40 +284,8 @@
 
             <!-- Ranking -->
             <div class="side-card">
-                <div class="card-title">Mais populares desta semana</div>
-
-                <div class="ranking-item">
-                    <div class="rank-num">1</div>
-                    <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&h=100&fit=crop"
-                        alt="Bolo" class="rank-img">
-                    <div class="rank-info">
-                        <strong>Bolo de Chocolate</strong>
-                        <span>por Fernando F.</span>
-                    </div>
-                    <div class="rank-hearts"><i class="fa-regular fa-heart"></i> 32</div>
-                </div>
-
-                <div class="ranking-item">
-                    <div class="rank-num">2</div>
-                    <img src="https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=100&h=100&fit=crop"
-                        alt="Cookie" class="rank-img">
-                    <div class="rank-info">
-                        <strong>Cookie Red Velvet</strong>
-                        <span>por Matheus H.</span>
-                    </div>
-                    <div class="rank-hearts"><i class="fa-regular fa-heart"></i> 28</div>
-                </div>
-
-                <div class="ranking-item">
-                    <div class="rank-num">3</div>
-                    <img src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=100&h=100&fit=crop"
-                        alt="Torta" class="rank-img">
-                    <div class="rank-info">
-                        <strong>Torta de Morango</strong>
-                        <span>por Vinicius</span>
-                    </div>
-                    <div class="rank-hearts"><i class="fa-regular fa-heart"></i> 24</div>
-                </div>
+              <div class="card-title">Mais populares desta semana</div> 
+              <div class="popular-list">
 
             </div>
 
@@ -472,6 +428,12 @@
             document.getElementById('mediaPreviewContainer').style.display = 'none';
             document.getElementById('uploadBox').style.display = 'flex';
         }
+
+        <!-- Script do SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Script do Vendas -->
+    <script src="../js/jsvendas/vendas.js?v=<?php echo time(); ?>"></script>
+
     </script>
 </body>
 
