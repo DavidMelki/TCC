@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $usuario_id = $_SESSION['usuario_id'];
+    $usuario_id = $_SESSION['usuario_id'] ?? null;
     $titulo     = filter_input(INPUT_POST, 'titulo', FILTER_SANITIZE_SPECIAL_CHARS);
     $preco      = filter_input(INPUT_POST, 'preco', FILTER_SANITIZE_SPECIAL_CHARS);
     $local      = filter_input(INPUT_POST, 'local', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -79,7 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         foreach ($vendas as &$venda) {
             $foto = trim($venda['foto_perfil'] ?? '');
             if (!empty($foto)) {
-                $venda['foto_perfil'] = '/TCC/uploads/' . str_replace([' ', ' png'], ['.', '.png'], $foto);
+                $fotoCorrigida = str_replace([' ', ' png'], ['.', '.png'], $foto);
+                $venda['foto_perfil'] = $fotoCorrigida;
             } else {
                 $venda['foto_perfil'] = '';
             }
@@ -93,4 +94,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         exit;
     }
 }
-?>

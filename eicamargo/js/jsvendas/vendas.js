@@ -301,9 +301,19 @@ function removerMidia() {
 
 function abrirModalDetalhes(venda) {
     const nomeSeguro = encodeURIComponent(venda.nome || 'Usuário');
+    
+    // Avatar padrão com as iniciais
     let fotoPerfil = `https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff&size=128`;
+
     if (venda.foto_perfil && venda.foto_perfil.trim() !== '') {
-        fotoPerfil = venda.foto_perfil;
+        const fotoLimpa = venda.foto_perfil.trim();
+        if (fotoLimpa.startsWith('http')) {
+            fotoPerfil = fotoLimpa;
+        } else if (fotoLimpa.startsWith('/')) {
+            fotoPerfil = fotoLimpa;
+        } else {
+            fotoPerfil = `../uploads/${fotoLimpa.replace('../uploads/', '')}`;
+        }
     }
 
     let midiaHTML = '';
@@ -320,7 +330,10 @@ function abrirModalDetalhes(venda) {
             <div style="text-align: left; font-family: var(--font-main);">
                 ${midiaHTML}
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                    <img src="${fotoPerfil}" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover;">
+                    <img src="${fotoPerfil}" 
+                         alt="${venda.nome || 'Vendedor'}" 
+                         style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;"
+                         onerror="this.src='https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff&size=128';">
                     <div>
                         <strong style="display: block; font-size: 14px; color: #1a1a1a;">${venda.nome || 'Aluno(a)'}</strong>
                         <span style="font-size: 12px; color: #8c8c8c;"><i class="fa-solid fa-location-dot"></i> ${venda.local || 'Andar não informado'}</span>

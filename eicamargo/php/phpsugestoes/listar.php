@@ -23,12 +23,11 @@ try {
 
         $sugestao['usuario'] = '@' . strtolower(str_replace(' ', '', $sugestao['nome']));
 
-        // FORÇA A LIMPEZA DE QUALQUER ESPAÇO NO NOME DO ARQUIVO ANTES DE MANDAR PRO JS
+        // Ajusta apenas o nome do arquivo da foto
         $foto = trim($sugestao['foto_perfil'] ?? '');
         if (!empty($foto)) {
-            // Corrige caso o banco tenha salvo espaço antes do png ou espaços no nome
             $fotoCorrigida = str_replace([' ', ' png'], ['.', '.png'], $foto);
-            $sugestao['foto_perfil'] = '/TCC/uploads/' . $fotoCorrigida;
+            $sugestao['foto_perfil'] = $fotoCorrigida;
         } else {
             $sugestao['foto_perfil'] = '';
         }

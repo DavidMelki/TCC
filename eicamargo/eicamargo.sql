@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 27/08/2026 às 14:42
+-- Tempo de geração: 02/09/2026 às 03:36
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -40,7 +40,6 @@ CREATE TABLE `comentarios` (
 --
 
 INSERT INTO `comentarios` (`id`, `sugestao_id`, `comentario`, `data_criacao`, `nome`) VALUES
-(53, 93, 'comentario', '2026-08-27 08:02:44', 'Você'),
 (54, 96, 'Comentario', '2026-08-27 08:05:50', 'Você');
 
 -- --------------------------------------------------------
@@ -64,11 +63,8 @@ CREATE TABLE `sugestoes` (
 --
 
 INSERT INTO `sugestoes` (`id`, `descricao`, `data_criacao`, `nome`, `usuario`, `likes`, `usuario_id`) VALUES
-(88, 'asd', '2026-08-22 08:38:49', 'Você', '@usuario', 0, NULL),
-(91, 'a', '2026-08-22 09:03:09', 'Você', '@usuario', 0, 3),
-(92, 'asd', '2026-08-22 09:05:54', 'Você', '@usuario', 0, 3),
-(93, 'as', '2026-08-22 09:08:23', 'Você', '@usuario', 0, 3),
-(96, 'Sugiro que...', '2026-08-27 08:00:23', 'Você', '@usuario', 0, 5);
+(96, 'Sugiro que...', '2026-08-27 08:00:23', 'Você', '@usuario', 0, 5),
+(97, 'Minha sugestão é criar mais espaços de convivência na escola, com bancos, mesas e lugares para os alunos descansarem durante o intervalo. Acho que isso deixaria a escola mais confortável e agradável para todos.', '2026-09-01 21:29:06', 'Você', '@usuario', 0, 6);
 
 -- --------------------------------------------------------
 
@@ -83,18 +79,18 @@ CREATE TABLE `usuarios` (
   `senha` varchar(255) NOT NULL,
   `data_criacao` timestamp NOT NULL DEFAULT current_timestamp(),
   `foto_perfil` varchar(255) DEFAULT 'default.png',
-  `biografia` text DEFAULT NULL
+  `biografia` text DEFAULT NULL,
+  `foto_capa` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `data_criacao`, `foto_perfil`, `biografia`) VALUES
-(2, 'Alexandre', 'juniorbrasolin3@gmail.com', '$2y$10$K3P8slaZ2eRBLrEmkgqe6ORhOIQyhxKcD.lhAsRX1REWAPsWBojZ6', '2026-08-19 21:15:38', 'perfil_2_1787397008.png', 'ds'),
-(3, 'David Melqui', 'davidmelquiades@gmail.com', '$2y$10$TkXdEvoBRzki./afDEqh.urJVP2vxU61n5KoHYimy/EIoCBbCNwPW', '2026-08-22 11:52:58', 'perfil_3_1787402235.png', 'DS'),
-(4, 'Bruna', 'email@gmail.com', '$2y$10$MrwEQZAuvYnvhs2FnNDSL.w/sFYmGweuwlUKc4dpB7PTm1A83MqlG', '2026-08-27 10:58:36', 'default.png', NULL),
-(5, 'bruna', 'bruna@gmail.com', '$2y$10$6QVe3VrPsNKyzTZlQtqGpOckexTK30lvqYZp/1VnCHfjywxPHKjqG', '2026-08-27 10:59:21', 'perfil_5_1787832005.png', 'Terceiro ano do curso Análise e Desenvolvimento de Sistemas.');
+INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `data_criacao`, `foto_perfil`, `biografia`, `foto_capa`) VALUES
+(5, 'Bruna', 'bruna@gmail.com', '$2y$10$6QVe3VrPsNKyzTZlQtqGpOckexTK30lvqYZp/1VnCHfjywxPHKjqG', '2026-08-27 10:59:21', 'perfil_5_1787832005.png', 'Terceiro ano do curso Análise e Desenvolvimento de Sistemas.', NULL),
+(6, 'Julia', 'julia@gmail.com', '$2y$10$HbW4KOcTYEKTRVANHJLCXet/EbZ7MdUXdCbZcNyKFzviT0AehGHai', '2026-09-02 00:26:58', 'perfil_6a977611ceeda7.85533089.jpg', 'Terceiro ano de Analise e Desenvolvimento de Sistemas', 'capa_6a977611cf7165.09826406.jpg'),
+(7, 'Alexandre', 'alexandre@gmail.com', '$2y$10$eh4HUdnoTsNTP6orUzts.uGX6ToNMc3rAX2MXVJ5quZmmFAfFEPge', '2026-09-02 00:50:13', 'default.png', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -124,7 +120,8 @@ INSERT INTO `vendas` (`id`, `usuario_id`, `titulo`, `preco`, `local`, `legenda`,
 (12, 5, 'Donuts', 'R$ 7,00', 'Primeiro andar', 'Donuts macios e fofinhos, cobertos com chocolate, glacê e confeitos coloridos.', '../uploads/venda_6a902d8bd038f6.79126338.png', '2026-08-27 09:28:59'),
 (13, 5, 'Paçoquita', 'R$ 2,00', 'segundo andar', 'Doce artesanal de amendoim com textura macia, sabor marcante e o toque caseiro perfeito. Ideal para festas juninas, sobremesa ou acompanhamento de café.', '../uploads/venda_6a902e11159735.34096558.png', '2026-08-27 09:31:13'),
 (14, 5, 'Cheesecake de Morango', 'R$ 14,00', 'Pátio', 'Sobremesa clássica com base crocante de biscoito, recheio leve e cremoso de cream cheese, coberta com generosa camada de morangos frescos e folhas de hortelã. (Fatia)', '../uploads/venda_6a902e4c930966.90253957.png', '2026-08-27 09:32:12'),
-(15, 5, 'Brigadeiros Gourmet', 'R$ 35,00', '', 'Seleção especial de brigadeiros artesanais e doces finos, incluindo opções tradicionais, de coco, nozes e decorados com frutas (como physalis). Perfeito para eventos, festas ou presentes. (caixa presenteável com 12 unidades).', '../uploads/venda_6a902e818ee2b4.78528111.png', '2026-08-27 09:33:05');
+(15, 5, 'Brigadeiros Gourmet', 'R$ 35,00', '', 'Seleção especial de brigadeiros artesanais e doces finos, incluindo opções tradicionais, de coco, nozes e decorados com frutas (como physalis). Perfeito para eventos, festas ou presentes. (caixa presenteável com 12 unidades).', '../uploads/venda_6a902e818ee2b4.78528111.png', '2026-08-27 09:33:05'),
+(16, 6, 'Torta de Morango com Caramelo', 'R$ 12,00', 'Pátio', 'Deliciosa tortinha com recheio cremoso, coberta com uma generosa camada de caramelo e finalizada com castanhas crocantes. Uma combinação irresistível de cremosidade e crocância!', '../uploads/venda_6a9779cea1d092.82249371.jpg', '2026-09-01 22:20:14');
 
 --
 -- Índices para tabelas despejadas
@@ -171,19 +168,19 @@ ALTER TABLE `comentarios`
 -- AUTO_INCREMENT de tabela `sugestoes`
 --
 ALTER TABLE `sugestoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de tabela `vendas`
 --
 ALTER TABLE `vendas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- Restrições para tabelas despejadas

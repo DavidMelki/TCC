@@ -310,13 +310,21 @@ function criarHTMLPost(post) {
     }
 
     const nomeSeguro = encodeURIComponent(post.nome || 'Usuário');
+    
+    // Tratamento estrito do caminho da foto
     let fotoPerfil = `https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff&size=128`;
 
     if (post.foto_perfil && post.foto_perfil.trim() !== '') {
-        fotoPerfil = post.foto_perfil;
+        const fotoLimpa = post.foto_perfil.trim();
+        if (fotoLimpa.startsWith('http')) {
+            fotoPerfil = fotoLimpa;
+        } else if (fotoLimpa.startsWith('/')) {
+            fotoPerfil = fotoLimpa;
+        } else {
+            fotoPerfil = `../uploads/${fotoLimpa.replace('../uploads/', '')}`;
+        }
     }
 
-    // Se já existem comentários salvos, mantém a seção aberta (classe "ativo" ou display block)
     const classeAtivo = temComentarios ? 'ativo' : '';
     const displaySecao = temComentarios ? 'block' : 'none';
 
@@ -324,7 +332,9 @@ function criarHTMLPost(post) {
         <div class="card-sugestao-post" data-id="${post.id}" style="margin-bottom: 30px; border: 1px solid #eee; padding: 20px; border-radius: 12px; background: #fff;">
             <div class="detalhe-header" style="padding-left:0; padding-right:0; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: none;">
                 <div class="autor-box" style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
-                    <img src="${fotoPerfil}" alt="Foto de perfil" style="width: 45px !important; height: 45px !important; min-width: 45px !important; min-height: 45px !important; border-radius: 50% !important; object-fit: cover !important; display: block !important; border: 1px solid #ddd;" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff';">
+                    
+                    <!-- FOTO FORÇADA VIA CONTAINER PARA SOBREPOR O CSS -->
+                    <div style="width: 45px; height: 45px; min-width: 45px; min-height: 45px; border-radius: 50%; overflow: hidden; background-image: url('${fotoPerfil}'); background-size: cover; background-position: center; border: 1px solid #ddd; flex-shrink: 0;"></div>
                     
                     <div class="autor-dados" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center;">
                        <div style="display: flex; align-items: center; gap: 8px;">
@@ -435,11 +445,13 @@ function atualizarFavoritas() {
         const nomeEl = post.querySelector('.autor-dados h3');
         const textoEl = post.querySelector('.secao-descricao p');
         const likeEl = post.querySelector('.like-count');
+        const imgEl = post.querySelector('.autor-box img');
 
         return {
             nome: nomeEl ? nomeEl.textContent.trim() : 'Usuário',
             texto: textoEl ? textoEl.textContent.trim() : '',
-            likes: likeEl ? parseInt(likeEl.textContent) || 0 : 0
+            likes: likeEl ? parseInt(likeEl.textContent) || 0 : 0,
+            foto: imgEl ? imgEl.getAttribute('src') : ''
         };
     });
 
@@ -458,7 +470,7 @@ function atualizarFavoritas() {
 
         return `
             <div class="item-sugestao ${classeAtiva}">
-                <div class="avatar"></div>
+                <div class="avatar" style="background-image: url('${post.foto}'); background-size: cover; background-position: center;"></div>
                 <div class="item-info">
                     <div class="item-header">
                         <span class="item-nome">${post.nome}</span>
