@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 17/09/2026 às 03:40
+-- Tempo de geração: 17/09/2026 às 14:27
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -30,6 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `comentarios` (
   `id` int(11) NOT NULL,
   `sugestao_id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL,
   `comentario` text NOT NULL,
   `data_criacao` datetime DEFAULT current_timestamp(),
   `nome` varchar(100) DEFAULT 'Você'
@@ -39,8 +40,10 @@ CREATE TABLE `comentarios` (
 -- Despejando dados para a tabela `comentarios`
 --
 
-INSERT INTO `comentarios` (`id`, `sugestao_id`, `comentario`, `data_criacao`, `nome`) VALUES
-(54, 96, 'Comentario', '2026-08-27 08:05:50', 'Você');
+INSERT INTO `comentarios` (`id`, `sugestao_id`, `usuario_id`, `comentario`, `data_criacao`, `nome`) VALUES
+(63, 96, 7, 'Não Concordo!', '2026-09-17 08:51:46', 'Alexandre'),
+(64, 101, 6, 'SIM!', '2026-09-17 08:53:52', 'Julia'),
+(65, 101, 10, 'super concordo rs', '2026-09-17 09:11:28', 'rafaela');
 
 -- --------------------------------------------------------
 
@@ -91,6 +94,26 @@ INSERT INTO `cursos` (`id`, `nome`, `codigo_coordenador`, `codigo_aluno`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Estrutura para tabela `curtidas`
+--
+
+CREATE TABLE `curtidas` (
+  `id` int(11) NOT NULL,
+  `sugestao_id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL,
+  `data_curtida` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `curtidas`
+--
+
+INSERT INTO `curtidas` (`id`, `sugestao_id`, `usuario_id`, `data_curtida`) VALUES
+(2, 101, 6, '2026-09-17 12:24:50');
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura para tabela `sugestoes`
 --
 
@@ -110,7 +133,8 @@ CREATE TABLE `sugestoes` (
 
 INSERT INTO `sugestoes` (`id`, `descricao`, `data_criacao`, `nome`, `usuario`, `likes`, `usuario_id`) VALUES
 (96, 'Sugiro que...', '2026-08-27 08:00:23', 'Você', '@usuario', 0, 5),
-(97, 'Minha sugestão é criar mais espaços de convivência na escola, com bancos, mesas e lugares para os alunos descansarem durante o intervalo. Acho que isso deixaria a escola mais confortável e agradável para todos.', '2026-09-01 21:29:06', 'Você', '@usuario', 0, 6);
+(97, 'Minha sugestão é criar mais espaços de convivência na escola, com bancos, mesas e lugares para os alunos descansarem durante o intervalo. Acho que isso deixaria a escola mais confortável e agradável para todos.', '2026-09-01 21:29:06', 'Você', '@usuario', 0, 6),
+(101, 'acho que a entrada na escola devia ser a partir das 9h', '2026-09-17 08:05:28', 'Você', '@usuario', 1, 14);
 
 -- --------------------------------------------------------
 
@@ -142,7 +166,9 @@ INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `data_criacao`, `foto_pe
 (8, 'Bruno Cano', 'bruno@gmail.com', '$2y$10$OW5MiobE82mYjIssNxsvP.2ZNRpS.PwYh.GzafESsCkpQeTz/BlKe', '2026-09-17 00:06:06', 'default.png', NULL, NULL, 'coordenador', 3),
 (10, 'rafaela', 'rafaela@gmail.com', '$2y$10$6RupzRShpOYMwkkz./NM2uiw83sOBcmM1RCSJ8prFWMTBLl1Y/nZe', '2026-09-17 01:15:21', 'default.png', NULL, NULL, 'aluno', 1),
 (11, 'Alice', 'alice@gmail.com', '$2y$10$H3Ua84vvLEYsRuzC6shnDuOjrlOmueXjVCQf6EVItl4.YlixhUaku', '2026-09-17 01:20:09', 'default.png', NULL, NULL, 'coordenador', 1),
-(12, 'Davi Afonso', 'afonso@gmail.com', '$2y$10$zUG3HyU.7tMA7ndvdvFwse8M8qJkW.gR5oZ6DLyRPHu0gL7NFyZgW', '2026-09-17 01:25:33', 'default.png', NULL, NULL, 'coordenador', 4);
+(12, 'Davi Afonso', 'afonso@gmail.com', '$2y$10$zUG3HyU.7tMA7ndvdvFwse8M8qJkW.gR5oZ6DLyRPHu0gL7NFyZgW', '2026-09-17 01:25:33', 'default.png', NULL, NULL, 'coordenador', 4),
+(13, 'davi', 'davi@gmail.com', '$2y$10$1K2UDOhn8D6Vfe4yV66JOOd.GNQS0jVFrURs6lKRL7IdjYskr5ECa', '2026-09-17 10:38:23', 'perfil_6aabc50c19f926.76370859.png', 'Terceiro ano DS', 'capa_6aabc4b0cb53d3.54606551.png', 'aluno', 3),
+(14, 'Matheus de Moura Holanda', 'matheusdemoura2009@gmail.com', '$2y$10$CuO8/IkpuUMQ1u0cKKP1feVFEtNoAndzHCWXg2qhXTwMRn.6dMdPK', '2026-09-17 10:50:11', 'perfil_6aabc8726c7879.35747319.png', '', 'capa_6aabc8977de324.90368974.png', 'aluno', 3);
 
 -- --------------------------------------------------------
 
@@ -203,6 +229,13 @@ ALTER TABLE `cursos`
   ADD UNIQUE KEY `codigo_aluno` (`codigo_aluno`);
 
 --
+-- Índices de tabela `curtidas`
+--
+ALTER TABLE `curtidas`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `curtida_unica` (`sugestao_id`,`usuario_id`);
+
+--
 -- Índices de tabela `sugestoes`
 --
 ALTER TABLE `sugestoes`
@@ -231,7 +264,7 @@ ALTER TABLE `vendas`
 -- AUTO_INCREMENT de tabela `comentarios`
 --
 ALTER TABLE `comentarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT de tabela `comunicados`
@@ -246,16 +279,22 @@ ALTER TABLE `cursos`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
+-- AUTO_INCREMENT de tabela `curtidas`
+--
+ALTER TABLE `curtidas`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de tabela `sugestoes`
 --
 ALTER TABLE `sugestoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de tabela `vendas`

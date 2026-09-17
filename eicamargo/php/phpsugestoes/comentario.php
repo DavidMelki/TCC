@@ -1,40 +1,40 @@
 <?php
+session_start();
 header('Content-Type: application/json');
 
-$host = 'localhost';
-$dbname = 'eicamargo'; 
-$username = 'root';
-$password = '';
+include_once '../conexao.php';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     $sugestao_id = $_POST['sugestao_id'] ?? null;
     $comentario = $_POST['comentario'] ?? null;
-    $nome = $_POST['nome'] ?? 'Você';
+    $usuario_id = $_SESSION['usuario']['id'] ?? null;
+    $nomeUsuario = $_SESSION['usuario']['nome'] ?? 'Usuário';
 
-    if (!$sugestao_id || !$comentario) {
-        echo json_encode(['status' => 'error', 'message' => 'Dados incompletos.']);
+    if (!$sugestao_id || !$comentario || !$usuario_id) {
+        echo json_encode(['status' => 'error', 'message' => 'Sessão inválida ou dados incompletos.']);
         exit;
     }
 
-    $stmt = $pdo->prepare("INSERT INTO comentarios (sugestao_id, nome, comentario) VALUES (:sugestao_id, :nome, :comentario)");
+    $stmt = $pdo->prepare("INSERT INTO comentarios (sugestao_id, usuario_id, nome, comentario) VALUES (:sugestao_id, :usuario_id, :nome, :comentario)");
     $stmt->execute([
         ':sugestao_id' => $sugestao_id,
-        ':nome' => $nome,
+        ':usuario_id' => $usuario_id,
+        ':nome' => $nomeUsuario,
         ':comentario' => $comentario
     ]);
 
-    // PEGA O ID DO COMENTÁRIO CRIADO E ENVIA JUNTO NO JSON
     $novoId = $pdo->lastInsertId();
+    $userTag = '@' . strtolower(str_replace(' ', '', $nomeUsuario));
 
     echo json_encode([
         'status' => 'success',
-        'id' => $novoId // <--- ISSO RESOLVE O ERRO DA LIXEIRA
+        'id' => $novoId,
+        'usuario_id' => $usuario_id,
+        'nome' => $nomeUsuario,
+        'userTag' => $userTag
     ]);
 
 } catch (Exception $e) {
-    echo json_encode(['status' => 'error', 'message' => 'Erro ao salvar comentário: ' . $e->getMessage()]);
+    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
 ?>

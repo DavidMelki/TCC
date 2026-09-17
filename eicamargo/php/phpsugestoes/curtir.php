@@ -1,47 +1,63 @@
 <?php
+session_start();
 header('Content-Type: application/json; charset=utf-8');
 
-$host = 'localhost';
-$dbname = 'eicamargo'; 
-$username = 'root';
-$password = '';
+include_once '../conexao.php';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     $sugestao_id = $_POST['sugestao_id'] ?? null;
-    $acao = $_POST['acao'] ?? null; // 'curtir' ou 'descurtir'
+    $usuario_id = $_SESSION['usuario']['id'] ?? null;
 
-    if (!$sugestao_id || !$acao) {
-        echo json_encode(['status' => 'error', 'message' => 'Dados incompletos.']);
+    if (!$sugestao_id || !$usuario_id) {
+        echo json_encode(['status' => 'error', 'message' => 'Usuário não autenticado ou post inválido.']);
         exit;
     }
 
-    if ($acao === 'curtir') {
-        // Incrementa 1 no like
-        $stmt = $pdo->prepare("UPDATE sugestoes SET likes = likes + 1 WHERE id = :id");
-    } else {
-        // Decrementa 1 no like (garantindo que não fique menor que 0)
-        $stmt = $pdo->prepare("UPDATE sugestoes SET likes = GREATEST(0, likes - 1) WHERE id = :id");
-    }
-    
-    $stmt->execute([':id' => $sugestao_id]);
+    // 1. Verifica se o usuário já curtiu esta sugestão
+    $stmtCheck = $pdo->prepare("SELECT id FROM curtidas WHERE sugestao_id = :sugestao_id AND usuario_id = :usuario_id");
+    $stmtCheck->execute([
+        ':sugestao_id' => $sugestao_id,
+        ':usuario_id' => $usuario_id
+    ]);
+    $jaCurtiu = $stmtCheck->fetch();
 
-    // Retorna a quantidade atualizada de likes
-    $stmtSelect = $pdo->prepare("SELECT likes FROM sugestoes WHERE id = :id");
-    $stmtSelect->execute([':id' => $sugestao_id]);
-    $resultado = $stmtSelect->fetch(PDO::FETCH_ASSOC);
+    if ($jaCurtiu) {
+        // Se já curtiu, remove a curtida (Descurtir)
+        $stmtDelete = $pdo->prepare("DELETE FROM curtidas WHERE sugestao_id = :sugestao_id AND usuario_id = :usuario_id");
+        $stmtDelete->execute([
+            ':sugestao_id' => $sugestao_id,
+            ':usuario_id' => $usuario_id
+        ]);
+        $liked = false;
+    } else {
+        // Se não curtiu, insere a curtida (Curtir)
+        $stmtInsert = $pdo->prepare("INSERT INTO curtidas (sugestao_id, usuario_id) VALUES (:sugestao_id, :usuario_id)");
+        $stmtInsert->execute([
+            ':sugestao_id' => $sugestao_id,
+            ':usuario_id' => $usuario_id
+        ]);
+        $liked = true;
+    }
+
+    // 2. Recalcula o total de curtidas reais da tabela curtidas
+    $stmtCount = $pdo->prepare("SELECT COUNT(*) AS total FROM curtidas WHERE sugestao_id = :sugestao_id");
+    $stmtCount->execute([':sugestao_id' => $sugestao_id]);
+    $totalLikes = (int)$stmtCount->fetchColumn();
+
+    // 3. Atualiza o valor fixo na tabela sugestoes
+    $stmtUpdate = $pdo->prepare("UPDATE sugestoes SET likes = :likes WHERE id = :id");
+    $stmtUpdate->execute([
+        ':likes' => $totalLikes,
+        ':id' => $sugestao_id
+    ]);
 
     echo json_encode([
         'status' => 'success',
-        'likes' => $resultado['likes'] ?? 0
+        'liked' => $liked,
+        'likes' => $totalLikes
     ]);
 
 } catch (Exception $e) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => $e->getMessage()
-    ]);
+    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
 }
 ?>

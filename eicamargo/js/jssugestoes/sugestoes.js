@@ -1,3 +1,5 @@
+let usuarioLogadoId = 0;
+
 document.addEventListener('DOMContentLoaded', () => {
     carregarSugestoes();
 
@@ -39,15 +41,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     })
                         .then(res => res.json())
                         .then(data => {
-                            if (cardPost) cardPost.remove();
-                            atualizarFavoritas();
+                            if (data.status === 'success') {
+                                if (cardPost) cardPost.remove();
+                                atualizarFavoritas();
 
-                            Swal.fire({
-                                title: 'Excluído!',
-                                text: 'A sugestão foi removida.',
-                                icon: 'success',
-                                confirmButtonColor: '#e63946'
-                            });
+                                Swal.fire({
+                                    title: 'Excluído!',
+                                    text: 'A sugestão foi removida.',
+                                    icon: 'success',
+                                    confirmButtonColor: '#e63946'
+                                });
+                            } else {
+                                Swal.fire('Erro', data.message || 'Não foi possível excluir', 'error');
+                            }
                         })
                         .catch(err => console.error('Erro ao excluir:', err));
                 }
@@ -100,39 +106,44 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const cardPost = btnLike.closest('.card-sugestao-post');
             const sugestaoId = cardPost?.getAttribute('data-id');
-            const countSpan = btnLike.querySelector('.like-count');
-            let count = parseInt(countSpan?.textContent) || 0;
-            const icon = btnLike.querySelector('i');
 
-            let acao = 'curtir';
-            if (btnLike.classList.contains('liked')) {
-                btnLike.classList.remove('liked');
-                count--;
-                acao = 'descurtir';
-                if (icon) {
-                    icon.classList.remove('bi-hand-thumbs-up-fill');
-                    icon.classList.add('bi-hand-thumbs-up');
-                }
-            } else {
-                btnLike.classList.add('liked');
-                count++;
-                if (icon) {
-                    icon.classList.remove('bi-hand-thumbs-up');
-                    icon.classList.add('bi-hand-thumbs-up-fill');
-                }
-            }
-
-            if (countSpan) countSpan.textContent = count;
-            atualizarFavoritas();
+            if (!sugestaoId) return;
 
             const formData = new FormData();
             formData.append('sugestao_id', sugestaoId);
-            formData.append('acao', acao);
 
             fetch('../php/phpsugestoes/curtir.php', {
                 method: 'POST',
                 body: formData
-            }).catch(err => console.error('Erro ao registrar like:', err));
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const countSpan = btnLike.querySelector('.like-count');
+                        const icon = btnLike.querySelector('i');
+
+                        if (countSpan) countSpan.textContent = data.likes;
+
+                        if (data.liked) {
+                            btnLike.classList.add('liked');
+                            if (icon) {
+                                icon.classList.remove('bi-hand-thumbs-up');
+                                icon.classList.add('bi-hand-thumbs-up-fill');
+                            }
+                        } else {
+                            btnLike.classList.remove('liked');
+                            if (icon) {
+                                icon.classList.remove('bi-hand-thumbs-up-fill');
+                                icon.classList.add('bi-hand-thumbs-up');
+                            }
+                        }
+
+                        atualizarFavoritas();
+                    } else {
+                        console.error(data.message);
+                    }
+                })
+                .catch(err => console.error('Erro ao registrar curtida:', err));
             return;
         }
 
@@ -146,6 +157,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (secaoComentarios) {
                 secaoComentarios.classList.toggle('ativo');
                 btnComent.classList.toggle('comentario-ativo');
+
+                if (secaoComentarios.classList.contains('ativo')) {
+                    secaoComentarios.style.display = 'block';
+                } else {
+                    secaoComentarios.style.display = 'none';
+                }
             }
             return;
         }
@@ -239,10 +256,15 @@ function enviarComentario(cardPost) {
         .then(res => res.json())
         .then(data => {
             if (data.status === 'success') {
+                const nomeExibir = data.nome || 'Usuário';
+                const tagExibir = data.userTag || ('@' + nomeExibir.toLowerCase().replace(/\s+/g, ''));
+
                 const novoComentarioHTML = `
                 <div class="item-comentario" data-comentario-id="${data.id}" style="background: #f8f9fa; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 13px; color: #333; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <strong style="color: #e63946;">Você:</strong> ${comentarioTexto}
+                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                        <strong style="color: #1a1a1a;">${nomeExibir}</strong>
+                        <span style="color: #777; font-size: 12px;">${tagExibir}</span>
+                        <span style="margin-left: 4px;">${comentarioTexto}</span>
                     </div>
                     <button class="btn-excluir-comentario" title="Excluir comentário" style="border: none; background: transparent; color: #aaa; cursor: pointer; font-size: 14px;">
                         <i class="bi bi-trash"></i>
@@ -257,7 +279,10 @@ function enviarComentario(cardPost) {
 
                 const secaoComentarios = cardPost.querySelector('.secao-comentarios');
                 const btnCom = cardPost.querySelector('.btn-coment');
-                if (secaoComentarios) secaoComentarios.classList.add('ativo');
+                if (secaoComentarios) {
+                    secaoComentarios.classList.add('ativo');
+                    secaoComentarios.style.display = 'block';
+                }
                 if (btnCom) btnCom.classList.add('comentario-ativo');
 
                 if (input) input.value = '';
@@ -276,8 +301,14 @@ async function carregarSugestoes() {
         const res = await fetch('../php/phpsugestoes/listar.php');
         const data = await res.json();
 
-        if (data.status === 'success' && data.sugestoes && data.sugestoes.length > 0) {
-            detalheBody.innerHTML = data.sugestoes.map(post => criarHTMLPost(post)).join('');
+        if (data.status === 'success') {
+            usuarioLogadoId = parseInt(data.usuario_logado_id) || 0;
+
+            if (data.sugestoes && data.sugestoes.length > 0) {
+                detalheBody.innerHTML = data.sugestoes.map(post => criarHTMLPost(post)).join('');
+            } else {
+                detalheBody.innerHTML = `<p style="text-align: center; color: #999;">Nenhuma sugestão enviada ainda.</p>`;
+            }
         } else {
             detalheBody.innerHTML = `<p style="text-align: center; color: #999;">Nenhuma sugestão enviada ainda.</p>`;
         }
@@ -293,32 +324,49 @@ function criarHTMLPost(post) {
     const curtidoClasse = post.liked ? 'liked' : '';
     const iconeLike = post.liked ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up';
 
+    // Checa se o usuário logado é o autor da sugestão
+    const eDonoPost = (parseInt(post.usuario_id) === usuarioLogadoId);
+    const btnExcluirPostHTML = eDonoPost ? `
+        <button class="btn-excluir-post" title="Excluir sugestão" style="border: none; background: transparent; color: #aaa; cursor: pointer; font-size: 16px;">
+            <i class="bi bi-trash"></i>
+        </button>
+    ` : '';
+
     let comentariosHTML = '';
     const temComentarios = post.comentarios && Array.isArray(post.comentarios) && post.comentarios.length > 0;
 
     if (temComentarios) {
-        comentariosHTML = post.comentarios.map(c => `
-            <div class="item-comentario" data-comentario-id="${c.id}" style="background: #f8f9fa; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 13px; color: #333; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <strong style="color: #e63946;">${c.nome || 'Você'}:</strong> ${c.comentario}
-                </div>
+        comentariosHTML = post.comentarios.map(c => {
+            const nome = c.nome || 'Usuário';
+            const userTag = c.userTag || ('@' + nome.toLowerCase().replace(/\s+/g, ''));
+
+            // Checa se o usuário logado é o autor deste comentário
+            const eDonoComentario = (parseInt(c.usuario_id) === usuarioLogadoId);
+            const btnExcluirComentHTML = eDonoComentario ? `
                 <button class="btn-excluir-comentario" title="Excluir comentário" style="border: none; background: transparent; color: #aaa; cursor: pointer; font-size: 14px;">
                     <i class="bi bi-trash"></i>
                 </button>
-            </div>
-        `).join('');
+            ` : '';
+
+            return `
+                <div class="item-comentario" data-comentario-id="${c.id}" style="background: #f8f9fa; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 13px; color: #333; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                        <strong style="color: #1a1a1a;">${nome}</strong>
+                        <span style="color: #777; font-size: 12px;">${userTag}</span>
+                        <span style="margin-left: 4px;">${c.comentario}</span>
+                    </div>
+                    ${btnExcluirComentHTML}
+                </div>
+            `;
+        }).join('');
     }
 
     const nomeSeguro = encodeURIComponent(post.nome || 'Usuário');
-    
-    // Tratamento estrito do caminho da foto
     let fotoPerfil = `https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff&size=128`;
 
     if (post.foto_perfil && post.foto_perfil.trim() !== '') {
         const fotoLimpa = post.foto_perfil.trim();
-        if (fotoLimpa.startsWith('http')) {
-            fotoPerfil = fotoLimpa;
-        } else if (fotoLimpa.startsWith('/')) {
+        if (fotoLimpa.startsWith('http') || fotoLimpa.startsWith('/')) {
             fotoPerfil = fotoLimpa;
         } else {
             fotoPerfil = `../uploads/${fotoLimpa.replace('../uploads/', '')}`;
@@ -332,13 +380,11 @@ function criarHTMLPost(post) {
         <div class="card-sugestao-post" data-id="${post.id}" style="margin-bottom: 30px; border: 1px solid #eee; padding: 20px; border-radius: 12px; background: #fff;">
             <div class="detalhe-header" style="padding-left:0; padding-right:0; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: none;">
                 <div class="autor-box" style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
-                    
-                    <!-- FOTO FORÇADA VIA CONTAINER PARA SOBREPOR O CSS -->
                     <div style="width: 45px; height: 45px; min-width: 45px; min-height: 45px; border-radius: 50%; overflow: hidden; background-image: url('${fotoPerfil}'); background-size: cover; background-position: center; border: 1px solid #ddd; flex-shrink: 0;"></div>
                     
                     <div class="autor-dados" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center;">
                        <div style="display: flex; align-items: center; gap: 8px;">
-                         <h3 style="margin: 0; font-size: 15px; font-weight: 600;">${post.nome || 'Você'}</h3>
+                         <h3 style="margin: 0; font-size: 15px; font-weight: 600;">${post.nome || 'Usuário'}</h3>
                          <span class="autor-tag" style="color: #777; font-size: 13px; line-height: 1;">${post.usuario || '@usuario'}</span>
                        </div>
 
@@ -347,9 +393,7 @@ function criarHTMLPost(post) {
                         </div>
                     </div>
                 </div>
-                <button class="btn-excluir-post" title="Excluir sugestão" style="border: none; background: transparent; color: #aaa; cursor: pointer; font-size: 16px;">
-                    <i class="bi bi-trash"></i>
-                </button>
+                ${btnExcluirPostHTML}
             </div>
             <div class="secao-descricao" style="margin-bottom: 15px;">
                 <p style="color: #333; line-height: 1.5; font-size: 15px;">${post.descricao}</p>
@@ -407,7 +451,6 @@ function abrirModalSugestao() {
             const formData = new FormData();
             formData.append('descricao', descricao);
 
-            // Ajustado para apontar para o local correto do backend de salvamento
             return fetch('../php/phpsugestoes/sugestao.php', {
                 method: 'POST',
                 body: formData
@@ -445,13 +488,13 @@ function atualizarFavoritas() {
         const nomeEl = post.querySelector('.autor-dados h3');
         const textoEl = post.querySelector('.secao-descricao p');
         const likeEl = post.querySelector('.like-count');
-        const imgEl = post.querySelector('.autor-box img');
+        const imgEl = post.querySelector('.autor-box div');
 
         return {
             nome: nomeEl ? nomeEl.textContent.trim() : 'Usuário',
             texto: textoEl ? textoEl.textContent.trim() : '',
             likes: likeEl ? parseInt(likeEl.textContent) || 0 : 0,
-            foto: imgEl ? imgEl.getAttribute('src') : ''
+            foto: imgEl ? imgEl.style.backgroundImage : ''
         };
     });
 
@@ -470,7 +513,7 @@ function atualizarFavoritas() {
 
         return `
             <div class="item-sugestao ${classeAtiva}">
-                <div class="avatar" style="background-image: url('${post.foto}'); background-size: cover; background-position: center;"></div>
+                <div class="avatar" style="${post.foto}; background-size: cover; background-position: center;"></div>
                 <div class="item-info">
                     <div class="item-header">
                         <span class="item-nome">${post.nome}</span>

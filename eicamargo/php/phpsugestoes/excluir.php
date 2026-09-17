@@ -1,34 +1,34 @@
 <?php
+session_start();
 header('Content-Type: application/json');
 
-$host = 'localhost';
-$dbname = 'eicamargo';
-$username = 'root';
-$password = '';
+include_once '../conexao.php';
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     $sugestaoId = $_POST['sugestao_id'] ?? 0;
+    $usuario_id = $_SESSION['usuario']['id'] ?? null;
 
-    if (empty($sugestaoId)) {
-        echo json_encode(['status' => 'error', 'message' => 'ID inválido.']);
+    if (empty($sugestaoId) || !$usuario_id) {
+        echo json_encode(['status' => 'error', 'message' => 'Acesso não autorizado.']);
+        exit;
+    }
+
+    // Verifica se a sugestão é do usuário logado
+    $stmtCheck = $pdo->prepare("SELECT usuario_id FROM sugestoes WHERE id = :id");
+    $stmtCheck->execute([':id' => $sugestaoId]);
+    $sugestao = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+
+    if (!$sugestao || $sugestao['usuario_id'] != $usuario_id) {
+        echo json_encode(['status' => 'error', 'message' => 'Você só pode excluir suas próprias sugestões.']);
         exit;
     }
 
     $stmt = $pdo->prepare("DELETE FROM sugestoes WHERE id = :id");
     $stmt->execute([':id' => $sugestaoId]);
 
-    echo json_encode([
-        'status' => 'success',
-        'message' => 'Sugestão excluída com sucesso!'
-    ]);
+    echo json_encode(['status' => 'success', 'message' => 'Sugestão excluída com sucesso!']);
 
 } catch (Exception $e) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Erro ao excluir: ' . $e->getMessage()
-    ]);
+    echo json_encode(['status' => 'error', 'message' => 'Erro ao excluir: ' . $e->getMessage()]);
 }
 ?>
