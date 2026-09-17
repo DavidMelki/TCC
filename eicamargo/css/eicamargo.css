@@ -138,6 +138,23 @@ body{
     box-shadow: 0 0 10px rgba(193,18,31,0.2);
 }
 
+.input select {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    background-color: #fff;
+    font-size: 1rem;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.input select:focus {
+    border-color: #c1121f;
+    box-shadow: 0 0 10px rgba(193, 18, 31, 0.2);
+}
+
 .botao-entrar{
     width: 100%;
     padding: 14px;

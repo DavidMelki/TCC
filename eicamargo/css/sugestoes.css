@@ -383,9 +383,19 @@ body {
 .detalhe-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    padding: 24px;
+    align-items: center;
+    padding: 20px 24px 16px 24px; 
     border-bottom: 1px solid var(--border-color);
+}
+
+.detalhe-header h1,
+.detalhe-header h2 {
+    font-size: 23px !important;
+    font-weight: 700 !important;
+    color: var(--text-dark) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
 }
 
 .autor-box {
@@ -631,3 +641,4 @@ body {
     font-size: 14px !important;
     padding: 10px 24px !important;
 }
+

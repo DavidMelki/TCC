@@ -24,12 +24,16 @@ try {
     }
 
     // Inicia a sessão e guarda os dados essenciais
+    // Inicia a sessão e guarda os dados essenciais
+    // Inicia a sessão e guarda os dados essenciais
     session_start();
-    $_SESSION['usuario_id'] = $usuario['id'];
+    $_SESSION['usuario_id']   = $usuario['id'];
     $_SESSION['usuario_nome'] = $usuario['nome'];
+    $_SESSION['tipo_usuario'] = $usuario['tipo'] ?? null;
+    $_SESSION['curso_id']     = $usuario['curso_id'] ?? null; // Define o curso na sessão
     
-    // IMPORTANTE: Salvamos o array completo ou a foto na sessão para o uso imediato
-    $_SESSION['usuario'] = $usuario; 
+    // Salvamos o array completo na sessão
+    $_SESSION['usuario'] = $usuario;
 
     echo json_encode([
         'status' => 'success',

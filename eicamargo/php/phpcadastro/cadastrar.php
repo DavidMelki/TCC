@@ -1,21 +1,21 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
-// Inclui a conexão que você já tem na pasta php
 include_once '../conexao.php'; 
 
 try {
-    // Recebe os dados enviados via POST
-    $nome = $_POST['nome'] ?? null;
-    $email = $_POST['email'] ?? null;
-    $senha = $_POST['senha'] ?? null;
+    $nome   = $_POST['nome']   ?? null;
+    $email  = $_POST['email']  ?? null;
+    $senha  = $_POST['senha']  ?? null;
+    $tipo   = $_POST['tipo']   ?? 'aluno'; // 'aluno' ou 'coordenador'
+    $codigo = $_POST['codigo'] ?? null; // Código do curso fornecido pelo usuário
 
     if (empty($nome) || empty($email) || empty($senha)) {
-        echo json_encode(['status' => 'error', 'message' => 'Preencha todos os campos.']);
+        echo json_encode(['status' => 'error', 'message' => 'Preencha todos os campos obrigatórios.']);
         exit;
     }
 
-    // Verifica se o e-mail já existe
+    // 1. Verifica se o e-mail já existe
     $stmtCheck = $pdo->prepare("SELECT id FROM usuarios WHERE email = :email");
     $stmtCheck->execute([':email' => $email]);
     if ($stmtCheck->rowCount() > 0) {
@@ -23,25 +23,50 @@ try {
         exit;
     }
 
-    // Criptografa a senha por segurança
+    // 2. Valida o código do curso e obtém o curso_id
+    $cursoId = null;
+    if (!empty($codigo)) {
+        if ($tipo === 'coordenador') {
+            $stmtCurso = $pdo->prepare("SELECT id FROM cursos WHERE codigo_coordenador = :codigo");
+        } else {
+            $stmtCurso = $pdo->prepare("SELECT id FROM cursos WHERE codigo_aluno = :codigo");
+        }
+        
+        $stmtCurso->execute([':codigo' => $codigo]);
+        $curso = $stmtCurso->fetch(PDO::FETCH_ASSOC);
+
+        if (!$curso) {
+            echo json_encode(['status' => 'error', 'message' => 'Código do curso inválido.']);
+            exit;
+        }
+
+        $cursoId = $curso['id'];
+    }
+
+    // 3. Criptografa a senha
     $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
 
-    // Insere no banco
-    $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, senha) VALUES (:nome, :email, :senha)");
+    // 4. Insere no banco com o 'tipo' e o 'curso_id'
+    $stmt = $pdo->prepare("
+        INSERT INTO usuarios (nome, email, senha, tipo, curso_id) 
+        VALUES (:nome, :email, :senha, :tipo, :curso_id)
+    ");
     $stmt->execute([
-        ':nome' => $nome,
-        ':email' => $email,
-        ':senha' => $senhaHash
+        ':nome'     => $nome,
+        ':email'    => $email,
+        ':senha'    => $senhaHash,
+        ':tipo'     => $tipo,
+        ':curso_id' => $cursoId
     ]);
 
     echo json_encode([
-        'status' => 'success',
+        'status'  => 'success',
         'message' => 'Cadastro realizado com sucesso!'
     ]);
 
 } catch (Exception $e) {
     echo json_encode([
-        'status' => 'error',
+        'status'  => 'error',
         'message' => 'Erro ao cadastrar: ' . $e->getMessage()
     ]);
 }
