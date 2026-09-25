@@ -1,7 +1,7 @@
 # TCC
 Trabalho de conclusão de curso por Bruna, Julia, David e Alexandre
 
-  Tema - Plataforma para envio de sujestões de melhorias para a escola
+  Tema - Plataforma para envio de sujestões de melhorias para a escola e maior integração de alunos na comunidade escolar
 - Plataforma para alunos enviarem sugestões para a Etec Professor Camargo Aranha com o objetivo de chegar nos superiores.
 - Muitos alunos tem problemas de comunicação com os superiores, isso ajudaria a resolver esses problemas.
 
