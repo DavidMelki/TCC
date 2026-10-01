@@ -86,102 +86,28 @@
                     <h2>Mensagens</h2>
                     <div class="pesquisa">
                         <i class="bi bi-search"></i>
-                        <input type="text" placeholder="Pesquisar conversa">
+                        <input type="text" id="inputPesquisaUsuario" placeholder="Pesquisar usuário para conversar">
                     </div>
 
                     <div class="filtros">
-                        <button class="ativo">
-                            Todas
-                        </button>
-                        <button>
-                            Não lidas
-                        </button>
+                        <button class="ativo" id="btnFiltroTodas">Todas</button>
                     </div>
                 </div>
 
-                <div class="conversas">
-                    <!-- Conversa 1 -->
-                    <div class="conversa ativa">
-                        <div class="avatar-post"></div>
-                        <div class="texto">
-                            <h4>Bruno Cano</h4>
-                            <p>Você tomou uma advertência.</p>
-                        </div>
-                        <span>5h</span>
-                    </div>
-
-                    <!-- Conversa 2 -->
-                    <div class="conversa">
-                        <div class="avatar-post"></div>
-                        <div class="texto">
-                            <h4>Davi Afonso</h4>
-                            <p>Venha para a direção...</p>
-                        </div>
-                        <span>2d</span>
-                    </div>
-
-                    <!-- Conversa 3 -->
-                    <div class="conversa">
-                        <div class="avatar-post"></div>
-                        <div class="texto">
-                            <h4>Davi Villar</h4>
-                            <p>Vou comunicar o pessoal do laboratório.</p>
-                        </div>
-                        <span>8h</span>
-                    </div>
-
-                    <!-- Conversa 4 -->
-                    <div class="conversa">
-                        <div class="avatar-post"></div>
-                        <div class="texto">
-                            <h4>Pichuru</h4>
-                            <p>Pode entregar o atestado semana que vem.</p>
-                        </div>
-                        <span>2h</span>
-                    </div>
-
-                    <!-- Conversa 5 -->
-                    <div class="conversa">
-                        <div class="avatar-post"></div>
-                        <div class="texto">
-                            <h4>João Silles</h4>
-                            <p>Pode encaminhar o arquivo ainda hoje.</p>
-                        </div>
-                        <span>30min</span>
-                    </div>
-
-                    <!-- Conversa 6 -->
-                    <div class="conversa">
-                        <div class="avatar-post"></div>
-                        <div class="texto">
-                            <h4>Maria Oliveira</h4>
-                            <p>Recebi seu trabalho!</p>
-                        </div>
-                        <span>Ontem</span>
-                    </div>
-
-                    <!-- Conversa 7 -->
-                    <div class="conversa">
-                        <div class="avatar-post"></div>
-                        <div class="texto">
-                            <h4>Secretaria</h4>
-                            <p>Seu documento foi aprovado.</p>
-                        </div>
-                        <span>3d</span>
-                    </div>
-
+                <!-- Lista carregada via JS -->
+                <div class="conversas" id="containerConversas">
+                    <p style="text-align: center; color: #999; margin-top: 20px;">Carregando conversas...</p>
                 </div>
-
             </section>
 
             <!-- ================= CHAT ================= -->
-            <section class="chat">
-                <div class="chat-topo">
+            <section class="chat" id="secaoChat" style="display: flex;">
+                <div class="chat-topo" id="chatTopo" style="visibility: hidden;">
                     <div class="usuario-chat">
-                        <div class="avatar-post"></div>
+                        <div class="avatar-post" id="chatAvatar"></div>
                         <div>
-                            <h3>Bruno Cano</h3>
-                            <span>@brunocanodd</span>
+                            <h3 id="chatNome">Selecione uma conversa</h3>
+                            <span id="chatTag">@usuario</span>
                         </div>
                     </div>
 
@@ -190,124 +116,30 @@
                         <i class="bi bi-camera-video"></i>
                         <i class="bi bi-info-circle"></i>
                     </div>
-
                 </div>
 
-                <div class="chat-mensagens">
-                    <div class="msg recebida">
-                        <p>Olá! Tudo bem?</p>
-                        <span class="hora">09:20</span>
+                <div class="chat-mensagens" id="containerMensagens">
+                    <div style="text-align: center; color: #aaa; margin-top: 50px;">
+                        Selecione um usuário para visualizar a conversa.
                     </div>
-
-                    <div class="msg enviada">
-                        <p>Olá, professor! Tudo sim.</p>
-                        <span class="hora">09:21</span>
-                    </div>
-
-                    <div class="msg recebida">
-                        <p>Gostaria de conversar com você sobre a advertência registrada no sistema.</p>
-                        <span class="hora">09:22</span>
-                    </div>
-
-                    <div class="msg enviada">
-                        <p>Claro. O que aconteceu exatamente?</p>
-                        <span class="hora">09:23</span>
-                    </div>
-
-                    <div class="msg recebida">
-                        <p>Foi identificado um atraso recorrente nas últimas semanas.</p>
-                        <span class="hora">09:24</span>
-                    </div>
-
-                    <div class="msg recebida">
-                        <p>Precisamos conversar para regularizar essa situação.</p>
-                        <span class="hora">09:24</span>
-                    </div>
-
-                    <div class="msg enviada">
-                        <p>Entendi. Posso passar na direção amanhã?</p>
-                        <span class="hora">09:26</span>
-                    </div>
-
-                    <div class="msg recebida">
-                        <p>Sim! Amanhã às 10h será um bom horário.</p>
-                        <span class="hora">09:27</span>
-                    </div>
-
-                    <div class="msg enviada">
-                        <p>Perfeito. Muito obrigado!</p>
-                        <span class="hora">09:28</span>
-                    </div>
-
                 </div>
 
                 <!-- Campo para enviar mensagem -->
-                <div class="enviar">
+                <div class="enviar" id="boxEnviar" style="visibility: hidden;">
                     <i class="bi bi-emoji-smile"></i>
                     <i class="bi bi-paperclip"></i>
-                    <input type="text" placeholder="Digite uma mensagem...">
+                    <input type="text" id="inputMensagem" placeholder="Digite uma mensagem...">
                     <i class="bi bi-image"></i>
 
-                    <button class="botao-enviar">
+                    <button class="botao-enviar" id="btnEnviar">
                         <i class="bi bi-send-fill"></i>
                     </button>
                 </div>
-
             </section>
-
         </div>
-
     </div>
 
-    <!-- ================= SCRIPTS ================= -->
-    <script>
-        // Seleciona a conversa clicada
-        const conversas = document.querySelectorAll(".conversa");
-
-        conversas.forEach(conversa => {
-            conversa.addEventListener("click", () => {
-                conversas.forEach(c => c.classList.remove("ativa"));
-                conversa.classList.add("ativa");
-            });
-        });
-
-        // Enviar mensagem
-        const input = document.querySelector(".enviar input");
-        const botao = document.querySelector(".botao-enviar");
-        const chat = document.querySelector(".chat-mensagens");
-
-        function enviarMensagem() {
-            if (input.value.trim() === "")
-                return;
-
-            const mensagem = document.createElement("div");
-            mensagem.className = "msg enviada";
-
-            const agora = new Date();
-            const hora =
-                String(agora.getHours()).padStart(2, "0") +
-                ":" +
-                String(agora.getMinutes()).padStart(2, "0");
-
-            mensagem.innerHTML = `
-                <p>${input.value}</p>
-                <span class="hora">${hora}</span>
-            `;
-
-            chat.appendChild(mensagem);
-            chat.scrollTop = chat.scrollHeight;
-            input.value = "";
-        }
-
-        botao.addEventListener("click", enviarMensagem);
-
-        input.addEventListener("keydown", function (e) {
-            if (e.key === "Enter") {
-                enviarMensagem();
-            }
-        });
-    </script>
-
+    <!-- Script principal de mensagens -->
+    <script src="../js/jsmensagens/mensagens.js"></script>
 </body>
-
 </html>

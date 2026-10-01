@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 17/09/2026 às 14:27
+-- Tempo de geração: 01/10/2026 às 03:44
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -109,7 +109,34 @@ CREATE TABLE `curtidas` (
 --
 
 INSERT INTO `curtidas` (`id`, `sugestao_id`, `usuario_id`, `data_curtida`) VALUES
-(2, 101, 6, '2026-09-17 12:24:50');
+(3, 101, 6, '2026-10-01 00:44:23');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `mensagens`
+--
+
+CREATE TABLE `mensagens` (
+  `id` int(11) NOT NULL,
+  `remetente_id` int(11) NOT NULL,
+  `destinatario_id` int(11) NOT NULL,
+  `mensagem` text NOT NULL,
+  `data_envio` timestamp NOT NULL DEFAULT current_timestamp(),
+  `lida` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `mensagens`
+--
+
+INSERT INTO `mensagens` (`id`, `remetente_id`, `destinatario_id`, `mensagem`, `data_envio`, `lida`) VALUES
+(1, 6, 7, 'olá', '2026-10-01 01:05:18', 1),
+(2, 6, 7, 'tudo bem?', '2026-10-01 01:05:23', 1),
+(13, 7, 14, 'Olá', '2026-10-01 06:19:11', 0),
+(14, 7, 14, 'tudo bem?', '2026-10-01 06:20:46', 0),
+(15, 7, 6, 'oie, tudo e você?', '2026-10-01 06:23:41', 1),
+(16, 6, 7, 'tudo certo!', '2026-10-01 06:43:08', 0);
 
 -- --------------------------------------------------------
 
@@ -236,6 +263,14 @@ ALTER TABLE `curtidas`
   ADD UNIQUE KEY `curtida_unica` (`sugestao_id`,`usuario_id`);
 
 --
+-- Índices de tabela `mensagens`
+--
+ALTER TABLE `mensagens`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `remetente_id` (`remetente_id`),
+  ADD KEY `destinatario_id` (`destinatario_id`);
+
+--
 -- Índices de tabela `sugestoes`
 --
 ALTER TABLE `sugestoes`
@@ -282,7 +317,13 @@ ALTER TABLE `cursos`
 -- AUTO_INCREMENT de tabela `curtidas`
 --
 ALTER TABLE `curtidas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de tabela `mensagens`
+--
+ALTER TABLE `mensagens`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de tabela `sugestoes`
@@ -318,6 +359,13 @@ ALTER TABLE `comentarios`
 ALTER TABLE `comunicados`
   ADD CONSTRAINT `comunicados_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
   ADD CONSTRAINT `comunicados_ibfk_2` FOREIGN KEY (`curso_id`) REFERENCES `cursos` (`id`);
+
+--
+-- Restrições para tabelas `mensagens`
+--
+ALTER TABLE `mensagens`
+  ADD CONSTRAINT `mensagens_ibfk_1` FOREIGN KEY (`remetente_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `mensagens_ibfk_2` FOREIGN KEY (`destinatario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 
 --
 -- Restrições para tabelas `usuarios`
