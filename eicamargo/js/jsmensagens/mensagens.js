@@ -1,16 +1,79 @@
 let usuarioAtivoId = null;
+let filtroAtual = 'todas'; // Controla qual filtro está ativo ('todas' ou 'nao_lidas')
 
 document.addEventListener('DOMContentLoaded', () => {
     carregarConversas();
 
-    // Atualiza a lista de conversas automaticamente a cada 5 segundos para trazer mensagens novas
+    // Atualiza a lista de conversas a cada 5 segundos
     setInterval(() => {
         carregarConversas(document.getElementById('inputPesquisaUsuario')?.value.trim() || '', false);
     }, 5000);
 
     const inputPesquisa = document.getElementById('inputPesquisaUsuario');
     const inputMensagem = document.getElementById('inputMensagem');
-    const btnEnviar = document.getElementById('btnEnviar') || document.querySelector('.botao-enviar');
+    const btnEnviar = document.getElementById('btnEnviar');
+    const btnEmoji = document.getElementById('btnEmoji');
+    const emojiPicker = document.getElementById('emojiPicker');
+    const btnAnexo = document.getElementById('btnAnexo');
+    const inputAnexo = document.getElementById('inputAnexo');
+    const btnFiltroTodas = document.getElementById('btnFiltroTodas');
+    const btnFiltroNaoLidas = document.getElementById('btnFiltroNaoLidas');
+
+    // Evento do botão "Todas"
+    if (btnFiltroTodas) {
+        btnFiltroTodas.addEventListener('click', () => {
+            filtroAtual = 'todas';
+            btnFiltroTodas.classList.add('ativo');
+            if (btnFiltroNaoLidas) btnFiltroNaoLidas.classList.remove('ativo');
+            carregarConversas(document.getElementById('inputPesquisaUsuario')?.value.trim() || '');
+        });
+    }
+
+    // Evento do botão "Não lidas"
+    if (btnFiltroNaoLidas) {
+        btnFiltroNaoLidas.addEventListener('click', () => {
+            filtroAtual = 'nao_lidas';
+            btnFiltroNaoLidas.classList.add('ativo');
+            if (btnFiltroTodas) btnFiltroTodas.classList.remove('ativo');
+            carregarConversas(document.getElementById('inputPesquisaUsuario')?.value.trim() || '');
+        });
+    }
+
+    // Emoji Picker Toggle
+    if (btnEmoji && emojiPicker) {
+        btnEmoji.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const estaVisivel = emojiPicker.style.display === 'flex';
+            emojiPicker.style.display = estaVisivel ? 'none' : 'flex';
+        });
+
+        emojiPicker.querySelectorAll('span').forEach(emojiSpan => {
+            emojiSpan.addEventListener('click', () => {
+                if (inputMensagem) {
+                    inputMensagem.value += emojiSpan.textContent;
+                    inputMensagem.focus();
+                }
+            });
+        });
+    }
+
+    // Clique no clipe abre seleção de imagem/arquivo
+    if (btnAnexo && inputAnexo) {
+        btnAnexo.addEventListener('click', (e) => {
+            e.stopPropagation();
+            inputAnexo.setAttribute('accept', 'image/*,.pdf,.doc,.docx');
+            inputAnexo.click();
+        });
+    }
+
+    // Ao selecionar arquivo, envia a mensagem com o anexo automaticamente
+    if (inputAnexo) {
+        inputAnexo.addEventListener('change', () => {
+            if (inputAnexo.files.length > 0) {
+                enviarMensagem();
+            }
+        });
+    }
 
     if (inputPesquisa) {
         inputPesquisa.addEventListener('input', () => {
@@ -35,10 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Oculta menus ao clicar fora
 document.addEventListener('click', () => {
-    document.querySelectorAll('.dropdown-menu-msg').forEach(menu => {
-        menu.classList.remove('show');
-    });
+    const emojiPicker = document.getElementById('emojiPicker');
+    if (emojiPicker) emojiPicker.style.display = 'none';
+    document.querySelectorAll('.dropdown-menu-msg').forEach(menu => menu.classList.remove('show'));
 });
 
 async function carregarConversas(termoBusca = '', recarregarTudo = true) {
@@ -46,18 +110,15 @@ async function carregarConversas(termoBusca = '', recarregarTudo = true) {
     if (!container) return;
 
     try {
-        const res = await fetch(`../php/phpmensagens/listar_conversas.php?busca=${encodeURIComponent(termoBusca)}`);
+        // Passa o termo de busca e o filtro selecionado ('todas' ou 'nao_lidas')
+        const res = await fetch(`../php/phpmensagens/listar_conversas.php?busca=${encodeURIComponent(termoBusca)}&filtro=${filtroAtual}`);
         const data = await res.json();
 
         if (data.status === 'success' && data.conversas.length > 0) {
             container.innerHTML = data.conversas.map(c => {
                 const fotoUrl = c.foto_perfil ? `../uploads/${c.foto_perfil}` : '../uploads/default.png';
                 const eAtiva = c.usuario_id === usuarioAtivoId ? 'ativa' : '';
-
-                // Bolinha vermelha com a quantidade de mensagens não lidas
-                const badgeNaoLidas = (c.nao_lidas > 0) 
-                    ? `<span class="badge-nao-lidas">${c.nao_lidas}</span>` 
-                    : '';
+                const badgeNaoLidas = (c.nao_lidas > 0) ? `<span class="badge-nao-lidas">${c.nao_lidas}</span>` : '';
 
                 return `
                     <div class="conversa ${eAtiva}" data-id="${c.usuario_id}" data-nome="${c.nome}" data-foto="${fotoUrl}">
@@ -88,7 +149,7 @@ async function carregarConversas(termoBusca = '', recarregarTudo = true) {
             });
 
         } else if (recarregarTudo) {
-            container.innerHTML = `<p style="text-align: center; color: #999; margin-top: 20px;">Nenhum usuário encontrado.</p>`;
+            container.innerHTML = `<p style="text-align: center; color: #999; margin-top: 20px;">Nenhuma conversa encontrada.</p>`;
         }
     } catch (e) {
         console.error('Erro ao buscar conversas:', e);
@@ -126,6 +187,16 @@ async function abrirChat(id, nome, foto) {
                     const eMinha = (parseInt(m.remetente_id) === data.meu_id);
                     const tipo = eMinha ? 'enviada' : 'recebida';
                     
+                    let htmlAnexo = '';
+                    if (m.anexo) {
+                        const caminhoAnexo = `../uploads/anexos/${m.anexo}`;
+                        if (m.anexo.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+                            htmlAnexo = `<div class="msg-imagem"><a href="${caminhoAnexo}" target="_blank"><img src="${caminhoAnexo}" style="max-width: 200px; border-radius: 8px; margin-bottom: 5px; display: block;"></a></div>`;
+                        } else {
+                            htmlAnexo = `<div class="msg-documento"><a href="${caminhoAnexo}" target="_blank" style="color: inherit; text-decoration: underline;"><i class="fa-solid fa-paperclip"></i> Ver Anexo</a></div>`;
+                        }
+                    }
+
                     const menuOpcoes = eMinha ? `
                         <div class="msg-opcoes">
                             <button class="btn-tres-pontos" onclick="toggleMenuMsg(event, ${m.id})">⋮</button>
@@ -139,7 +210,8 @@ async function abrirChat(id, nome, foto) {
 
                     return `
                         <div class="msg ${tipo}" data-msg-id="${m.id}">
-                            <p>${m.mensagem}</p>
+                            ${htmlAnexo}
+                            ${m.mensagem ? `<p>${m.mensagem}</p>` : ''}
                             <div class="hora-container">
                                 <span class="hora">${m.hora}</span>
                                 ${menuOpcoes}
@@ -161,15 +233,11 @@ async function abrirChat(id, nome, foto) {
 function toggleMenuMsg(event, idMensagem) {
     event.stopPropagation();
     document.querySelectorAll('.dropdown-menu-msg').forEach(menu => {
-        if (menu.id !== `dropdown-msg-${idMensagem}`) {
-            menu.classList.remove('show');
-        }
+        if (menu.id !== `dropdown-msg-${idMensagem}`) menu.classList.remove('show');
     });
 
     const menuAtual = document.getElementById(`dropdown-msg-${idMensagem}`);
-    if (menuAtual) {
-        menuAtual.classList.toggle('show');
-    }
+    if (menuAtual) menuAtual.classList.toggle('show');
 }
 
 async function apagarMensagem(idMensagem, elementoBotao) {
@@ -187,9 +255,7 @@ async function apagarMensagem(idMensagem, elementoBotao) {
 
         if (data.status === 'success') {
             const divMensagem = elementoBotao.closest('.msg');
-            if (divMensagem) {
-                divMensagem.remove();
-            }
+            if (divMensagem) divMensagem.remove();
             carregarConversas('', false);
         } else {
             alert(data.message || 'Erro ao apagar mensagem.');
@@ -201,11 +267,13 @@ async function apagarMensagem(idMensagem, elementoBotao) {
 
 async function enviarMensagem() {
     const input = document.getElementById('inputMensagem');
+    const inputAnexo = document.getElementById('inputAnexo');
     if (!input) return;
 
     const texto = input.value.trim();
+    const temAnexo = inputAnexo && inputAnexo.files.length > 0;
 
-    if (!texto) return;
+    if (!texto && !temAnexo) return;
     if (!usuarioAtivoId) {
         alert("Selecione um usuário para enviar a mensagem.");
         return;
@@ -214,6 +282,10 @@ async function enviarMensagem() {
     const formData = new FormData();
     formData.append('destinatario_id', usuarioAtivoId);
     formData.append('mensagem', texto);
+
+    if (temAnexo) {
+        formData.append('anexo', inputAnexo.files[0]);
+    }
 
     try {
         const res = await fetch('../php/phpmensagens/enviar_mensagem.php', {
@@ -224,8 +296,9 @@ async function enviarMensagem() {
         const data = await res.json();
 
         if (data.status === 'success') {
-            abrirChat(usuarioAtivoId, document.getElementById('chatNome').textContent, document.getElementById('chatAvatar').style.backgroundImage.slice(5, -2));
             input.value = '';
+            if (inputAnexo) inputAnexo.value = '';
+            abrirChat(usuarioAtivoId, document.getElementById('chatNome').textContent, document.getElementById('chatAvatar').style.backgroundImage.slice(5, -2));
         } else {
             alert('Erro ao enviar mensagem: ' + (data.message || 'Tente novamente.'));
         }
@@ -234,80 +307,36 @@ async function enviarMensagem() {
     }
 }
 
+// Verifica se há vendedor/produto na URL ao carregar a página de mensagens
 document.addEventListener('DOMContentLoaded', () => {
-    carregarConversas();
+    const urlParams = new URLSearchParams(window.location.search);
+    const usuarioIdParam = urlParams.get('usuario_id');
+    const produtoParam = urlParams.get('produto');
 
-    const btnEmoji = document.getElementById('btnEmoji');
-    const emojiPicker = document.getElementById('emojiPicker');
-    const btnAnexo = document.getElementById('btnAnexo');
-    const anexoMenu = document.getElementById('anexoMenu');
-    const inputAnexo = document.getElementById('inputAnexo');
-    const btnAnexoFoto = document.getElementById('btnAnexoFoto');
-    const btnAnexoDoc = document.getElementById('btnAnexoDoc');
-    const inputMensagem = document.getElementById('inputMensagem');
+    if (usuarioIdParam) {
+        const targetId = parseInt(usuarioIdParam);
 
-    // Toggle Menu de Emojis
-    if (btnEmoji && emojiPicker) {
-        btnEmoji.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (anexoMenu) anexoMenu.classList.remove('show');
-            emojiPicker.classList.toggle('show');
-        });
+        const tentarAbrirConversa = () => {
+            // Procura a conversa na lista e simula o clique para abrir o chat
+            const conversaEl = document.querySelector(`.conversa[data-id="${targetId}"]`);
+            if (conversaEl) {
+                conversaEl.click();
+            } else {
+                // Se for uma conversa nova ainda não listada, chama o abrirChat diretamente
+                abrirChat(targetId, 'Usuário', '../uploads/default.png');
+            }
 
-        // Clique em um emoji
-        emojiPicker.querySelectorAll('span').forEach(emojiSpan => {
-            emojiSpan.addEventListener('click', () => {
+            // Preenche o campo de input com o texto de reserva do produto
+            if (produtoParam) {
+                const inputMensagem = document.getElementById('inputMensagem');
                 if (inputMensagem) {
-                    inputMensagem.value += emojiSpan.textContent;
+                    inputMensagem.value = `Olá! Gostaria de reservar o item: ${decodeURIComponent(produtoParam)}`;
                     inputMensagem.focus();
                 }
-            });
-        });
-    }
-
-    // Toggle Menu de Anexos
-    if (btnAnexo && anexoMenu) {
-        btnAnexo.addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (emojiPicker) emojiPicker.classList.remove('show');
-            anexoMenu.classList.toggle('show');
-        });
-    }
-
-    // Ações do Menu de Anexos
-    if (btnAnexoFoto && inputAnexo) {
-        btnAnexoFoto.addEventListener('click', () => {
-            inputAnexo.setAttribute('accept', 'image/*,video/*');
-            inputAnexo.click();
-            anexoMenu.classList.remove('show');
-        });
-    }
-
-    if (btnAnexoDoc && inputAnexo) {
-        btnAnexoDoc.addEventListener('click', () => {
-            inputAnexo.setAttribute('accept', '.pdf,.doc,.docx,.xls,.xlsx,.txt');
-            inputAnexo.click();
-            anexoMenu.classList.remove('show');
-        });
-    }
-
-    // Evento para quando o usuário seleciona um ficheiro/anexo
-    if (inputAnexo) {
-        inputAnexo.addEventListener('change', () => {
-            if (inputAnexo.files.length > 0) {
-                const arquivo = inputAnexo.files[0];
-                alert(`Arquivo selecionado: ${arquivo.name}`);
-                // Aqui pode implementar o envio imediato ou upload do arquivo via FormData
             }
-        });
-    }
+        };
 
-    // Fechar menus ao clicar fora
-    document.addEventListener('click', () => {
-        if (emojiPicker) emojiPicker.classList.remove('show');
-        if (anexoMenu) anexoMenu.classList.remove('show');
-        document.querySelectorAll('.dropdown-menu-msg').forEach(menu => {
-            menu.classList.remove('show');
-        });
-    });
+        // Aguarda a busca inicial de conversas do servidor para executar a ação
+        setTimeout(tentarAbrirConversa, 500);
+    }
 });

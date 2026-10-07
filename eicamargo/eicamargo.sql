@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 01/10/2026 às 03:44
+-- Tempo de geração: 07/10/2026 às 03:27
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -122,6 +122,7 @@ CREATE TABLE `mensagens` (
   `remetente_id` int(11) NOT NULL,
   `destinatario_id` int(11) NOT NULL,
   `mensagem` text NOT NULL,
+  `anexo` varchar(255) DEFAULT NULL,
   `data_envio` timestamp NOT NULL DEFAULT current_timestamp(),
   `lida` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -130,13 +131,18 @@ CREATE TABLE `mensagens` (
 -- Despejando dados para a tabela `mensagens`
 --
 
-INSERT INTO `mensagens` (`id`, `remetente_id`, `destinatario_id`, `mensagem`, `data_envio`, `lida`) VALUES
-(1, 6, 7, 'olá', '2026-10-01 01:05:18', 1),
-(2, 6, 7, 'tudo bem?', '2026-10-01 01:05:23', 1),
-(13, 7, 14, 'Olá', '2026-10-01 06:19:11', 0),
-(14, 7, 14, 'tudo bem?', '2026-10-01 06:20:46', 0),
-(15, 7, 6, 'oie, tudo e você?', '2026-10-01 06:23:41', 1),
-(16, 6, 7, 'tudo certo!', '2026-10-01 06:43:08', 0);
+INSERT INTO `mensagens` (`id`, `remetente_id`, `destinatario_id`, `mensagem`, `anexo`, `data_envio`, `lida`) VALUES
+(1, 6, 7, 'olá', NULL, '2026-10-01 01:05:18', 1),
+(2, 6, 7, 'tudo bem?', NULL, '2026-10-01 01:05:23', 1),
+(13, 7, 14, 'Olá', NULL, '2026-10-01 06:19:11', 0),
+(14, 7, 14, 'tudo bem?', NULL, '2026-10-01 06:20:46', 0),
+(15, 7, 6, 'oie, tudo e você?', NULL, '2026-10-01 06:23:41', 1),
+(16, 6, 7, 'tudo certo!', NULL, '2026-10-01 06:43:08', 1),
+(17, 6, 7, '', 'anexo_6ac599053a084.jpg', '2026-10-07 00:57:41', 1),
+(18, 6, 7, '👍', NULL, '2026-10-07 00:57:48', 1),
+(19, 7, 6, '😀', NULL, '2026-10-07 01:08:02', 1),
+(20, 7, 6, 'Olá! Gostaria de reservar o item: Torta de Morango com Caramelo', NULL, '2026-10-07 01:23:10', 1),
+(21, 6, 7, 'Olá! Gostaria de reservar o item: Kit docinhos de festa', NULL, '2026-10-07 01:26:30', 0);
 
 -- --------------------------------------------------------
 
@@ -187,7 +193,6 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `data_criacao`, `foto_perfil`, `biografia`, `foto_capa`, `tipo`, `curso_id`) VALUES
-(5, 'Bruna', 'bruna@gmail.com', '$2y$10$6QVe3VrPsNKyzTZlQtqGpOckexTK30lvqYZp/1VnCHfjywxPHKjqG', '2026-08-27 10:59:21', 'perfil_5_1787832005.png', 'Terceiro ano do curso Análise e Desenvolvimento de Sistemas.', NULL, 'aluno', 3),
 (6, 'Julia', 'julia@gmail.com', '$2y$10$HbW4KOcTYEKTRVANHJLCXet/EbZ7MdUXdCbZcNyKFzviT0AehGHai', '2026-09-02 00:26:58', 'perfil_6a977611ceeda7.85533089.jpg', 'Terceiro ano de Analise e Desenvolvimento de Sistemas', 'capa_6a977611cf7165.09826406.jpg', 'aluno', 3),
 (7, 'Alexandre', 'alexandre@gmail.com', '$2y$10$eh4HUdnoTsNTP6orUzts.uGX6ToNMc3rAX2MXVJ5quZmmFAfFEPge', '2026-09-02 00:50:13', 'default.png', NULL, NULL, 'aluno', 3),
 (8, 'Bruno Cano', 'bruno@gmail.com', '$2y$10$OW5MiobE82mYjIssNxsvP.2ZNRpS.PwYh.GzafESsCkpQeTz/BlKe', '2026-09-17 00:06:06', 'default.png', NULL, NULL, 'coordenador', 3),
@@ -219,14 +224,8 @@ CREATE TABLE `vendas` (
 --
 
 INSERT INTO `vendas` (`id`, `usuario_id`, `titulo`, `preco`, `local`, `legenda`, `midia`, `data_criacao`) VALUES
-(9, 5, 'Doce Crocante de Amendoim', 'R$ 8,00', 'primeiro andar', 'Crocante, dourado e delicioso, feito com amendoim e caramelo.', '../uploads/venda_6a902d13604d12.18005686.png', '2026-08-27 09:26:59'),
-(10, 5, 'Ovo de Chocolate com Morango', 'R$ 18,00', 'Pátio', 'Chocolate cremoso recheado com creme e pedaços de morango fresco.', '../uploads/venda_6a902d3c4cd627.95478877.png', '2026-08-27 09:27:40'),
-(11, 5, 'Taça de Morango', 'R$ 15,00', '3 andar', 'Camadas de creme suave, morangos frescos e uma deliciosa calda de frutas.', '../uploads/venda_6a902d6312f1c6.38747826.png', '2026-08-27 09:28:19'),
-(12, 5, 'Donuts', 'R$ 7,00', 'Primeiro andar', 'Donuts macios e fofinhos, cobertos com chocolate, glacê e confeitos coloridos.', '../uploads/venda_6a902d8bd038f6.79126338.png', '2026-08-27 09:28:59'),
-(13, 5, 'Paçoquita', 'R$ 2,00', 'segundo andar', 'Doce artesanal de amendoim com textura macia, sabor marcante e o toque caseiro perfeito. Ideal para festas juninas, sobremesa ou acompanhamento de café.', '../uploads/venda_6a902e11159735.34096558.png', '2026-08-27 09:31:13'),
-(14, 5, 'Cheesecake de Morango', 'R$ 14,00', 'Pátio', 'Sobremesa clássica com base crocante de biscoito, recheio leve e cremoso de cream cheese, coberta com generosa camada de morangos frescos e folhas de hortelã. (Fatia)', '../uploads/venda_6a902e4c930966.90253957.png', '2026-08-27 09:32:12'),
-(15, 5, 'Brigadeiros Gourmet', 'R$ 35,00', '', 'Seleção especial de brigadeiros artesanais e doces finos, incluindo opções tradicionais, de coco, nozes e decorados com frutas (como physalis). Perfeito para eventos, festas ou presentes. (caixa presenteável com 12 unidades).', '../uploads/venda_6a902e818ee2b4.78528111.png', '2026-08-27 09:33:05'),
-(16, 6, 'Torta de Morango com Caramelo', 'R$ 12,00', 'Pátio', 'Deliciosa tortinha com recheio cremoso, coberta com uma generosa camada de caramelo e finalizada com castanhas crocantes. Uma combinação irresistível de cremosidade e crocância!', '../uploads/venda_6a9779cea1d092.82249371.jpg', '2026-09-01 22:20:14');
+(16, 6, 'Torta de Morango com Caramelo', 'R$ 12,00', 'Pátio', 'Deliciosa tortinha com recheio cremoso, coberta com uma generosa camada de caramelo e finalizada com castanhas crocantes. Uma combinação irresistível de cremosidade e crocância!', '../uploads/venda_6a9779cea1d092.82249371.jpg', '2026-09-01 22:20:14'),
+(17, 7, 'Kit docinhos de festa', 'R$ 12,00', 'segundo andar', 'Kit com 6 docinhos deliciosos, as opções podendo ser:&#13;&#10;Brigadeiro, Beijinho, Paçoca e Ninho com uva', '../uploads/venda_6ac59f9f730ba8.72704315.png', '2026-10-06 22:25:51');
 
 --
 -- Índices para tabelas despejadas
@@ -323,7 +322,7 @@ ALTER TABLE `curtidas`
 -- AUTO_INCREMENT de tabela `mensagens`
 --
 ALTER TABLE `mensagens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de tabela `sugestoes`
@@ -341,7 +340,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `vendas`
 --
 ALTER TABLE `vendas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- Restrições para tabelas despejadas

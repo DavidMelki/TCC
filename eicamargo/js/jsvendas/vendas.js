@@ -85,11 +85,11 @@ function renderizarFeed() {
 
 function criarHTMLProduto(venda) {
     let midiaHTML = '';
-    
+
     if (venda.midia && venda.midia.trim() !== '') {
         const isVideo = venda.midia.endsWith('.mp4') || venda.midia.endsWith('.mov');
-        midiaHTML = isVideo 
-            ? `<video src="${venda.midia}" class="product-image"></video>` 
+        midiaHTML = isVideo
+            ? `<video src="${venda.midia}" class="product-image"></video>`
             : `<img src="${venda.midia}" alt="${venda.titulo}" class="product-image" onerror="this.src='https://via.placeholder.com/300x300?text=Sem+Imagem';">`;
     } else {
         midiaHTML = `<img src="https://via.placeholder.com/300x300?text=Sem+Imagem" alt="${venda.titulo}" class="product-image">`;
@@ -252,10 +252,10 @@ function abrirModalVenda() {
                 method: 'POST',
                 body: formData
             })
-            .then(res => res.json())
-            .catch(error => {
-                Swal.showValidationMessage(`Erro ao enviar: ${error}`);
-            });
+                .then(res => res.json())
+                .catch(error => {
+                    Swal.showValidationMessage(`Erro ao enviar: ${error}`);
+                });
         },
         allowOutsideClick: () => !Swal.isLoading()
     }).then((result) => {
@@ -301,7 +301,7 @@ function removerMidia() {
 
 function abrirModalDetalhes(venda) {
     const nomeSeguro = encodeURIComponent(venda.nome || 'Usuário');
-    
+
     // Avatar padrão com as iniciais
     let fotoPerfil = `https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff&size=128`;
 
@@ -327,27 +327,38 @@ function abrirModalDetalhes(venda) {
     Swal.fire({
         title: '',
         html: `
-            <div style="text-align: left; font-family: var(--font-main);">
-                ${midiaHTML}
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                    <img src="${fotoPerfil}" 
-                         alt="${venda.nome || 'Vendedor'}" 
-                         style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;"
-                         onerror="this.src='https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff&size=128';">
-                    <div>
-                        <strong style="display: block; font-size: 14px; color: #1a1a1a;">${venda.nome || 'Aluno(a)'}</strong>
-                        <span style="font-size: 12px; color: #8c8c8c;"><i class="fa-solid fa-location-dot"></i> ${venda.local || 'Andar não informado'}</span>
-                    </div>
+        <div style="text-align: left; font-family: var(--font-main);">
+            ${midiaHTML}
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                <img src="${fotoPerfil}" 
+                     alt="${venda.nome || 'Vendedor'}" 
+                     style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;"
+                     onerror="this.src='https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff&size=128';">
+                <div>
+                    <strong style="display: block; font-size: 14px; color: #1a1a1a;">${venda.nome || 'Aluno(a)'}</strong>
+                    <span style="font-size: 12px; color: #8c8c8c;"><i class="fa-solid fa-location-dot"></i> ${venda.local || 'Andar não informado'}</span>
                 </div>
-
-                <h2 style="font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px;">${venda.titulo}</h2>
-                <div style="font-size: 20px; font-weight: 800; color: #e63c3c; margin-bottom: 14px;">${venda.preco}</div>
-
-                <div style="background-color: #f7f8fa; padding: 12px; border-radius: 8px; font-size: 14px; color: #4a4a4a; line-height: 1.5; white-space: pre-wrap;">${venda.legenda || 'Sem descrição.'}</div>
             </div>
-        `,
+
+            <h2 style="font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px;">${venda.titulo}</h2>
+            <div style="font-size: 20px; font-weight: 800; color: #e63c3c; margin-bottom: 14px;">${venda.preco}</div>
+
+            <div style="background-color: #f7f8fa; padding: 12px; border-radius: 8px; font-size: 14px; color: #4a4a4a; line-height: 1.5; white-space: pre-wrap;">${venda.legenda || 'Sem descrição.'}</div>
+        </div>
+    `,
+        showCancelButton: true,
         showConfirmButton: true,
-        confirmButtonText: 'Fechar',
-        confirmButtonColor: '#e63c3c'
+        confirmButtonText: 'Reservar',
+        cancelButtonText: 'Fechar',
+        confirmButtonColor: '#02d569',
+        cancelButtonColor: '#e63c3c'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const idVendedor = venda.usuario_id;
+            const produto = encodeURIComponent(venda.titulo);
+
+            // Redireciona para a página de mensagens enviando o ID e o produto na URL
+            window.location.href = `mensagens.php?usuario_id=${idVendedor}&produto=${produto}`;
+        }
     });
 }

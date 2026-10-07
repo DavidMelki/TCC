@@ -22,7 +22,6 @@ try {
         exit;
     }
 
-    // Marca as mensagens recebidas como lidas
     $stmtUpdate = $pdo->prepare("
         UPDATE mensagens 
         SET lida = 1 
@@ -33,9 +32,8 @@ try {
         ':meuId' => $usuarioLogadoId
     ]);
 
-    // Busca as mensagens
     $stmt = $pdo->prepare("
-        SELECT id, remetente_id, destinatario_id, mensagem, data_envio
+        SELECT id, remetente_id, destinatario_id, mensagem, anexo, data_envio
         FROM mensagens
         WHERE (remetente_id = :meuId AND destinatario_id = :outroId)
            OR (remetente_id = :outroId AND destinatario_id = :meuId)
@@ -56,6 +54,7 @@ try {
             'remetente_id' => $m['remetente_id'],
             'destinatario_id' => $m['destinatario_id'],
             'mensagem' => $m['mensagem'],
+            'anexo' => $m['anexo'],
             'hora' => $dt->format('H:i')
         ];
     }, $mensagensBrutas);

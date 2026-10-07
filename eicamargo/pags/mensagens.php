@@ -68,10 +68,14 @@
             <!-- Rodapé da Sidebar fixado na parte inferior -->
             <div class="profile-footer" style="margin-top: auto;">
                 <div class="profile-info">
-                    <div class="avatar" style="width: 40px; height: 40px; border-radius: 50%; background-image: url('../uploads/<?php echo !empty($usuarioLogado['foto_perfil']) ? htmlspecialchars($usuarioLogado['foto_perfil']) : 'default.png'; ?>'); background-size: cover; background-position: center;"></div>
+                    <div class="avatar"
+                        style="width: 40px; height: 40px; border-radius: 50%; background-image: url('../uploads/<?php echo !empty($usuarioLogado['foto_perfil']) ? htmlspecialchars($usuarioLogado['foto_perfil']) : 'default.png'; ?>'); background-size: cover; background-position: center;">
+                    </div>
                     <div class="dados">
-                        <span class="nome" style="font-weight: bold; font-size: 14px; display: block;"><?php echo htmlspecialchars($usuarioLogado['nome']); ?></span>
-                        <span class="usuario" style="font-size: 12px; color: #666; display: block;">@<?php echo strtolower(str_replace(' ', '', $usuarioLogado['nome'])); ?></span>
+                        <span class="nome"
+                            style="font-weight: bold; font-size: 14px; display: block;"><?php echo htmlspecialchars($usuarioLogado['nome']); ?></span>
+                        <span class="usuario"
+                            style="font-size: 12px; color: #666; display: block;">@<?php echo strtolower(str_replace(' ', '', $usuarioLogado['nome'])); ?></span>
                     </div>
                 </div>
                 <i class="bi bi-three-dots"></i>
@@ -91,6 +95,7 @@
 
                     <div class="filtros">
                         <button class="ativo" id="btnFiltroTodas">Todas</button>
+                        <button id="btnFiltroNaoLidas">Não lidas</button>
                     </div>
                 </div>
 
@@ -110,12 +115,6 @@
                             <span id="chatTag">@usuario</span>
                         </div>
                     </div>
-
-                    <div class="icones-chat">
-                        <i class="bi bi-telephone"></i>
-                        <i class="bi bi-camera-video"></i>
-                        <i class="bi bi-info-circle"></i>
-                    </div>
                 </div>
 
                 <div class="chat-mensagens" id="containerMensagens">
@@ -124,12 +123,26 @@
                     </div>
                 </div>
 
+                <!-- Campo oculto para seleção de arquivos -->
+                <input type="file" id="inputAnexo" style="display: none;">
+
                 <!-- Campo para enviar mensagem -->
-                <div class="enviar" id="boxEnviar" style="visibility: hidden;">
-                    <i class="bi bi-emoji-smile"></i>
-                    <i class="bi bi-paperclip"></i>
+                <div class="enviar" id="boxEnviar" style="visibility: hidden; position: relative;">
+                    <!-- Picker de Emoji simples -->
+                    <div id="emojiPicker" class="emoji-picker-container"
+                        style="display: none; position: absolute; bottom: 50px; left: 10px; background: #fff; border: 1px solid #ccc; padding: 10px; border-radius: 8px; gap: 8px;">
+                        <span style="cursor: pointer; font-size: 20px;">😀</span>
+                        <span style="cursor: pointer; font-size: 20px;">😂</span>
+                        <span style="cursor: pointer; font-size: 20px;">❤️</span>
+                        <span style="cursor: pointer; font-size: 20px;">👍</span>
+                        <span style="cursor: pointer; font-size: 20px;">🔥</span>
+                        <span style="cursor: pointer; font-size: 20px;">🎉</span>
+                    </div>
+
+                    <i class="bi bi-emoji-smile" id="btnEmoji" style="cursor: pointer;"></i>
+                    <i class="bi bi-paperclip" id="btnAnexo" style="cursor: pointer;"></i>
+
                     <input type="text" id="inputMensagem" placeholder="Digite uma mensagem...">
-                    <i class="bi bi-image"></i>
 
                     <button class="botao-enviar" id="btnEnviar">
                         <i class="bi bi-send-fill"></i>
@@ -142,4 +155,5 @@
     <!-- Script principal de mensagens -->
     <script src="../js/jsmensagens/mensagens.js"></script>
 </body>
+
 </html>
