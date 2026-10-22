@@ -1,6 +1,6 @@
 <?php
 session_start();
-date_default_timezone_set('America_Sao_Paulo');
+date_default_timezone_set('America/Sao_Paulo');
 
 if (ob_get_length()) ob_clean();
 header('Content-Type: application/json; charset=utf-8');

@@ -87,7 +87,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         }
         unset($venda);
 
-        echo json_encode(['status' => 'success', 'vendas' => $vendas]);
+        echo json_encode([
+            'status' => 'success',
+            'usuario_logado_id' => (int)($_SESSION['usuario_id'] ?? ($_SESSION['usuario']['id'] ?? 0)),
+            'vendas' => $vendas
+        ]);
         exit;
     } catch (Exception $e) {
         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);

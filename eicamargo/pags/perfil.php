@@ -68,7 +68,7 @@ $fotoCapa = !empty($usuario['foto_capa']) ? '../uploads/' . htmlspecialchars($us
 
             <ul class="nav-menu">
                 <li><a href="sugestoes.php" class="nav-item"><i class="bi bi-lightbulb-fill"></i> Sugestões</a></li>
-                <li><a href="vendas.php" class="nav-item"><i class="fa-solid fa-cart-shopping"></i> Vendas</a></li>
+                <li><a href="vendas.php" class="nav-item"><i class="fa-solid fa-cart-shopping"></i> Reservas</a></li>
                 <li><a href="comunicados.php" class="nav-item"><i class="fa-solid fa-bullhorn"></i> Comunicados</a></li>
                 <li><a href="mensagens.php" class="nav-item"><i class="fa-regular fa-envelope"></i> Mensagens</a></li>
                 <li><a href="curso.php" class="nav-item"><i class="fa-solid fa-graduation-cap"></i> Curso</a></li>
@@ -185,6 +185,8 @@ $fotoCapa = !empty($usuario['foto_capa']) ? '../uploads/' . htmlspecialchars($us
             document.getElementById('conteudo-' + aba).style.display = 'block';
         }
     </script>
+
+    <script src="../js/rodape-perfil.js"></script>
 </body>
 
 </html>

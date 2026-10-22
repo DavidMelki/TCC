@@ -22,6 +22,12 @@ try {
     $stmt = $pdo->query($sql);
     $sugestoes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    $stmtLiked = $pdo->prepare("
+        SELECT 1 FROM curtidas
+        WHERE sugestao_id = :sid AND usuario_id = :uid
+        LIMIT 1
+    ");
+
     foreach ($sugestoes as &$sugestao) {
         // Incluído usuario_id na busca dos comentários
         $stmtC = $pdo->query("SELECT id, usuario_id, comentario, nome FROM comentarios WHERE sugestao_id = " . (int)$sugestao['id'] . " ORDER BY id ASC");
@@ -44,9 +50,15 @@ try {
         } else {
             $sugestao['foto_perfil'] = '';
         }
-    
+
         $sugestao['likes'] = (int)($sugestao['likes'] ?? 0);
-        $sugestao['liked'] = ($sugestao['likes'] > 0); 
+
+        // Só é "liked" se o usuário logado realmente curtiu
+        $stmtLiked->execute([
+            ':sid' => (int)$sugestao['id'],
+            ':uid' => (int)$usuarioLogadoId
+        ]);
+        $sugestao['liked'] = (bool)$stmtLiked->fetchColumn();
     }
     unset($sugestao);
 

@@ -1,4 +1,4 @@
-let vendasCache = [];
+let vendasCache = []; let usuarioLogadoId = 0;
 
 // Helper functions para gerenciar localStorage
 function obterFavoritosSalvos() {
@@ -48,7 +48,7 @@ async function carregarVendas() {
 
     try {
         const res = await fetch('../php/phpvendas/Bvendas.php');
-        const data = await res.json();
+        const data = await res.json(); usuarioLogadoId = parseInt(data.usuario_logado_id) || 0;
 
         if (data.status === 'success' && data.vendas && data.vendas.length > 0) {
             const favoritosSalvos = obterFavoritosSalvos();
@@ -300,6 +300,7 @@ function removerMidia() {
 }
 
 function abrirModalDetalhes(venda) {
+    const eDono = parseInt(venda.usuario_id) === usuarioLogadoId;
     const nomeSeguro = encodeURIComponent(venda.nome || 'Usuário');
 
     // Avatar padrão com as iniciais
@@ -346,19 +347,66 @@ function abrirModalDetalhes(venda) {
             <div style="background-color: #f7f8fa; padding: 12px; border-radius: 8px; font-size: 14px; color: #4a4a4a; line-height: 1.5; white-space: pre-wrap;">${venda.legenda || 'Sem descrição.'}</div>
         </div>
     `,
-        showCancelButton: true,
-        showConfirmButton: true,
-        confirmButtonText: 'Reservar',
-        cancelButtonText: 'Fechar',
-        confirmButtonColor: '#02d569',
-        cancelButtonColor: '#e63c3c'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const idVendedor = venda.usuario_id;
-            const produto = encodeURIComponent(venda.titulo);
+    showCancelButton: true,
+    showConfirmButton: !eDono,   // dono não reserva o próprio item
+    showDenyButton: eDono,       // dono vê o botão de excluir
+    confirmButtonText: 'Reservar',
+    denyButtonText: '<i class="fa-solid fa-trash"></i> Excluir venda',
+    cancelButtonText: 'Fechar',
+    confirmButtonColor: '#02d569',
+    denyButtonColor: '#e63c3c',
+    cancelButtonColor: eDono ? '#8c8c8c' : '#e63c3c'
+}).then((result) => {
+    if (result.isConfirmed) {
+        const idVendedor = venda.usuario_id;
+        const produto = encodeURIComponent(venda.titulo);
 
-            // Redireciona para a página de mensagens enviando o ID e o produto na URL
-            window.location.href = `mensagens.php?usuario_id=${idVendedor}&produto=${produto}`;
-        }
-    });
+        // Redireciona para a página de mensagens enviando o ID e o produto na URL
+        window.location.href = `mensagens.php?usuario_id=${idVendedor}&produto=${produto}`;
+    } else if (result.isDenied) {
+        excluirVenda(venda);
+    }
+});
+}
+
+function excluirVenda(venda) {
+Swal.fire({
+    title: 'Excluir esta venda?',
+    text: 'O anúncio será removido permanentemente.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#e63c3c',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: 'Sim, excluir!',
+    cancelButtonText: 'Cancelar'
+}).then((result) => {
+    if (!result.isConfirmed) return;
+
+    const formData = new FormData();
+    formData.append('venda_id', venda.id);
+
+    fetch('../php/phpvendas/excluir_venda.php', {
+        method: 'POST',
+        body: formData
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Remove dos favoritos salvos no navegador
+                const restantes = obterFavoritosSalvos().filter(id => String(id) !== String(venda.id));
+                salvarFavoritosNoStorage(restantes);
+
+                carregarVendas();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Excluída!',
+                    text: data.message,
+                    confirmButtonColor: '#02d569'
+                });
+            } else {
+                Swal.fire('Erro', data.message || 'Não foi possível excluir', 'error');
+            }
+        })
+        .catch(err => console.error('Erro ao excluir venda:', err));
+});
 }

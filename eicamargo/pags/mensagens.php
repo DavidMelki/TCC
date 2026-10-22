@@ -36,7 +36,7 @@
 
                 <li class="nav-item">
                     <a href="vendas.php" id="link">
-                        <i class="fa-solid fa-cart-shopping"></i> Vendas
+                        <i class="fa-solid fa-cart-shopping"></i> Reservas
                     </a>
                 </li>
 
@@ -154,6 +154,7 @@
 
     <!-- Script principal de mensagens -->
     <script src="../js/jsmensagens/mensagens.js"></script>
+    <script src="../js/rodape-perfil.js"></script>
 </body>
 
 </html>

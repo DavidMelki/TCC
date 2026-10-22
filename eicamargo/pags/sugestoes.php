@@ -47,7 +47,7 @@
 
                 <li>
                     <a href="vendas.php" class="nav-item">
-                        <i class="fa-solid fa-cart-shopping"></i> Vendas
+                        <i class="fa-solid fa-cart-shopping"></i> Reservas
                     </a>
                 </li>
 
@@ -136,6 +136,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script src="../js/jssugestoes/sugestoes.js?v=<?php echo time(); ?>"></script>
+
+    <script src="../js/rodape-perfil.js"></script>
 
 </body>
 

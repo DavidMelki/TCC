@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Se não estiver logado, redireciona para o login
 if (!isset($_SESSION['usuario_id'])) {
-    header("Location: ../index.php");
+    header("Location: ../index.html");
     exit;
 }
 
@@ -18,7 +18,7 @@ try {
 
     if (!$usuarioLogado) {
         session_destroy();
-        header("Location: ../index.php");
+        header("Location: ../index.html");
         exit;
     }
 

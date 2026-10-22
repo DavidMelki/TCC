@@ -373,8 +373,8 @@ function criarHTMLPost(post) {
         }
     }
 
-    const classeAtivo = temComentarios ? 'ativo' : '';
-    const displaySecao = temComentarios ? 'block' : 'none';
+    const classeAtivo = '';
+    const displaySecao = 'none';
 
     return `
         <div class="card-sugestao-post" data-id="${post.id}" style="margin-bottom: 30px; border: 1px solid #eee; padding: 20px; border-radius: 12px; background: #fff;">
@@ -402,7 +402,7 @@ function criarHTMLPost(post) {
                 <button class="btn-like ${curtidoClasse}" style="border: 1px solid #ddd; padding: 5px 12px; border-radius: 15px; background: #fff; cursor: pointer;">
                     <i class="bi ${iconeLike}"></i> <span class="like-count">${post.likes || 0}</span>
                 </button>
-                <button class="btn-coment ${temComentarios ? 'comentario-ativo' : ''}" style="border: 1px solid #ddd; padding: 5px 12px; border-radius: 15px; background: #fff; cursor: pointer;">
+                <button class="btn-coment" style="border: 1px solid #ddd; padding: 5px 12px; border-radius: 15px; background: #fff; cursor: pointer;">
                     <i class="bi bi-chat-dots"></i>
                 </button>
             </div>
@@ -427,12 +427,18 @@ function abrirModalSugestao() {
     Swal.fire({
         title: '<strong>Nova Sugestão</strong>',
         html: `
-            <form id="formSugestao">
-                <div>
-                    <textarea id="swal-descricao" class="swal2-textarea" placeholder="Descreva sua sugestão em detalhes..." style="width: 100%; margin: 0; height: 120px; resize: none;" required></textarea>
-                </div>
-            </form>
-        `,
+        <form id="formSugestao">
+            <div style="position: relative;">
+                <textarea id="swal-descricao" class="swal2-textarea" placeholder="Descreva sua sugestão em detalhes..." style="width: 100%; box-sizing: border-box; margin: 0; height: 130px; resize: none; padding-bottom: 40px;" required></textarea>
+
+                <button type="button" id="swal-btn-emoji" title="Adicionar emoji" style="position: absolute; left: 12px; bottom: 10px; border: none; background: transparent; color: #777; cursor: pointer; font-size: 22px; padding: 0; line-height: 1;">
+                    <i class="bi bi-emoji-smile"></i>
+                </button>
+            </div>
+
+            <div id="swal-emoji-area" style="display: none; margin-top: 8px; justify-content: center;"></div>
+        </form>
+    `,
         showCancelButton: true,
         confirmButtonText: 'Enviar Sugestão',
         cancelButtonText: 'Cancelar',
@@ -440,6 +446,42 @@ function abrirModalSugestao() {
         cancelButtonColor: '#8c8c8c',
         focusConfirm: false,
         showLoaderOnConfirm: true,
+        didOpen: () => {
+            const btnEmoji = document.getElementById('swal-btn-emoji');
+            const areaEmoji = document.getElementById('swal-emoji-area');
+            const textarea = document.getElementById('swal-descricao');
+            let picker = null;
+
+            btnEmoji.addEventListener('click', () => {
+                // Se já está aberto, fecha
+                if (areaEmoji.style.display === 'flex') {
+                    areaEmoji.style.display = 'none';
+                    return;
+                }
+
+                // Cria o seletor só na primeira vez
+                if (!picker) {
+                    picker = new EmojiMart.Picker({
+                        locale: 'pt',
+                        theme: 'light',
+                        previewPosition: 'none',
+                        skinTonePosition: 'none',
+                        onEmojiSelect: (emoji) => {
+                            const start = textarea.selectionStart;
+                            const end = textarea.selectionEnd;
+                            const texto = textarea.value;
+
+                            textarea.value = texto.substring(0, start) + emoji.native + texto.substring(end);
+                            textarea.selectionStart = textarea.selectionEnd = start + emoji.native.length;
+                            textarea.focus();
+                        }
+                    });
+                    areaEmoji.appendChild(picker);
+                }
+
+                areaEmoji.style.display = 'flex';
+            });
+        },
         preConfirm: () => {
             const descricao = document.getElementById('swal-descricao').value.trim();
 
@@ -494,7 +536,7 @@ function atualizarFavoritas() {
             nome: nomeEl ? nomeEl.textContent.trim() : 'Usuário',
             texto: textoEl ? textoEl.textContent.trim() : '',
             likes: likeEl ? parseInt(likeEl.textContent) || 0 : 0,
-            foto: imgEl ? imgEl.style.backgroundImage : ''
+            foto: imgEl ? imgEl.style.backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '') : ''
         };
     });
 
@@ -513,7 +555,7 @@ function atualizarFavoritas() {
 
         return `
             <div class="item-sugestao ${classeAtiva}">
-                <div class="avatar" style="${post.foto}; background-size: cover; background-position: center;"></div>
+                <div class="avatar" style="background-image: url('${post.foto}'); background-size: cover; background-position: center;"></div>
                 <div class="item-info">
                     <div class="item-header">
                         <span class="item-nome">${post.nome}</span>

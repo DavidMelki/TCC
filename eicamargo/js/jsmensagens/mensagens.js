@@ -307,36 +307,40 @@ async function enviarMensagem() {
     }
 }
 
-// Verifica se há vendedor/produto na URL ao carregar a página de mensagens
-document.addEventListener('DOMContentLoaded', () => {
+// Abre direto o chat com o vendedor quando vier de "Reservar" (vendas.php)
+document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
-    const usuarioIdParam = urlParams.get('usuario_id');
-    const produtoParam = urlParams.get('produto');
+    const usuarioIdParam = parseInt(urlParams.get('usuario_id'));
+    const produtoParam = urlParams.get('produto'); // já vem decodificado
 
-    if (usuarioIdParam) {
-        const targetId = parseInt(usuarioIdParam);
+    if (!usuarioIdParam) return;
 
-        const tentarAbrirConversa = () => {
-            // Procura a conversa na lista e simula o clique para abrir o chat
-            const conversaEl = document.querySelector(`.conversa[data-id="${targetId}"]`);
-            if (conversaEl) {
-                conversaEl.click();
-            } else {
-                // Se for uma conversa nova ainda não listada, chama o abrirChat diretamente
-                abrirChat(targetId, 'Usuário', '../uploads/default.png');
+    try {
+        // Busca os dados do vendedor, mesmo que nunca tenham conversado
+        const res = await fetch(`../php/phpmensagens/buscar_usuario.php?usuario_id=${usuarioIdParam}`);
+        const data = await res.json();
+
+        if (data.status !== 'success') {
+            alert(data.message || 'Não foi possível abrir a conversa.');
+            return;
+        }
+
+        const u = data.usuario;
+        const foto = u.foto_perfil ? `../uploads/${u.foto_perfil}` : '../uploads/default.png';
+
+        // IMPORTANTE: define o usuário ativo para o envio funcionar
+        usuarioAtivoId = u.usuario_id;
+        await abrirChat(u.usuario_id, u.nome, foto);
+
+        // Preenche o texto de reserva
+        if (produtoParam) {
+            const inputMensagem = document.getElementById('inputMensagem');
+            if (inputMensagem) {
+                inputMensagem.value = `Olá! Gostaria de reservar o item: ${produtoParam}`;
+                inputMensagem.focus();
             }
-
-            // Preenche o campo de input com o texto de reserva do produto
-            if (produtoParam) {
-                const inputMensagem = document.getElementById('inputMensagem');
-                if (inputMensagem) {
-                    inputMensagem.value = `Olá! Gostaria de reservar o item: ${decodeURIComponent(produtoParam)}`;
-                    inputMensagem.focus();
-                }
-            }
-        };
-
-        // Aguarda a busca inicial de conversas do servidor para executar a ação
-        setTimeout(tentarAbrirConversa, 500);
+        }
+    } catch (e) {
+        console.error('Erro ao abrir conversa do vendedor:', e);
     }
 });

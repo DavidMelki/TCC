@@ -38,7 +38,7 @@
 
                 <li class="nav-item active">
                     <a href="vendas.php" id="link">
-                        <i class="fa-solid fa-cart-shopping"></i> Vendas
+                        <i class="fa-solid fa-cart-shopping"></i> Reservas
                     </a>
                 </li>
 
@@ -86,7 +86,7 @@
         <main class="feed-area">
 
             <div class="page-header">
-                <h1>Vendas/Reservas</h1>
+                <h1>Reservas</h1>
                 <p>Compre de colegas, apoie a escola e fortaleça nossa comunidade.</p>
             </div>
 
@@ -435,6 +435,8 @@
     <script src="../js/jsvendas/vendas.js?v=<?php echo time(); ?>"></script>
 
     </script>
+
+    <script src="../js/rodape-perfil.js"></script>
 </body>
 
 </html>
