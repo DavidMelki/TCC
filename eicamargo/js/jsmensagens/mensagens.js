@@ -105,57 +105,109 @@ document.addEventListener('click', () => {
     document.querySelectorAll('.dropdown-menu-msg').forEach(menu => menu.classList.remove('show'));
 });
 
+let ultimaBusca = 0; // evita que uma resposta lenta sobrescreva uma mais nova
+
+function escaparHTML(texto) {
+    return String(texto ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 async function carregarConversas(termoBusca = '', recarregarTudo = true) {
     const container = document.getElementById('containerConversas');
     if (!container) return;
 
+    const idBusca = ++ultimaBusca;
+
     try {
-        // Passa o termo de busca e o filtro selecionado ('todas' ou 'nao_lidas')
+        // 1) Conversas que já existem (filtradas pela busca e pelo filtro)
         const res = await fetch(`../php/phpmensagens/listar_conversas.php?busca=${encodeURIComponent(termoBusca)}&filtro=${filtroAtual}`);
         const data = await res.json();
+        const conversas = (data.status === 'success') ? data.conversas : [];
 
-        if (data.status === 'success' && data.conversas.length > 0) {
-            container.innerHTML = data.conversas.map(c => {
-                const fotoUrl = c.foto_perfil ? `../uploads/${c.foto_perfil}` : '../uploads/default.png';
-                const eAtiva = c.usuario_id === usuarioAtivoId ? 'ativa' : '';
-                const badgeNaoLidas = (c.nao_lidas > 0) ? `<span class="badge-nao-lidas">${c.nao_lidas}</span>` : '';
+        // 2) Ao pesquisar, também busca TODOS os outros usuários
+        let novos = [];
+        if (termoBusca && filtroAtual === 'todas') {
+            const res2 = await fetch(`../php/phpmensagens/buscar_usuarios.php?busca=${encodeURIComponent(termoBusca)}`);
+            const data2 = await res2.json();
+            if (data2.status === 'success') {
+                const idsComConversa = new Set(conversas.map(c => c.usuario_id));
+                novos = data2.usuarios.filter(u => !idsComConversa.has(u.usuario_id));
+            }
+        }
+
+        // Ignora respostas antigas (o usuário continuou digitando)
+        if (idBusca !== ultimaBusca) return;
+
+        if (conversas.length === 0 && novos.length === 0) {
+            if (recarregarTudo) {
+                container.innerHTML = `<p style="text-align: center; color: #999; margin-top: 20px;">Nenhuma conversa encontrada.</p>`;
+            }
+            return;
+        }
+
+        const htmlConversas = conversas.map(c => {
+            const fotoUrl = c.foto_perfil ? `../uploads/${escaparHTML(c.foto_perfil)}` : '../uploads/default.png';
+            const eAtiva = c.usuario_id === usuarioAtivoId ? 'ativa' : '';
+            const badgeNaoLidas = (c.nao_lidas > 0) ? `<span class="badge-nao-lidas">${c.nao_lidas}</span>` : '';
+
+            return `
+                <div class="conversa ${eAtiva}" data-id="${c.usuario_id}" data-nome="${escaparHTML(c.nome)}" data-foto="${fotoUrl}">
+                    <div class="avatar-post" style="background-image: url('${fotoUrl}'); background-size: cover; background-position: center;"></div>
+                    <div class="texto">
+                        <h4>${escaparHTML(c.nome)}</h4>
+                        <p>${escaparHTML(c.ultima_msg)}</p>
+                    </div>
+                    <div class="conversa-status">
+                        <span>${c.tempo}</span>
+                        ${badgeNaoLidas}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        let htmlNovos = '';
+        if (novos.length > 0) {
+            htmlNovos = `
+                <p style="margin: 14px 16px 6px; font-size: 12px; font-weight: 600; color: #8c8c8c; text-transform: uppercase;">Outros usuários</p>
+            ` + novos.map(u => {
+                const fotoUrl = u.foto_perfil ? `../uploads/${escaparHTML(u.foto_perfil)}` : '../uploads/default.png';
+                const eAtiva = u.usuario_id === usuarioAtivoId ? 'ativa' : '';
 
                 return `
-                    <div class="conversa ${eAtiva}" data-id="${c.usuario_id}" data-nome="${c.nome}" data-foto="${fotoUrl}">
+                    <div class="conversa ${eAtiva}" data-id="${u.usuario_id}" data-nome="${escaparHTML(u.nome)}" data-foto="${fotoUrl}">
                         <div class="avatar-post" style="background-image: url('${fotoUrl}'); background-size: cover; background-position: center;"></div>
                         <div class="texto">
-                            <h4>${c.nome}</h4>
-                            <p>${c.ultima_msg}</p>
-                        </div>
-                        <div class="conversa-status">
-                            <span>${c.tempo}</span>
-                            ${badgeNaoLidas}
+                            <h4>${escaparHTML(u.nome)}</h4>
+                            <p>Iniciar conversa</p>
                         </div>
                     </div>
                 `;
             }).join('');
-
-            document.querySelectorAll('.conversa').forEach(el => {
-                el.addEventListener('click', () => {
-                    document.querySelectorAll('.conversa').forEach(i => i.classList.remove('ativa'));
-                    el.classList.add('ativa');
-
-                    usuarioAtivoId = parseInt(el.getAttribute('data-id'));
-                    const nome = el.getAttribute('data-nome');
-                    const foto = el.getAttribute('data-foto');
-
-                    abrirChat(usuarioAtivoId, nome, foto);
-                });
-            });
-
-        } else if (recarregarTudo) {
-            container.innerHTML = `<p style="text-align: center; color: #999; margin-top: 20px;">Nenhuma conversa encontrada.</p>`;
         }
+
+        container.innerHTML = htmlConversas + htmlNovos;
+
+        document.querySelectorAll('.conversa').forEach(el => {
+            el.addEventListener('click', () => {
+                document.querySelectorAll('.conversa').forEach(i => i.classList.remove('ativa'));
+                el.classList.add('ativa');
+
+                usuarioAtivoId = parseInt(el.getAttribute('data-id'));
+                const nome = el.getAttribute('data-nome');
+                const foto = el.getAttribute('data-foto');
+
+                abrirChat(usuarioAtivoId, nome, foto);
+            });
+        });
+
     } catch (e) {
         console.error('Erro ao buscar conversas:', e);
     }
 }
-
 async function abrirChat(id, nome, foto) {
     const chatTopo = document.getElementById('chatTopo');
     const boxEnviar = document.getElementById('boxEnviar');
@@ -342,5 +394,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch (e) {
         console.error('Erro ao abrir conversa do vendedor:', e);
+        alert('Não foi possível abrir a conversa: ' + e.message);
     }
 });

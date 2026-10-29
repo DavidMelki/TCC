@@ -153,7 +153,7 @@
     </div>
 
     <!-- Script principal de mensagens -->
-    <script src="../js/jsmensagens/mensagens.js"></script>
+    <script src="../js/jsmensagens/mensagens.js?v=<?php echo time(); ?>"></script>
     <script src="../js/rodape-perfil.js"></script>
 </body>
 

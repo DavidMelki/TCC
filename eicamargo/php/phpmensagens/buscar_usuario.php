@@ -7,7 +7,7 @@ header('Content-Type: application/json; charset=utf-8');
 try {
     include_once __DIR__ . '/../conexao.php';
 
-    $meuId = $_SESSION['usuario']['id'] ?? null;
+    $meuId = $_SESSION['usuario']['id'] ?? ($_SESSION['usuario_id'] ?? null);
     $id    = (int)($_GET['usuario_id'] ?? 0);
 
     if (!$meuId) {

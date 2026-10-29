@@ -94,9 +94,9 @@ function abrirModalEditarPerfil() {
         cancelButtonText: 'Cancelar',
         confirmButtonColor: '#e63c3c',
         cancelButtonColor: '#8c8c8c',
-        preConfirm: () => {
-            const foto = document.getElementById('swal-foto').files[0];
-            const capa = document.getElementById('swal-capa').files[0];
+        preConfirm: async () => {
+            const fotoOriginal = document.getElementById('swal-foto').files[0];
+            const capaOriginal = document.getElementById('swal-capa').files[0];
             const nome = document.getElementById('swal-nome').value.trim();
             const biografia = document.getElementById('swal-bio').value.trim();
 
@@ -105,26 +105,30 @@ function abrirModalEditarPerfil() {
                 return false;
             }
 
-            const formData = new FormData();
-            formData.append('nome', nome);
-            formData.append('biografia', biografia);
-            if (foto) formData.append('foto', foto);
-            if (capa) formData.append('capa', capa);
+            try {
+                const foto = fotoOriginal ? await comprimirImagem(fotoOriginal, 800) : null;
+                const capa = capaOriginal ? await comprimirImagem(capaOriginal, 1600) : null;
 
-            return fetch('../php/phpperfil/atualizarperfil.php', {
-                method: 'POST',
-                body: formData
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'error') {
-                        throw new Error(data.message);
-                    }
-                    return data;
-                })
-                .catch(error => {
-                    Swal.showValidationMessage(`Erro ao atualizar: ${error.message}`);
+                const formData = new FormData();
+                formData.append('nome', nome);
+                formData.append('biografia', biografia);
+                if (foto) formData.append('foto', foto);
+                if (capa) formData.append('capa', capa);
+
+                const res = await fetch('../php/phpperfil/atualizarperfil.php', {
+                    method: 'POST',
+                    body: formData
                 });
+                const data = await res.json();
+
+                if (data.status === 'error') {
+                    throw new Error(data.message);
+                }
+                return data;
+            } catch (error) {
+                Swal.showValidationMessage(`Erro ao atualizar: ${error.message}`);
+                return false;
+            }
         }
     }).then((result) => {
         if (result.isConfirmed && result.value) {
@@ -153,4 +157,45 @@ function atualizarNomeArquivo(input, idLabel) {
         span.style.color = '#666';
         span.style.fontWeight = 'normal';
     }
+}
+
+// Redimensiona e comprime a imagem no navegador (devolve um File menor)
+function comprimirImagem(arquivo, ladoMaximo) {
+    return new Promise((resolve) => {
+        // Imagens pequenas e GIFs (animação) seguem como estão
+        if (arquivo.size <= 1024 * 1024 || arquivo.type === 'image/gif') {
+            return resolve(arquivo);
+        }
+
+        const url = URL.createObjectURL(arquivo);
+        const img = new Image();
+
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+
+            const escala = Math.min(1, ladoMaximo / Math.max(img.width, img.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(img.width * escala);
+            canvas.height = Math.round(img.height * escala);
+
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff'; // fundo branco (JPG não tem transparência)
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            canvas.toBlob((blob) => {
+                if (!blob) return resolve(arquivo);
+                const nomeBase = arquivo.name.replace(/\.[^.]+$/, '');
+                resolve(new File([blob], nomeBase + '.jpg', { type: 'image/jpeg' }));
+            }, 'image/jpeg', 0.85);
+        };
+
+        // Se o navegador não conseguir ler a imagem (ex.: HEIC), envia o original
+        img.onerror = () => {
+            URL.revokeObjectURL(url);
+            resolve(arquivo);
+        };
+
+        img.src = url;
+    });
 }

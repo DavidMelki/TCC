@@ -1,14 +1,5 @@
-let vendasCache = []; let usuarioLogadoId = 0;
-
-// Helper functions para gerenciar localStorage
-function obterFavoritosSalvos() {
-    const salvos = localStorage.getItem('vendas_favoritadas');
-    return salvos ? JSON.parse(salvos) : [];
-}
-
-function salvarFavoritosNoStorage(favoritosIds) {
-    localStorage.setItem('vendas_favoritadas', JSON.stringify(favoritosIds));
-}
+let vendasCache = [];
+let usuarioLogadoId = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
     carregarVendas();
@@ -47,22 +38,18 @@ async function carregarVendas() {
     if (!productsList) return;
 
     try {
-        const res = await fetch('../php/phpvendas/Bvendas.php');
-        const data = await res.json(); usuarioLogadoId = parseInt(data.usuario_logado_id) || 0;
+        const res = await fetch('../php/phpvendas/bvendas.php');
+        const data = await res.json();
+
+        usuarioLogadoId = parseInt(data.usuario_logado_id) || 0;
 
         if (data.status === 'success' && data.vendas && data.vendas.length > 0) {
-            const favoritosSalvos = obterFavoritosSalvos();
-
-            vendasCache = data.vendas.map(v => {
-                const jaFavoritado = favoritosSalvos.includes(String(v.id));
-                let likesBase = parseInt(v.likes || v.favoritos || 0);
-
-                return {
-                    ...v,
-                    likes: jaFavoritado ? Math.max(likesBase, 1) : likesBase,
-                    favoritado: jaFavoritado
-                };
-            });
+            // Os favoritos agora vêm do banco, separados por usuário
+            vendasCache = data.vendas.map(v => ({
+                ...v,
+                likes: parseInt(v.likes) || 0,
+                favoritado: v.favoritado === true || v.favoritado === 1 || v.favoritado === '1'
+            }));
 
             renderizarFeed();
         } else {
@@ -119,34 +106,48 @@ function criarHTMLProduto(venda) {
     `;
 }
 
+// Favoritar / desfavoritar: salva no banco, ligado ao usuário logado
 function toggleFavorito(venda, elementBtn) {
-    venda.favoritado = !venda.favoritado;
-    venda.likes += venda.favoritado ? 1 : -1;
+    const formData = new FormData();
+    formData.append('venda_id', venda.id);
 
-    // Atualiza storage
-    let favoritosSalvos = obterFavoritosSalvos().map(String);
-    const vendaIdStr = String(venda.id);
+    fetch('../php/phpvendas/favoritar_venda.php', {
+        method: 'POST',
+        body: formData
+    })
+        .then(async res => {
+            const texto = await res.text();
+            try {
+                return JSON.parse(texto);
+            } catch (e) {
+                throw new Error(`HTTP ${res.status}: ${texto.substring(0, 200)}`);
+            }
+        })
+        .then(data => {
+            if (data.status !== 'success') {
+                Swal.fire('Erro', data.message || 'Não foi possível favoritar', 'error');
+                return;
+            }
 
-    if (venda.favoritado) {
-        if (!favoritosSalvos.includes(vendaIdStr)) {
-            favoritosSalvos.push(vendaIdStr);
-        }
-    } else {
-        favoritosSalvos = favoritosSalvos.filter(id => id !== vendaIdStr);
-    }
-    salvarFavoritosNoStorage(favoritosSalvos);
+            venda.favoritado = data.favoritado;
+            venda.likes = data.likes;
 
-    // Atualiza o estado e cor do ícone no card
-    const icon = elementBtn.querySelector('i');
-    if (venda.favoritado) {
-        elementBtn.classList.add('active');
-        icon.className = 'fa-solid fa-heart';
-    } else {
-        elementBtn.classList.remove('active');
-        icon.className = 'fa-regular fa-heart';
-    }
+            // Atualiza o estado e cor do ícone no card
+            const icon = elementBtn.querySelector('i');
+            if (venda.favoritado) {
+                elementBtn.classList.add('active');
+                icon.className = 'fa-solid fa-heart';
+            } else {
+                elementBtn.classList.remove('active');
+                icon.className = 'fa-regular fa-heart';
+            }
 
-    renderizarTopPopulares();
+            renderizarTopPopulares();
+        })
+        .catch(err => {
+            console.error('Erro ao favoritar:', err);
+            Swal.fire('Erro', String(err.message || err), 'error');
+        });
 }
 
 function renderizarTopPopulares() {
@@ -162,6 +163,7 @@ function renderizarTopPopulares() {
     }
 
     const top3 = popularesComCurtidas
+        .slice()
         .sort((a, b) => b.likes - a.likes)
         .slice(0, 3);
 
@@ -211,7 +213,7 @@ function abrirModalVenda() {
                 </div>
 
                 <div style="display: flex; gap: 10px;">
-                    <input type="text" id="swal-preco" class="swal2-input custom-swal-input" placeholder="Preço (ex: R$ 12,00)" style="margin: 0; width: 50%;">
+                    <input type="text" id="swal-preco" class="swal2-input custom-swal-input" placeholder="Preço * (R$ 0,00)" style="margin: 0; width: 50%;">
                     <input type="text" id="swal-local" class="swal2-input custom-swal-input" placeholder="Local (ex: 1º andar)" style="margin: 0; width: 50%;">
                 </div>
 
@@ -227,6 +229,29 @@ function abrirModalVenda() {
         cancelButtonColor: '#8c8c8c',
         focusConfirm: false,
         showLoaderOnConfirm: true,
+        didOpen: () => {
+            const inputPreco = document.getElementById('swal-preco');
+            if (!inputPreco) return;
+
+            inputPreco.setAttribute('inputmode', 'numeric'); // teclado numérico no celular
+            inputPreco.setAttribute('maxlength', '16');
+
+            inputPreco.addEventListener('input', () => {
+                // Mantém só os números e tira zeros à esquerda
+                const digitos = inputPreco.value.replace(/\D/g, '').replace(/^0+/, '');
+
+                if (!digitos) {
+                    inputPreco.value = '';
+                    return;
+                }
+
+                // Os dois últimos dígitos são os centavos
+                const centavos = digitos.padStart(3, '0');
+                const reais = centavos.slice(0, -2).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+                inputPreco.value = `R$ ${reais},${centavos.slice(-2)}`;
+            });
+        },
         preConfirm: () => {
             const midiaInput = document.getElementById('swal-midia');
             const titulo = document.getElementById('swal-titulo').value.trim();
@@ -234,8 +259,29 @@ function abrirModalVenda() {
             const local = document.getElementById('swal-local').value.trim();
             const legenda = document.getElementById('swal-legenda').value.trim();
 
-            if (!titulo || !preco || !legenda) {
-                Swal.showValidationMessage('Preencha os campos de título, preço e descrição!');
+            if (!titulo) {
+                Swal.showValidationMessage('Informe o título do produto.');
+                return false;
+            }
+
+            if (!preco) {
+                Swal.showValidationMessage('Informe o preço do produto.');
+                return false;
+            }
+
+            const valorNumerico = parseFloat(preco.replace(/[^\d,]/g, '').replace(',', '.'));
+            if (!valorNumerico || valorNumerico <= 0) {
+                Swal.showValidationMessage('Informe um preço maior que R$ 0,00.');
+                return false;
+            }
+
+            if (!local) {
+                Swal.showValidationMessage('Informe o andar ou local de retirada.');
+                return false;
+            }
+
+            if (!legenda) {
+                Swal.showValidationMessage('Escreva uma descrição para o produto.');
                 return false;
             }
 
@@ -248,7 +294,7 @@ function abrirModalVenda() {
             formData.append('local', local);
             formData.append('legenda', legenda);
 
-            return fetch('../php/phpvendas/Bvendas.php', {
+            return fetch('../php/phpvendas/bvendas.php', {
                 method: 'POST',
                 body: formData
             })
@@ -347,66 +393,73 @@ function abrirModalDetalhes(venda) {
             <div style="background-color: #f7f8fa; padding: 12px; border-radius: 8px; font-size: 14px; color: #4a4a4a; line-height: 1.5; white-space: pre-wrap;">${venda.legenda || 'Sem descrição.'}</div>
         </div>
     `,
-    showCancelButton: true,
-    showConfirmButton: !eDono,   // dono não reserva o próprio item
-    showDenyButton: eDono,       // dono vê o botão de excluir
-    confirmButtonText: 'Reservar',
-    denyButtonText: '<i class="fa-solid fa-trash"></i> Excluir venda',
-    cancelButtonText: 'Fechar',
-    confirmButtonColor: '#02d569',
-    denyButtonColor: '#e63c3c',
-    cancelButtonColor: eDono ? '#8c8c8c' : '#e63c3c'
-}).then((result) => {
-    if (result.isConfirmed) {
-        const idVendedor = venda.usuario_id;
-        const produto = encodeURIComponent(venda.titulo);
+        showCancelButton: true,
+        showConfirmButton: !eDono,   // dono não reserva o próprio item
+        showDenyButton: eDono,       // dono vê o botão de excluir
+        confirmButtonText: 'Reservar',
+        denyButtonText: '<i class="fa-solid fa-trash"></i> Excluir venda',
+        cancelButtonText: 'Fechar',
+        confirmButtonColor: '#02d569',
+        denyButtonColor: '#e63c3c',
+        cancelButtonColor: eDono ? '#8c8c8c' : '#e63c3c'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const idVendedor = venda.usuario_id;
+            const produto = encodeURIComponent(venda.titulo);
 
-        // Redireciona para a página de mensagens enviando o ID e o produto na URL
-        window.location.href = `mensagens.php?usuario_id=${idVendedor}&produto=${produto}`;
-    } else if (result.isDenied) {
-        excluirVenda(venda);
-    }
-});
+            // Redireciona para a página de mensagens enviando o ID e o produto na URL
+            window.location.href = `mensagens.php?usuario_id=${idVendedor}&produto=${produto}`;
+        } else if (result.isDenied) {
+            excluirVenda(venda);
+        }
+    });
 }
 
 function excluirVenda(venda) {
-Swal.fire({
-    title: 'Excluir esta venda?',
-    text: 'O anúncio será removido permanentemente.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#e63c3c',
-    cancelButtonColor: '#6c757d',
-    confirmButtonText: 'Sim, excluir!',
-    cancelButtonText: 'Cancelar'
-}).then((result) => {
-    if (!result.isConfirmed) return;
+    Swal.fire({
+        title: 'Excluir esta venda?',
+        text: 'O anúncio será removido permanentemente.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e63c3c',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sim, excluir!',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (!result.isConfirmed) return;
 
-    const formData = new FormData();
-    formData.append('venda_id', venda.id);
+        const formData = new FormData();
+        formData.append('venda_id', venda.id);
 
-    fetch('../php/phpvendas/excluir_venda.php', {
-        method: 'POST',
-        body: formData
-    })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === 'success') {
-                // Remove dos favoritos salvos no navegador
-                const restantes = obterFavoritosSalvos().filter(id => String(id) !== String(venda.id));
-                salvarFavoritosNoStorage(restantes);
-
-                carregarVendas();
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Excluída!',
-                    text: data.message,
-                    confirmButtonColor: '#02d569'
-                });
-            } else {
-                Swal.fire('Erro', data.message || 'Não foi possível excluir', 'error');
-            }
+        fetch('../php/phpvendas/excluir_venda.php', {
+            method: 'POST',
+            body: formData
         })
-        .catch(err => console.error('Erro ao excluir venda:', err));
-});
+            .then(async res => {
+                const texto = await res.text();
+                try {
+                    return JSON.parse(texto);
+                } catch (e) {
+                    // O servidor não devolveu JSON: mostra o que veio
+                    throw new Error(`HTTP ${res.status}: ${texto.substring(0, 300)}`);
+                }
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    carregarVendas();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Excluída!',
+                        text: data.message,
+                        confirmButtonColor: '#02d569'
+                    });
+                } else {
+                    Swal.fire('Erro', data.message || 'Não foi possível excluir', 'error');
+                }
+            })
+            .catch(err => {
+                console.error('Erro ao excluir venda:', err);
+                Swal.fire('Erro', String(err.message || err), 'error');
+            });
+    });
 }

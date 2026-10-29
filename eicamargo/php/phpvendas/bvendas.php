@@ -17,8 +17,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $local      = filter_input(INPUT_POST, 'local', FILTER_SANITIZE_SPECIAL_CHARS);
     $legenda    = filter_input(INPUT_POST, 'legenda', FILTER_SANITIZE_SPECIAL_CHARS);
 
-    if (empty($titulo) || empty($preco) || empty($legenda)) {
-        echo json_encode(['status' => 'error', 'message' => 'Preencha todos os campos obrigatórios.']);
+    if (empty($titulo) || empty($preco) || empty($local) || empty($legenda)) {
+        echo json_encode(['status' => 'error', 'message' => 'Preencha título, preço, andar e descrição.']);
+        exit;
+    }
+
+    if (!preg_match('/[1-9]/', $preco)) {
+        echo json_encode(['status' => 'error', 'message' => 'Informe um preço maior que zero.']);
         exit;
     }
 
@@ -69,11 +74,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Ação de LISTAR VENDAS (GET)
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
-        $sql = "SELECT v.*, u.nome, u.foto_perfil 
-                FROM vendas v 
-                JOIN usuarios u ON v.usuario_id = u.id 
+        $meuId = (int)($_SESSION['usuario_id'] ?? ($_SESSION['usuario']['id'] ?? 0));
+
+        $sql = "SELECT v.*, u.nome, u.foto_perfil,
+                    (SELECT COUNT(*) FROM favoritos_vendas f WHERE f.venda_id = v.id) AS likes,
+                    (SELECT COUNT(*) FROM favoritos_vendas f WHERE f.venda_id = v.id AND f.usuario_id = :uid) AS favoritado
+                FROM vendas v
+                JOIN usuarios u ON v.usuario_id = u.id
                 ORDER BY v.id DESC";
-        $stmt = $pdo->query($sql);
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':uid' => $meuId]);
         $vendas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($vendas as &$venda) {
@@ -84,12 +94,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             } else {
                 $venda['foto_perfil'] = '';
             }
+
+            $venda['likes'] = (int)$venda['likes'];
+            $venda['favoritado'] = ((int)$venda['favoritado'] > 0);
         }
         unset($venda);
 
         echo json_encode([
             'status' => 'success',
-            'usuario_logado_id' => (int)($_SESSION['usuario_id'] ?? ($_SESSION['usuario']['id'] ?? 0)),
+            'usuario_logado_id' => $meuId,
             'vendas' => $vendas
         ]);
         exit;

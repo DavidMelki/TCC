@@ -16,7 +16,6 @@ try {
         exit;
     }
 
-    // Confere se a venda existe e pertence ao usuário logado
     $stmtCheck = $pdo->prepare("SELECT usuario_id, midia FROM vendas WHERE id = :id");
     $stmtCheck->execute([':id' => $venda_id]);
     $venda = $stmtCheck->fetch(PDO::FETCH_ASSOC);
@@ -26,10 +25,12 @@ try {
         exit;
     }
 
+    $stmtFav = $pdo->prepare("DELETE FROM favoritos_vendas WHERE venda_id = :id");
+    $stmtFav->execute([':id' => $venda_id]);
+
     $stmt = $pdo->prepare("DELETE FROM vendas WHERE id = :id AND usuario_id = :uid");
     $stmt->execute([':id' => $venda_id, ':uid' => $usuario_id]);
 
-    // Apaga também a foto/vídeo da pasta uploads (basename evita caminhos maliciosos)
     if (!empty($venda['midia'])) {
         $arquivo = __DIR__ . '/../../uploads/' . basename($venda['midia']);
         if (is_file($arquivo)) {

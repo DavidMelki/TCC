@@ -67,7 +67,7 @@
                 </li>
             </ul>
 
-            <button class="btn-publish btn-abrir-modal-venda"><i class="fa-solid fa-plus"></i> Publicar venda</button>
+            <button class="btn-publish btn-abrir-modal-venda"><i class="fa-solid fa-plus"></i> Publicar produto</button>
 
             <!-- Rodapé da Sidebar Dinâmico -->
             <div class="profile-footer">
