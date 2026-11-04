@@ -4,7 +4,7 @@ header('Content-Type: application/json; charset=utf-8');
 include_once '../conexao.php';
 
 try {
-    $email = $_POST['email'] ?? null;
+    $email = strtolower(trim($_POST['email'] ?? ''));
     $senha = $_POST['senha'] ?? null;
 
     if (empty($email) || empty($senha)) {

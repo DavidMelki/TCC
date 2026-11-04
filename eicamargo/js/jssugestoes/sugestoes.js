@@ -262,7 +262,7 @@ function enviarComentario(cardPost) {
                 const novoComentarioHTML = `
                 <div class="item-comentario" data-comentario-id="${data.id}" style="background: #f8f9fa; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 13px; color: #333; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
                     <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                        <strong style="color: #1a1a1a;">${nomeExibir}</strong>
+                        <a href="perfil.php?id=${data.usuario_id}" title="Ver perfil" style="color: #1a1a1a; font-weight: 700; text-decoration: none;">${nomeExibir}</a>
                         <span style="color: #777; font-size: 12px;">${tagExibir}</span>
                         <span style="margin-left: 4px;">${comentarioTexto}</span>
                     </div>
@@ -351,7 +351,7 @@ function criarHTMLPost(post) {
             return `
                 <div class="item-comentario" data-comentario-id="${c.id}" style="background: #f8f9fa; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 13px; color: #333; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
                     <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                        <strong style="color: #1a1a1a;">${nome}</strong>
+                        <a href="perfil.php?id=${c.usuario_id}" title="Ver perfil" style="color: #1a1a1a; font-weight: 700; text-decoration: none;">${nome}</a>
                         <span style="color: #777; font-size: 12px;">${userTag}</span>
                         <span style="margin-left: 4px;">${c.comentario}</span>
                     </div>
@@ -379,7 +379,7 @@ function criarHTMLPost(post) {
     return `
         <div class="card-sugestao-post" data-id="${post.id}" style="margin-bottom: 30px; border: 1px solid #eee; padding: 20px; border-radius: 12px; background: #fff;">
             <div class="detalhe-header" style="padding-left:0; padding-right:0; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: none;">
-                <div class="autor-box" style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                <a class="autor-box" href="perfil.php?id=${post.usuario_id}" title="Ver perfil" style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; text-decoration: none; color: inherit;">
                     <div style="width: 45px; height: 45px; min-width: 45px; min-height: 45px; border-radius: 50%; overflow: hidden; background-image: url('${fotoPerfil}'); background-size: cover; background-position: center; border: 1px solid #ddd; flex-shrink: 0;"></div>
                     
                     <div class="autor-dados" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center;">
@@ -392,7 +392,7 @@ function criarHTMLPost(post) {
                           ${post.tempo || 'Recente'}
                         </div>
                     </div>
-                </div>
+                </a>
                 ${btnExcluirPostHTML}
             </div>
             <div class="secao-descricao" style="margin-bottom: 15px;">

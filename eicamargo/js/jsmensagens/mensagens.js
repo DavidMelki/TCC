@@ -226,6 +226,15 @@ async function abrirChat(id, nome, foto) {
         chatAvatar.style.backgroundSize = 'cover';
     }
 
+    const usuarioChat = document.querySelector('.usuario-chat');
+    if (usuarioChat) {
+        usuarioChat.style.cursor = 'pointer';
+        usuarioChat.title = 'Ver perfil';
+        usuarioChat.onclick = () => {
+            window.location.href = `perfil.php?id=${id}`;
+        };
+    }
+
     const containerMsg = document.getElementById('containerMensagens');
     if (!containerMsg) return;
 

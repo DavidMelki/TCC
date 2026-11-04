@@ -51,7 +51,7 @@ $comunicados = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <li><a href="perfil.php" class="nav-item"><i class="fa-regular fa-user"></i> Perfil</a></li>
             </ul>
 
-            <?php if (isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 'coordenador'): ?>
+            <?php if (in_array($_SESSION['tipo_usuario'] ?? '', ['coordenador', 'diretor'], true)): ?>
                 <button class="btn-nova-sugestao" id="btnNovoComunicadoGeral" style="margin-top: 20px;">
                     <i class="bi bi-plus-lg"></i> Comunicado Geral
                 </button>
@@ -103,10 +103,6 @@ $comunicados = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         class="autor-nome"><?php echo htmlspecialchars($item['autor_nome'] ?? $item['nome'] ?? 'ETEC'); ?></span>
                                     <span class="autor-divisor">•</span>
                                     <span class="autor-tag"><i class="bi bi-megaphone"></i> Geral</span>
-                                </div>
-
-                                <div class="comentarios-info">
-                                    <i class="bi bi-chat"></i> 0 comentários
                                 </div>
                             </div>
                         </div>

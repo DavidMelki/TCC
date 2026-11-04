@@ -70,6 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Domínio de e-mail institucional exigido para cada tipo de conta
+const DOMINIOS_CADASTRO = {
+    aluno: '@aluno.cps.sp.gov.br',
+    coordenador: '@cps.sp.gov.br',
+    professor: '@cps.sp.gov.br',
+    diretor: '@cps.sp.gov.br'
+};
+
 // Função que abre a janela de cadastro na tela
 function abrirModalCadastro() {
     Swal.fire({
@@ -81,22 +89,25 @@ function abrirModalCadastro() {
                     <input type="text" id="swal-nome" class="swal2-input" placeholder="Seu nome" style="width: 100%; margin: 0; box-sizing: border-box; height: 42px; border-radius: 8px; font-size: 14px;">
                 </div>
                 <div>
-                    <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 4px; color: #1a1a1a;">E-mail:</label>
-                    <input type="email" id="swal-email" class="swal2-input" placeholder="seu@email.com" style="width: 100%; margin: 0; box-sizing: border-box; height: 42px; border-radius: 8px; font-size: 14px;">
+                    <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 4px; color: #1a1a1a;">Tipo de Conta:</label>
+                    <select id="swal-tipo" class="swal2-select" style="width: 100%; margin: 0; box-sizing: border-box; height: 42px; border-radius: 8px; font-size: 14px; border: 1px solid #d9d9d9; padding: 0 10px;">
+                        <option value="aluno">Aluno</option>
+                        <option value="professor">Professor</option>
+                        <option value="coordenador">Coordenador</option>
+                        <option value="diretor">Diretor</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 4px; color: #1a1a1a;">E-mail institucional:</label>
+                    <input type="email" id="swal-email" class="swal2-input" placeholder="seu.nome@aluno.cps.sp.gov.br" style="width: 100%; margin: 0; box-sizing: border-box; height: 42px; border-radius: 8px; font-size: 14px;">
+                    <small id="swal-dica-email" style="display: block; margin-top: 4px; font-size: 12px; color: #8c8c8c;">Use o e-mail @aluno.cps.sp.gov.br</small>
                 </div>
                 <div>
                     <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 4px; color: #1a1a1a;">Senha:</label>
                     <input type="password" id="swal-senha" class="swal2-input" placeholder="Sua senha" style="width: 100%; margin: 0; box-sizing: border-box; height: 42px; border-radius: 8px; font-size: 14px;">
                 </div>
                 <div>
-                    <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 4px; color: #1a1a1a;">Tipo de Conta:</label>
-                    <select id="swal-tipo" class="swal2-select" style="width: 100%; margin: 0; box-sizing: border-box; height: 42px; border-radius: 8px; font-size: 14px; border: 1px solid #d9d9d9; padding: 0 10px;">
-                        <option value="aluno">Aluno</option>
-                        <option value="coordenador">Coordenador</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 4px; color: #1a1a1a;">Código do Curso:</label>
+                    <label id="swal-label-codigo" style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 4px; color: #1a1a1a;">Código do Curso:</label>
                     <input type="text" id="swal-codigo" class="swal2-input" placeholder="Digite o código fornecido" style="width: 100%; margin: 0; box-sizing: border-box; height: 42px; border-radius: 8px; font-size: 14px;">
                 </div>
             </form>
@@ -110,15 +121,45 @@ function abrirModalCadastro() {
         cancelButtonText: 'Cancelar',
         confirmButtonColor: '#e63c3c',
         cancelButtonColor: '#8c8c8c',
+        didOpen: () => {
+            const selectTipo = document.getElementById('swal-tipo');
+            const inputEmail = document.getElementById('swal-email');
+            const dica = document.getElementById('swal-dica-email');
+            const labelCodigo = document.getElementById('swal-label-codigo');
+
+            // Ajusta o exemplo de e-mail e o aviso conforme o tipo de conta
+            const atualizarCampos = () => {
+                const tipo = selectTipo.value;
+                const dominio = DOMINIOS_CADASTRO[tipo];
+
+                inputEmail.placeholder = 'seu.nome' + dominio;
+                dica.textContent = 'Use o e-mail ' + dominio;
+                labelCodigo.textContent = (tipo === 'aluno') ? 'Código do Curso:' : 'Código de Acesso:';
+            };
+
+            selectTipo.addEventListener('change', atualizarCampos);
+            atualizarCampos();
+        },
         preConfirm: () => {
             const nome = document.getElementById('swal-nome').value.trim();
-            const email = document.getElementById('swal-email').value.trim();
+            const email = document.getElementById('swal-email').value.trim().toLowerCase();
             const senha = document.getElementById('swal-senha').value.trim();
             const tipo = document.getElementById('swal-tipo').value;
             const codigo = document.getElementById('swal-codigo').value.trim();
 
             if (!nome || !email || !senha || !codigo) {
                 Swal.showValidationMessage('Preencha todos os campos, incluindo o código!');
+                return false;
+            }
+
+            // Confere o domínio do e-mail conforme o tipo de conta
+            const dominio = DOMINIOS_CADASTRO[tipo];
+            if (!email.endsWith(dominio) || email.length <= dominio.length) {
+                Swal.showValidationMessage(
+                    tipo === 'aluno'
+                        ? 'Alunos devem usar o e-mail institucional (' + dominio + ').'
+                        : 'Use o seu e-mail institucional (' + dominio + ').'
+                );
                 return false;
             }
 

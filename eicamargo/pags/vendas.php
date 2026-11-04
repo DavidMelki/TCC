@@ -284,7 +284,7 @@
 
             <!-- Ranking -->
             <div class="side-card">
-              <div class="card-title">Mais populares desta semana</div> 
+              <div class="card-title">Mais populares da camargo</div> 
               <div class="popular-list">
 
             </div>

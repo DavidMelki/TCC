@@ -44,7 +44,9 @@
                         <label>Tipo de Acesso</label>
                         <select id="tipo_usuario" class="select-tipo" required onchange="toggleCodigoField()">
                             <option value="aluno">Aluno</option>
+                            <option value="professor">Professor</option>
                             <option value="coordenador">Coordenador</option>
+                            <option value="diretor">Diretor</option>
                         </select>
                     </div>
 
@@ -92,11 +94,7 @@
             const tipo = document.getElementById('tipo_usuario').value;
             const label = document.getElementById('label-codigo');
 
-            if (tipo === 'coordenador') {
-                label.innerText = 'Código de Coordenador';
-            } else {
-                label.innerText = 'Código do Curso (Aluno)';
-            }
+            label.innerText = (tipo === 'aluno') ? 'Código do Curso (Aluno)' : 'Código de Acesso';
         }
     </script>
 

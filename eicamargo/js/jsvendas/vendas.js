@@ -376,16 +376,17 @@ function abrirModalDetalhes(venda) {
         html: `
         <div style="text-align: left; font-family: var(--font-main);">
             ${midiaHTML}
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-                <img src="${fotoPerfil}" 
-                     alt="${venda.nome || 'Vendedor'}" 
+
+            <a href="perfil.php?id=${venda.usuario_id}" title="Ver perfil" style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; text-decoration: none; color: inherit;">
+                <img src="${fotoPerfil}"
+                     alt="${venda.nome || 'Vendedor'}"
                      style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;"
                      onerror="this.src='https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff&size=128';">
                 <div>
                     <strong style="display: block; font-size: 14px; color: #1a1a1a;">${venda.nome || 'Aluno(a)'}</strong>
                     <span style="font-size: 12px; color: #8c8c8c;"><i class="fa-solid fa-location-dot"></i> ${venda.local || 'Andar não informado'}</span>
                 </div>
-            </div>
+            </a>
 
             <h2 style="font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px;">${venda.titulo}</h2>
             <div style="font-size: 20px; font-weight: 800; color: #e63c3c; margin-bottom: 14px;">${venda.preco}</div>

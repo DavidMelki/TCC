@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 29/10/2026 às 13:11
+-- Tempo de geração: 04/11/2026 às 02:05
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -60,14 +60,6 @@ CREATE TABLE `comunicados` (
   `conteudo` text NOT NULL,
   `data_criacao` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Despejando dados para a tabela `comunicados`
---
-
-INSERT INTO `comunicados` (`id`, `usuario_id`, `curso_id`, `titulo`, `conteudo`, `data_criacao`) VALUES
-(5, 12, NULL, 'Expocuca – Participe!', 'No dia 25/09 será realizada nossa Expocuca! O evento contará com apresentações, exposições de trabalhos, atividades e momentos de interação entre os alunos.\r\n\r\nTodos estão convidados a participar e prestigiar os trabalhos desenvolvidos pelas turmas. Contamos com a presença de todos!', '2026-09-16 22:26:52'),
-(6, 11, 1, 'Visita Técnica', 'Informamos aos alunos do curso de Administração que será realizada uma visita técnica a uma empresa parceira no dia 30/09. A atividade terá como objetivo proporcionar aos alunos uma experiência prática sobre o funcionamento e a organização de uma empresa.\r\n\r\nOs alunos interessados deverão confirmar sua participação com a coordenação do curso até o dia 25/09.', '2026-09-16 22:28:24');
 
 -- --------------------------------------------------------
 
@@ -159,24 +151,7 @@ CREATE TABLE `mensagens` (
 --
 
 INSERT INTO `mensagens` (`id`, `remetente_id`, `destinatario_id`, `mensagem`, `anexo`, `data_envio`, `lida`) VALUES
-(1, 6, 7, 'olá', NULL, '2026-10-01 01:05:18', 1),
-(2, 6, 7, 'tudo bem?', NULL, '2026-10-01 01:05:23', 1),
-(15, 7, 6, 'oie, tudo e você?', NULL, '2026-10-01 06:23:41', 1),
-(16, 6, 7, 'tudo certo!', NULL, '2026-10-01 06:43:08', 1),
-(17, 6, 7, '', 'anexo_6ac599053a084.jpg', '2026-10-07 00:57:41', 1),
-(18, 6, 7, '👍', NULL, '2026-10-07 00:57:48', 1),
-(19, 7, 6, '😀', NULL, '2026-10-07 01:08:02', 1),
-(20, 7, 6, 'Olá! Gostaria de reservar o item: Torta de Morango com Caramelo', NULL, '2026-10-07 01:23:10', 1),
-(21, 6, 7, 'Olá! Gostaria de reservar o item: Kit docinhos de festa', NULL, '2026-10-07 01:26:30', 0),
-(22, 17, 7, 'Olá! Gostaria de reservar o item: Kit docinhos de festa', NULL, '2026-10-29 11:56:59', 0),
-(23, 17, 7, 'sasasasa', NULL, '2026-10-29 11:57:45', 0),
-(24, 17, 7, 'asasa', NULL, '2026-10-29 11:57:46', 0),
-(25, 17, 7, 'sa', NULL, '2026-10-29 11:57:46', 0),
-(26, 17, 7, 'sa', NULL, '2026-10-29 11:57:46', 0),
-(27, 17, 7, 'sa', NULL, '2026-10-29 11:57:46', 0),
-(28, 17, 7, 'a', NULL, '2026-10-29 11:57:47', 0),
-(29, 17, 7, 'as', NULL, '2026-10-29 11:57:47', 0),
-(30, 17, 7, 'sa', NULL, '2026-10-29 11:57:47', 0);
+(32, 18, 19, 'oi', NULL, '2026-11-04 00:59:54', 0);
 
 -- --------------------------------------------------------
 
@@ -201,7 +176,8 @@ CREATE TABLE `sugestoes` (
 INSERT INTO `sugestoes` (`id`, `descricao`, `data_criacao`, `nome`, `usuario`, `likes`, `usuario_id`) VALUES
 (96, 'Sugiro que...', '2026-08-27 08:00:23', 'Você', '@usuario', 0, 5),
 (97, 'Minha sugestão é criar mais espaços de convivência na escola, com bancos, mesas e lugares para os alunos descansarem durante o intervalo. Acho que isso deixaria a escola mais confortável e agradável para todos.', '2026-09-01 21:29:06', 'Você', '@usuario', 3, 6),
-(101, 'acho que a entrada na escola devia ser a partir das 9h', '2026-09-17 08:05:28', 'Você', '@usuario', 0, 14);
+(101, 'acho que a entrada na escola devia ser a partir das 9h', '2026-09-17 08:05:28', 'Você', '@usuario', 0, 14),
+(102, 'yhgfg', '2026-11-03 21:59:03', 'Você', '@usuario', 0, 18);
 
 -- --------------------------------------------------------
 
@@ -217,8 +193,10 @@ CREATE TABLE `usuarios` (
   `data_criacao` timestamp NOT NULL DEFAULT current_timestamp(),
   `foto_perfil` varchar(255) DEFAULT 'default.png',
   `biografia` text DEFAULT NULL,
+  `ano` tinyint(4) DEFAULT NULL,
+  `curso` varchar(100) DEFAULT NULL,
   `foto_capa` varchar(255) DEFAULT NULL,
-  `tipo` enum('aluno','coordenador') DEFAULT 'aluno',
+  `tipo` enum('aluno','coordenador','professor','diretor') DEFAULT 'aluno',
   `curso_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -226,16 +204,9 @@ CREATE TABLE `usuarios` (
 -- Despejando dados para a tabela `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `data_criacao`, `foto_perfil`, `biografia`, `foto_capa`, `tipo`, `curso_id`) VALUES
-(6, 'Julia', 'julia@gmail.com', '$2y$10$HbW4KOcTYEKTRVANHJLCXet/EbZ7MdUXdCbZcNyKFzviT0AehGHai', '2026-09-02 00:26:58', 'perfil_6a977611ceeda7.85533089.jpg', 'Terceiro ano de Analise e Desenvolvimento de Sistemas', 'capa_6a977611cf7165.09826406.jpg', 'aluno', 3),
-(7, 'Alexandre', 'alexandre@gmail.com', '$2y$10$eh4HUdnoTsNTP6orUzts.uGX6ToNMc3rAX2MXVJ5quZmmFAfFEPge', '2026-09-02 00:50:13', 'perfil_6ae3305f52b477.20047856.png', '', NULL, 'aluno', 3),
-(8, 'Bruno Cano', 'bruno@gmail.com', '$2y$10$OW5MiobE82mYjIssNxsvP.2ZNRpS.PwYh.GzafESsCkpQeTz/BlKe', '2026-09-17 00:06:06', 'default.png', NULL, NULL, 'coordenador', 3),
-(10, 'rafaela', 'rafaela@gmail.com', '$2y$10$6RupzRShpOYMwkkz./NM2uiw83sOBcmM1RCSJ8prFWMTBLl1Y/nZe', '2026-09-17 01:15:21', 'default.png', NULL, NULL, 'aluno', 1),
-(11, 'Alice', 'alice@gmail.com', '$2y$10$H3Ua84vvLEYsRuzC6shnDuOjrlOmueXjVCQf6EVItl4.YlixhUaku', '2026-09-17 01:20:09', 'default.png', NULL, NULL, 'coordenador', 1),
-(12, 'Davi Afonso', 'afonso@gmail.com', '$2y$10$zUG3HyU.7tMA7ndvdvFwse8M8qJkW.gR5oZ6DLyRPHu0gL7NFyZgW', '2026-09-17 01:25:33', 'default.png', NULL, NULL, 'coordenador', 4),
-(13, 'davi', 'davi@gmail.com', '$2y$10$1K2UDOhn8D6Vfe4yV66JOOd.GNQS0jVFrURs6lKRL7IdjYskr5ECa', '2026-09-17 10:38:23', 'perfil_6aabc50c19f926.76370859.png', 'Terceiro ano DS', 'capa_6aabc4b0cb53d3.54606551.png', 'aluno', 3),
-(16, 'Matheus Holanda', 'matheus@gmail.com', '$2y$10$qyYtUKKrdfexILlf.rD/NeFFqi7.F4A/qmn9fhNuX4sXWn/P4QO82', '2026-10-29 11:10:09', 'perfil_6ae32b90e16901.82357561.png', 'Desenvolvimento de Sistemas Terceiro ano :)', 'capa_6ae32befb1abf4.41680998.jpg', 'aluno', 3),
-(17, 'Leonardo Buso', 'leobuso.buso@gmail.com', '$2y$10$y9wcscmsOGo6B5zalpCFFeY6f9iZ2MYWNOs.OSfCy1/alsXk0PmNK', '2026-10-29 11:43:22', 'perfil_6ae331ca1b6309.65234042.png', 'allaalala', 'capa_6ae3319c053a40.38771206.jpg', 'aluno', 3);
+INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `data_criacao`, `foto_perfil`, `biografia`, `ano`, `curso`, `foto_capa`, `tipo`, `curso_id`) VALUES
+(18, 'Bruna de Mello', 'bruna@aluno.cps.sp.gov.br', '$2y$10$4cXkQZou2bTJcE3kZQkOa.N1ITBUKE2hTTS.3zgra9OQt/WpCOOPu', '2026-11-04 00:01:43', 'perfil_6aea76cee55501.75373739.jpeg', '', 3, 'Analise e Desenvolvimento de Sistemas', 'capa_6aea76cee63032.63165704.jpg', 'aluno', 3),
+(19, 'Davi Afonso', 'daviafonso@cps.sp.gov.br', '$2y$10$ukJm/lNgc0o44PEXRQmjJOdwQHA5SHIsA0iNtWqkG7t7VeLiBjcNK', '2026-11-04 00:45:20', 'default.png', NULL, NULL, NULL, NULL, 'diretor', 4);
 
 -- --------------------------------------------------------
 
@@ -259,9 +230,7 @@ CREATE TABLE `vendas` (
 --
 
 INSERT INTO `vendas` (`id`, `usuario_id`, `titulo`, `preco`, `local`, `legenda`, `midia`, `data_criacao`) VALUES
-(16, 6, 'Torta de Morango com Caramelo', 'R$ 12,00', 'Pátio', 'Deliciosa tortinha com recheio cremoso, coberta com uma generosa camada de caramelo e finalizada com castanhas crocantes. Uma combinação irresistível de cremosidade e crocância!', '../uploads/venda_6a9779cea1d092.82249371.jpg', '2026-09-01 22:20:14'),
-(17, 7, 'Kit docinhos de festa', 'R$ 12,00', 'segundo andar', 'Kit com 6 docinhos deliciosos, as opções podendo ser:&#13;&#10;Brigadeiro, Beijinho, Paçoca e Ninho com uva', '../uploads/venda_6ac59f9f730ba8.72704315.png', '2026-10-06 22:25:51'),
-(19, 16, 'Donuts', 'R$ 13,00', 'andar 2', 'Donuts frescos para adoçar o dia ;)', '../uploads/venda_6ae32dd1b25023.16687709.png', '2026-10-29 08:28:17');
+(24, 18, 'jbh', 'R$ 5,84', 'segundo andar', 'ijhjo', '../uploads/venda_6aea83778a8a46.31782275.jpg', '2026-11-03 21:59:35');
 
 --
 -- Índices para tabelas despejadas
@@ -371,25 +340,25 @@ ALTER TABLE `favoritos_vendas`
 -- AUTO_INCREMENT de tabela `mensagens`
 --
 ALTER TABLE `mensagens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT de tabela `sugestoes`
 --
 ALTER TABLE `sugestoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=103;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT de tabela `vendas`
 --
 ALTER TABLE `vendas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- Restrições para tabelas despejadas

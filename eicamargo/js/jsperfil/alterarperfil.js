@@ -9,11 +9,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Escapa texto para usar dentro de atributos/HTML do modal
+function escaparAttr(texto) {
+    return String(texto ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 function abrirModalEditarPerfil() {
-    const nomeAtual = document.querySelector('.info-perfil h2')?.textContent.trim() || '';
-    const bioElemento = document.querySelector('.info-perfil .descricao');
-    const bioTexto = bioElemento ? bioElemento.textContent.trim() : '';
-    const bioAtual = (bioTexto === 'Nenhuma biografia informada.') ? '' : bioTexto;
+    const info = document.querySelector('.info-perfil');
+
+    const nomeAtual = escaparAttr(info?.querySelector('h2')?.textContent.trim() || '');
+    const anoAtual = info?.dataset.ano || '';
+    const cursoAtual = escaparAttr(info?.dataset.curso || '');
+    const bioAtual = escaparAttr(info?.dataset.bio || '');
 
     Swal.fire({
         title: '<h3 style="margin: 0; color: #111; font-size: 22px; font-weight: 700;">Editar Perfil</h3>',
@@ -81,10 +93,27 @@ function abrirModalEditarPerfil() {
                     <input type="text" id="swal-nome" placeholder="Digite seu nome" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;" value="${nomeAtual}">
                 </div>
 
-                <!-- Biografia -->
+                <!-- Ano e Curso -->
+                <div style="display: flex; gap: 10px;">
+                    <div style="width: 38%;">
+                        <label style="font-size: 13px; font-weight: 600; color: #444; display: block; margin-bottom: 6px;">Ano *</label>
+                        <select id="swal-ano" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: #fff; font-family: inherit;">
+                            <option value="" ${anoAtual === '' || anoAtual === '0' ? 'selected' : ''}>Selecione</option>
+                            <option value="1" ${anoAtual === '1' ? 'selected' : ''}>1º ano</option>
+                            <option value="2" ${anoAtual === '2' ? 'selected' : ''}>2º ano</option>
+                            <option value="3" ${anoAtual === '3' ? 'selected' : ''}>3º ano</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 13px; font-weight: 600; color: #444; display: block; margin-bottom: 6px;">Curso *</label>
+                        <input type="text" id="swal-curso" maxlength="100" placeholder="Ex: Desenvolvimento de Sistemas" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;" value="${cursoAtual}">
+                    </div>
+                </div>
+
+                <!-- Biografia (opcional) -->
                 <div>
-                  <label style="font-size: 13px; font-weight: 600; color: #444; display: block; margin-bottom: 6px;">Descrição / Biografia / Curso</label>
-                  <textarea id="swal-bio" placeholder="Ex: Terceiro ano do curso Análise e Desenvolvimento de Sistemas." style="width: 100%; height: 80px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; resize: none; box-sizing: border-box; font-family: inherit;">${bioAtual}</textarea>
+                  <label style="font-size: 13px; font-weight: 600; color: #444; display: block; margin-bottom: 6px;">Biografia <span style="font-weight: 400; color: #8c8c8c;">(opcional)</span></label>
+                  <textarea id="swal-bio" maxlength="200" placeholder="Escreva uma frase sobre você, se quiser." style="width: 100%; height: 80px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; resize: none; box-sizing: border-box; font-family: inherit;">${bioAtual}</textarea>
                 </div>
 
             </div>
@@ -98,10 +127,22 @@ function abrirModalEditarPerfil() {
             const fotoOriginal = document.getElementById('swal-foto').files[0];
             const capaOriginal = document.getElementById('swal-capa').files[0];
             const nome = document.getElementById('swal-nome').value.trim();
+            const ano = document.getElementById('swal-ano').value;
+            const curso = document.getElementById('swal-curso').value.trim();
             const biografia = document.getElementById('swal-bio').value.trim();
 
             if (!nome) {
                 Swal.showValidationMessage('O nome completo não pode ficar vazio.');
+                return false;
+            }
+
+            if (!ano) {
+                Swal.showValidationMessage('Selecione o seu ano (1º, 2º ou 3º).');
+                return false;
+            }
+
+            if (!curso) {
+                Swal.showValidationMessage('Informe o seu curso.');
                 return false;
             }
 
@@ -111,6 +152,8 @@ function abrirModalEditarPerfil() {
 
                 const formData = new FormData();
                 formData.append('nome', nome);
+                formData.append('ano', ano);
+                formData.append('curso', curso);
                 formData.append('biografia', biografia);
                 if (foto) formData.append('foto', foto);
                 if (capa) formData.append('capa', capa);

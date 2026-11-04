@@ -7,7 +7,7 @@ $cursoIdUsuario = $_SESSION['curso_id'] ?? ($_SESSION['usuario']['curso_id'] ?? 
 
 // Busca apenas comunicados VINCULADOS AO CURSO do usuário
 $stmt = $pdo->prepare("
-    SELECT c.*, u.nome AS autor_nome 
+    SELECT c.*, u.nome AS autor_nome, u.foto_perfil AS autor_foto
     FROM comunicados c
     INNER JOIN usuarios u ON c.usuario_id = u.id
     WHERE c.curso_id = :curso_id
@@ -54,7 +54,7 @@ $comunicadosCurso = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <li><a href="perfil.php" class="nav-item"><i class="fa-regular fa-user"></i> Perfil</a></li>
             </ul>
 
-            <?php if (isset($_SESSION['tipo_usuario']) && $_SESSION['tipo_usuario'] === 'coordenador'): ?>
+            <?php if (in_array($_SESSION['tipo_usuario'] ?? '', ['coordenador', 'diretor'], true)): ?>
                 <button class="btn-nova-sugestao" id="btnNovoComunicadoCurso" style="margin-top: 20px;">
                     <i class="bi bi-plus-lg"></i> Comunicado Curso
                 </button>
@@ -105,17 +105,16 @@ $comunicadosCurso = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </p>
 
                             <div class="card-comunicado-footer">
-                                <div class="autor-info">
-                                    <span class="avatar-mini"></span>
+                                <!-- Clicar no autor abre o perfil dele -->
+                                <a class="autor-info" href="perfil.php?id=<?php echo (int)$item['usuario_id']; ?>"
+                                    title="Ver perfil" style="text-decoration: none; color: inherit;">
+                                    <span class="avatar-mini"
+                                        style="background-image: url('../uploads/<?php echo !empty($item['autor_foto']) ? htmlspecialchars($item['autor_foto']) : 'default.png'; ?>'); background-size: cover; background-position: center;"></span>
                                     <span
                                         class="autor-nome"><?php echo htmlspecialchars($item['autor_nome'] ?? $item['nome'] ?? 'Coordenação'); ?></span>
                                     <span class="autor-divisor">•</span>
                                     <span class="autor-tag"><i class="bi bi-mortarboard"></i> Curso</span>
-                                </div>
-
-                                <div class="comentarios-info">
-                                    <i class="bi bi-chat"></i> 0 comentários
-                                </div>
+                                </a>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -135,7 +134,7 @@ $comunicadosCurso = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     </div>
 
-    <script src="../js/jscomunicados/curso.js"></script>
+    <script src="../js/jscomunicados/curso.js?v=<?php echo time(); ?>"></script>
     <script src="../js/rodape-perfil.js"></script>
 </body>
 
