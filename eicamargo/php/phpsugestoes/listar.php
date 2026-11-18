@@ -8,10 +8,12 @@ error_reporting(E_ALL);
 header('Content-Type: application/json; charset=utf-8');
 
 include_once '../conexao.php';
+include_once '../moderador.php';
 
 try {
     // Pega o ID do usuário que está logado na sessão
     $usuarioLogadoId = $_SESSION['usuario']['id'] ?? 0;
+    $ehModerador = ehModerador($pdo, $usuarioLogadoId);
 
     $sql = "SELECT s.id, s.descricao, s.likes, s.usuario_id, 
                    u.nome, u.foto_perfil 
@@ -66,6 +68,7 @@ try {
     echo json_encode([
         'status' => 'success',
         'usuario_logado_id' => (int)$usuarioLogadoId,
+        'eh_moderador' => $ehModerador,
         'sugestoes' => $sugestoes
     ]);
 

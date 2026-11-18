@@ -3,6 +3,7 @@ session_start();
 header('Content-Type: application/json; charset=utf-8');
 
 include_once '../conexao.php';
+include_once '../moderador.php';
 
 // Ação de SALVAR VENDA (POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -75,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
         $meuId = (int)($_SESSION['usuario_id'] ?? ($_SESSION['usuario']['id'] ?? 0));
+        $ehModerador = ehModerador($pdo, $meuId);
 
         $sql = "SELECT v.*, u.nome, u.foto_perfil,
                     (SELECT COUNT(*) FROM favoritos_vendas f WHERE f.venda_id = v.id) AS likes,
@@ -103,6 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         echo json_encode([
             'status' => 'success',
             'usuario_logado_id' => $meuId,
+            'eh_moderador' => $ehModerador,
             'vendas' => $vendas
         ]);
         exit;

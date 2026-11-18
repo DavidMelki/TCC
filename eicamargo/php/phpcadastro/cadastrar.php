@@ -11,6 +11,10 @@ $dominiosPorTipo = [
     'diretor'     => ['@cps.sp.gov.br'],
 ];
 
+// Código ÚNICO para todos os professores (de todas as matérias e cursos).
+// Para trocar o código, basta alterar o texto abaixo.
+$codigoGeralProfessor = 'PROF-GERAL-2026';
+
 try {
     $nome   = trim($_POST['nome'] ?? '');
     $email  = strtolower(trim($_POST['email'] ?? ''));
@@ -55,21 +59,36 @@ try {
         exit;
     }
 
-    // 2. Valida o código do curso e obtém o curso_id
-    //    Aluno usa o código do aluno; os demais usam o código de coordenador
+    // 2. Valida o código de acesso e obtém o curso_id
+    if (empty($codigo)) {
+        echo json_encode(['status' => 'error', 'message' => 'Informe o código de acesso.']);
+        exit;
+    }
+    $codigo = trim($codigo);
+
     $cursoId = null;
-    if (!empty($codigo)) {
-        if ($tipo === 'aluno') {
-            $stmtCurso = $pdo->prepare("SELECT id FROM cursos WHERE codigo_aluno = :codigo");
-        } else {
-            $stmtCurso = $pdo->prepare("SELECT id FROM cursos WHERE codigo_coordenador = :codigo");
+
+    if ($tipo === 'professor') {
+        // Professor usa um código geral, que não é de nenhum curso específico
+        if (!hash_equals(strtoupper($codigoGeralProfessor), strtoupper($codigo))) {
+            echo json_encode(['status' => 'error', 'message' => 'Código de acesso inválido para este tipo de conta.']);
+            exit;
         }
-        
+    } else {
+        // aluno -> codigo_aluno | coordenador e diretor -> codigo_coordenador
+        $colunasCodigo = [
+            'aluno'       => 'codigo_aluno',
+            'coordenador' => 'codigo_coordenador',
+            'diretor'     => 'codigo_coordenador',
+        ];
+        $colunaCodigo = $colunasCodigo[$tipo]; // vem de uma lista fixa (seguro para usar na consulta)
+
+        $stmtCurso = $pdo->prepare("SELECT id FROM cursos WHERE $colunaCodigo = :codigo");
         $stmtCurso->execute([':codigo' => $codigo]);
         $curso = $stmtCurso->fetch(PDO::FETCH_ASSOC);
 
         if (!$curso) {
-            echo json_encode(['status' => 'error', 'message' => 'Código do curso inválido.']);
+            echo json_encode(['status' => 'error', 'message' => 'Código de acesso inválido para este tipo de conta.']);
             exit;
         }
 

@@ -19,13 +19,51 @@ function escaparAttr(texto) {
         .replace(/'/g, '&#39;');
 }
 
+// Exemplos de função na escola, de acordo com o tipo de conta
+const EXEMPLOS_FUNCAO = {
+    professor: 'Ex: Professor de Matemática',
+    coordenador: 'Ex: Coordenador do curso de Desenvolvimento de Sistemas',
+    diretor: 'Ex: Diretor da escola'
+};
+
 function abrirModalEditarPerfil() {
     const info = document.querySelector('.info-perfil');
+
+    const tipo = info?.dataset.tipo || 'aluno';
+    const eAluno = (tipo === 'aluno');
 
     const nomeAtual = escaparAttr(info?.querySelector('h2')?.textContent.trim() || '');
     const anoAtual = info?.dataset.ano || '';
     const cursoAtual = escaparAttr(info?.dataset.curso || '');
+    const funcaoAtual = escaparAttr(info?.dataset.funcao || '');
     const bioAtual = escaparAttr(info?.dataset.bio || '');
+    const exemploFuncao = escaparAttr(EXEMPLOS_FUNCAO[tipo] || 'Ex: Professor de Matemática');
+
+    // Aluno informa ano e curso; os demais informam a função na escola
+    const camposIdentificacao = eAluno ? `
+                <!-- Ano e Curso -->
+                <div style="display: flex; gap: 10px;">
+                    <div style="width: 38%;">
+                        <label style="font-size: 13px; font-weight: 600; color: #444; display: block; margin-bottom: 6px;">Ano *</label>
+                        <select id="swal-ano" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: #fff; font-family: inherit;">
+                            <option value="" ${anoAtual === '' || anoAtual === '0' ? 'selected' : ''}>Selecione</option>
+                            <option value="1" ${anoAtual === '1' ? 'selected' : ''}>1º ano</option>
+                            <option value="2" ${anoAtual === '2' ? 'selected' : ''}>2º ano</option>
+                            <option value="3" ${anoAtual === '3' ? 'selected' : ''}>3º ano</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 13px; font-weight: 600; color: #444; display: block; margin-bottom: 6px;">Curso *</label>
+                        <input type="text" id="swal-curso" maxlength="100" placeholder="Ex: Desenvolvimento de Sistemas" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;" value="${cursoAtual}">
+                    </div>
+                </div>
+    ` : `
+                <!-- Função na escola -->
+                <div>
+                    <label style="font-size: 13px; font-weight: 600; color: #444; display: block; margin-bottom: 6px;">O que você exerce na escola *</label>
+                    <input type="text" id="swal-funcao" maxlength="100" placeholder="${exemploFuncao}" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;" value="${funcaoAtual}">
+                </div>
+    `;
 
     Swal.fire({
         title: '<h3 style="margin: 0; color: #111; font-size: 22px; font-weight: 700;">Editar Perfil</h3>',
@@ -93,22 +131,7 @@ function abrirModalEditarPerfil() {
                     <input type="text" id="swal-nome" placeholder="Digite seu nome" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;" value="${nomeAtual}">
                 </div>
 
-                <!-- Ano e Curso -->
-                <div style="display: flex; gap: 10px;">
-                    <div style="width: 38%;">
-                        <label style="font-size: 13px; font-weight: 600; color: #444; display: block; margin-bottom: 6px;">Ano *</label>
-                        <select id="swal-ano" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; background: #fff; font-family: inherit;">
-                            <option value="" ${anoAtual === '' || anoAtual === '0' ? 'selected' : ''}>Selecione</option>
-                            <option value="1" ${anoAtual === '1' ? 'selected' : ''}>1º ano</option>
-                            <option value="2" ${anoAtual === '2' ? 'selected' : ''}>2º ano</option>
-                            <option value="3" ${anoAtual === '3' ? 'selected' : ''}>3º ano</option>
-                        </select>
-                    </div>
-                    <div style="flex: 1;">
-                        <label style="font-size: 13px; font-weight: 600; color: #444; display: block; margin-bottom: 6px;">Curso *</label>
-                        <input type="text" id="swal-curso" maxlength="100" placeholder="Ex: Desenvolvimento de Sistemas" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box;" value="${cursoAtual}">
-                    </div>
-                </div>
+                ${camposIdentificacao}
 
                 <!-- Biografia (opcional) -->
                 <div>
@@ -127,8 +150,6 @@ function abrirModalEditarPerfil() {
             const fotoOriginal = document.getElementById('swal-foto').files[0];
             const capaOriginal = document.getElementById('swal-capa').files[0];
             const nome = document.getElementById('swal-nome').value.trim();
-            const ano = document.getElementById('swal-ano').value;
-            const curso = document.getElementById('swal-curso').value.trim();
             const biografia = document.getElementById('swal-bio').value.trim();
 
             if (!nome) {
@@ -136,25 +157,40 @@ function abrirModalEditarPerfil() {
                 return false;
             }
 
-            if (!ano) {
-                Swal.showValidationMessage('Selecione o seu ano (1º, 2º ou 3º).');
-                return false;
-            }
+            const formData = new FormData();
+            formData.append('nome', nome);
+            formData.append('biografia', biografia);
 
-            if (!curso) {
-                Swal.showValidationMessage('Informe o seu curso.');
-                return false;
+            if (eAluno) {
+                const ano = document.getElementById('swal-ano').value;
+                const curso = document.getElementById('swal-curso').value.trim();
+
+                if (!ano) {
+                    Swal.showValidationMessage('Selecione o seu ano (1º, 2º ou 3º).');
+                    return false;
+                }
+                if (!curso) {
+                    Swal.showValidationMessage('Informe o seu curso.');
+                    return false;
+                }
+
+                formData.append('ano', ano);
+                formData.append('curso', curso);
+            } else {
+                const funcao = document.getElementById('swal-funcao').value.trim();
+
+                if (!funcao) {
+                    Swal.showValidationMessage('Informe o que você exerce na escola.');
+                    return false;
+                }
+
+                formData.append('funcao', funcao);
             }
 
             try {
                 const foto = fotoOriginal ? await comprimirImagem(fotoOriginal, 800) : null;
                 const capa = capaOriginal ? await comprimirImagem(capaOriginal, 1600) : null;
 
-                const formData = new FormData();
-                formData.append('nome', nome);
-                formData.append('ano', ano);
-                formData.append('curso', curso);
-                formData.append('biografia', biografia);
                 if (foto) formData.append('foto', foto);
                 if (capa) formData.append('capa', capa);
 

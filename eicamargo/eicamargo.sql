@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 04/11/2026 às 02:05
+-- Tempo de geração: 18/11/2026 às 02:54
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -71,6 +71,7 @@ CREATE TABLE `cursos` (
   `id` int(11) NOT NULL,
   `nome` varchar(100) NOT NULL,
   `codigo_coordenador` varchar(20) NOT NULL,
+  `codigo_professor` varchar(50) DEFAULT NULL,
   `codigo_aluno` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -78,11 +79,19 @@ CREATE TABLE `cursos` (
 -- Despejando dados para a tabela `cursos`
 --
 
-INSERT INTO `cursos` (`id`, `nome`, `codigo_coordenador`, `codigo_aluno`) VALUES
-(1, 'Administração', 'ADM-COORD-01', 'ADM-ALUNO-01'),
-(2, 'Gastronomia', 'GAS-COORD-02', 'GAS-ALUNO-02'),
-(3, 'Análise e Desenvolvimento de Sistemas', 'ADS-COORD-03', 'ADS-ALU-03'),
-(4, 'Direção', 'DRC-COORD-04', 'DRC-ALUNO-04');
+INSERT INTO `cursos` (`id`, `nome`, `codigo_coordenador`, `codigo_professor`, `codigo_aluno`) VALUES
+(1, 'Administração', 'ADM-COORD-01', NULL, 'ADM-ALUNO-01'),
+(2, 'Gastronomia', 'GAS-COORD-02', NULL, 'GAS-ALUNO-02'),
+(3, 'Análise e Desenvolvimento de Sistemas', 'ADS-COORD-03', NULL, 'ADS-ALU-03'),
+(4, 'Direção', 'DRC-COORD-04', NULL, 'DRC-ALUNO-04'),
+(6, 'Contabilidade', 'CTB-COORD-06', NULL, 'CTB-ALUNO-06'),
+(7, 'Eventos', 'EVT-COORD-07', NULL, 'EVT-ALUNO-07'),
+(8, 'Finanças', 'FIN-COORD-08', NULL, 'FIN-ALUNO-08'),
+(9, 'Guia de Turismo', 'GTR-COORD-09', NULL, 'GTR-ALUNO-09'),
+(10, 'Marketing', 'MKT-COORD-10', NULL, 'MKT-ALUNO-10'),
+(11, 'Nutrição e Dietética', 'NUT-COORD-11', NULL, 'NUT-ALUNO-11'),
+(12, 'Serviços Públicos', 'SPB-COORD-12', NULL, 'SPB-ALUNO-12'),
+(13, 'Especialização Técnica em Gastronomia Brasileira', 'GBR-COORD-13', NULL, 'GBR-ALUNO-13');
 
 -- --------------------------------------------------------
 
@@ -104,7 +113,8 @@ CREATE TABLE `curtidas` (
 INSERT INTO `curtidas` (`id`, `sugestao_id`, `usuario_id`, `data_curtida`) VALUES
 (6, 97, 7, '2026-10-29 11:33:32'),
 (7, 97, 16, '2026-10-29 11:34:04'),
-(11, 97, 17, '2026-10-29 11:59:05');
+(11, 97, 17, '2026-10-29 11:59:05'),
+(12, 103, 18, '2026-11-18 01:43:59');
 
 -- --------------------------------------------------------
 
@@ -128,7 +138,10 @@ INSERT INTO `favoritos_vendas` (`id`, `venda_id`, `usuario_id`, `data_criacao`) 
 (3, 17, 16, '2026-10-29 11:41:27'),
 (4, 16, 16, '2026-10-29 11:41:28'),
 (7, 17, 17, '2026-10-29 11:58:11'),
-(10, 16, 17, '2026-10-29 11:58:13');
+(10, 16, 17, '2026-10-29 11:58:13'),
+(11, 27, 22, '2026-11-18 01:41:06'),
+(12, 27, 18, '2026-11-18 01:48:53'),
+(13, 28, 18, '2026-11-18 01:48:56');
 
 -- --------------------------------------------------------
 
@@ -151,7 +164,9 @@ CREATE TABLE `mensagens` (
 --
 
 INSERT INTO `mensagens` (`id`, `remetente_id`, `destinatario_id`, `mensagem`, `anexo`, `data_envio`, `lida`) VALUES
-(32, 18, 19, 'oi', NULL, '2026-11-04 00:59:54', 0);
+(32, 18, 19, 'oi', NULL, '2026-11-04 00:59:54', 0),
+(33, 22, 18, 'Oie', NULL, '2026-11-18 01:31:42', 1),
+(34, 18, 22, 'Olá! Gostaria de reservar o item: Brigadeiro Tradicional', NULL, '2026-11-18 01:48:45', 0);
 
 -- --------------------------------------------------------
 
@@ -177,7 +192,8 @@ INSERT INTO `sugestoes` (`id`, `descricao`, `data_criacao`, `nome`, `usuario`, `
 (96, 'Sugiro que...', '2026-08-27 08:00:23', 'Você', '@usuario', 0, 5),
 (97, 'Minha sugestão é criar mais espaços de convivência na escola, com bancos, mesas e lugares para os alunos descansarem durante o intervalo. Acho que isso deixaria a escola mais confortável e agradável para todos.', '2026-09-01 21:29:06', 'Você', '@usuario', 3, 6),
 (101, 'acho que a entrada na escola devia ser a partir das 9h', '2026-09-17 08:05:28', 'Você', '@usuario', 0, 14),
-(102, 'yhgfg', '2026-11-03 21:59:03', 'Você', '@usuario', 0, 18);
+(103, 'Faltam mais tomadas e mesas nas áreas comuns e no pátio para quem chega mais cedo ou precisa ficar na escola entre um turno e outro para estudar e fazer trabalhos em grupo.', '2026-11-17 22:25:24', 'Você', '@usuario', 1, 18),
+(104, 'Poderíamos ter mais visitas técnicas, palestras com profissionais da área e workshops práticos para conectar melhor a teoria das aulas com o que o mercado realmente exige hoje.', '2026-11-17 22:26:58', 'Você', '@usuario', 0, 22);
 
 -- --------------------------------------------------------
 
@@ -195,6 +211,7 @@ CREATE TABLE `usuarios` (
   `biografia` text DEFAULT NULL,
   `ano` tinyint(4) DEFAULT NULL,
   `curso` varchar(100) DEFAULT NULL,
+  `funcao` varchar(100) DEFAULT NULL,
   `foto_capa` varchar(255) DEFAULT NULL,
   `tipo` enum('aluno','coordenador','professor','diretor') DEFAULT 'aluno',
   `curso_id` int(11) DEFAULT NULL
@@ -204,9 +221,10 @@ CREATE TABLE `usuarios` (
 -- Despejando dados para a tabela `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `data_criacao`, `foto_perfil`, `biografia`, `ano`, `curso`, `foto_capa`, `tipo`, `curso_id`) VALUES
-(18, 'Bruna de Mello', 'bruna@aluno.cps.sp.gov.br', '$2y$10$4cXkQZou2bTJcE3kZQkOa.N1ITBUKE2hTTS.3zgra9OQt/WpCOOPu', '2026-11-04 00:01:43', 'perfil_6aea76cee55501.75373739.jpeg', '', 3, 'Analise e Desenvolvimento de Sistemas', 'capa_6aea76cee63032.63165704.jpg', 'aluno', 3),
-(19, 'Davi Afonso', 'daviafonso@cps.sp.gov.br', '$2y$10$ukJm/lNgc0o44PEXRQmjJOdwQHA5SHIsA0iNtWqkG7t7VeLiBjcNK', '2026-11-04 00:45:20', 'default.png', NULL, NULL, NULL, NULL, 'diretor', 4);
+INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `data_criacao`, `foto_perfil`, `biografia`, `ano`, `curso`, `funcao`, `foto_capa`, `tipo`, `curso_id`) VALUES
+(18, 'Bruna de Mello', 'bruna@aluno.cps.sp.gov.br', '$2y$10$4cXkQZou2bTJcE3kZQkOa.N1ITBUKE2hTTS.3zgra9OQt/WpCOOPu', '2026-11-04 00:01:43', 'perfil_6aea76cee55501.75373739.jpeg', '', 3, 'Analise e Desenvolvimento de Sistemas', NULL, 'capa_6aea76cee63032.63165704.jpg', 'aluno', 3),
+(19, 'Davi Afonso', 'daviafonso@cps.sp.gov.br', '$2y$10$ukJm/lNgc0o44PEXRQmjJOdwQHA5SHIsA0iNtWqkG7t7VeLiBjcNK', '2026-11-04 00:45:20', 'perfil_6afcef1c506c97.04735577.png', '', NULL, NULL, 'Diretor', 'capa_6afcef6c2dddc6.18004469.jpg', 'diretor', 4),
+(22, 'David Melquiades', 'melquiades@aluno.cps.sp.gov.br', '$2y$10$jffdZsAHoR9QG1IF8Wdsq.5Ak5yduzt5g.gdvkobk4Im7OGgjk3iO', '2026-11-18 01:26:12', 'perfil_6afcffa316d482.77959596.jpg', '', 3, 'Analise e Desenvolvimento de Sistemas', NULL, 'capa_6afcffa3196cd6.33954939.jpg', 'aluno', 3);
 
 -- --------------------------------------------------------
 
@@ -230,7 +248,9 @@ CREATE TABLE `vendas` (
 --
 
 INSERT INTO `vendas` (`id`, `usuario_id`, `titulo`, `preco`, `local`, `legenda`, `midia`, `data_criacao`) VALUES
-(24, 18, 'jbh', 'R$ 5,84', 'segundo andar', 'ijhjo', '../uploads/venda_6aea83778a8a46.31782275.jpg', '2026-11-03 21:59:35');
+(25, 22, 'Sanduíche Quente', 'R$ 12,00', 'primeiro andar', 'Delicioso sanduíche prensado com pão de forma dourado, recheado com muito queijo derretido, presunto, tomate fresco e alface crocante, acompanhado de batatas rústicas temperadas. Perfeito para o lanche do recreio!', '../uploads/venda_6afd0149117a37.40518478.webp', '2026-11-17 22:37:13'),
+(27, 22, 'Brigadeiro Tradicional', 'R$ 4,00', 'primeiro andar', 'Delicioso brigadeiro caseiro de chocolate bem cremoso, coberto com bastante granulado e feito com muito carinho para adoçar o seu intervalo na escola!', '../uploads/venda_6afd022d1372b1.23014625.webp', '2026-11-17 22:41:01'),
+(28, 18, 'Torta de Limão Individual', 'R$ 8,00', 'patio', 'Deliciosa torta artesanal com merengue tostado! Feito com carinho', '../uploads/venda_6afd03e32a5e16.97651257.webp', '2026-11-17 22:48:19');
 
 --
 -- Índices para tabelas despejadas
@@ -316,49 +336,49 @@ ALTER TABLE `comentarios`
 -- AUTO_INCREMENT de tabela `comunicados`
 --
 ALTER TABLE `comunicados`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de tabela `cursos`
 --
 ALTER TABLE `cursos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de tabela `curtidas`
 --
 ALTER TABLE `curtidas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de tabela `favoritos_vendas`
 --
 ALTER TABLE `favoritos_vendas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de tabela `mensagens`
 --
 ALTER TABLE `mensagens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT de tabela `sugestoes`
 --
 ALTER TABLE `sugestoes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=103;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de tabela `vendas`
 --
 ALTER TABLE `vendas`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- Restrições para tabelas despejadas

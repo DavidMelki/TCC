@@ -4,20 +4,58 @@ header('Content-Type: application/json; charset=utf-8');
 include_once '../sessao.php';
 include_once '../conexao.php';
 
+// Quem pode publicar cada tipo de comunicado
+$tiposPublicamGeral = ['coordenador', 'diretor'];
+$tiposPublicamCurso = ['coordenador', 'diretor', 'professor'];
+
+// Quem pode escolher QUALQUER curso ao publicar (os demais publicam só no curso deles)
+$tiposEscolhemCurso = ['diretor', 'professor'];
+
 try {
-    if (!isset($_SESSION['tipo_usuario']) || $_SESSION['tipo_usuario'] !== 'coordenador') {
-        echo json_encode(['status' => 'error', 'message' => 'Acesso negado. Apenas coordenadores podem publicar.']);
+    $tipoUsuario    = $_SESSION['tipo_usuario'] ?? null;
+    $tipoComunicado = ($_POST['tipo_comunicado'] ?? 'geral') === 'curso' ? 'curso' : 'geral';
+    $titulo         = trim($_POST['titulo'] ?? '');
+    $conteudo       = trim($_POST['conteudo'] ?? '');
+    $usuarioId      = $_SESSION['usuario_id'] ?? null;
+    $cursoId        = $_SESSION['curso_id'] ?? ($_SESSION['usuario']['curso_id'] ?? null);
+
+    $permitidos = ($tipoComunicado === 'curso') ? $tiposPublicamCurso : $tiposPublicamGeral;
+
+    if (!in_array($tipoUsuario, $permitidos, true)) {
+        $mensagem = ($tipoComunicado === 'curso')
+            ? 'Acesso negado. Apenas coordenadores, diretores e professores podem publicar comunicados do curso.'
+            : 'Acesso negado. Apenas coordenadores e diretores podem publicar comunicados gerais.';
+        echo json_encode(['status' => 'error', 'message' => $mensagem]);
         exit;
     }
 
-    $tipoComunicado = $_POST['tipo_comunicado'] ?? 'geral'; // 'geral' ou 'curso'
-    $titulo          = $_POST['titulo'] ?? null;
-    $conteudo        = $_POST['conteudo'] ?? null;
-    $usuarioId       = $_SESSION['usuario_id'] ?? null;
-    $cursoId         = $_SESSION['curso_id'] ?? ($_SESSION['usuario']['curso_id'] ?? null);
-
     if (empty($titulo) || empty($conteudo)) {
         echo json_encode(['status' => 'error', 'message' => 'Preencha o título e o conteúdo.']);
+        exit;
+    }
+
+    // Diretor e professor podem escolher em qual curso publicar.
+    // O coordenador sempre publica no curso dele (o curso_id enviado é ignorado).
+    if ($tipoComunicado === 'curso' && in_array($tipoUsuario, $tiposEscolhemCurso, true)) {
+        $cursoEscolhido = (int)($_POST['curso_id'] ?? 0);
+
+        if ($cursoEscolhido > 0) {
+            $stmtCurso = $pdo->prepare("SELECT id FROM cursos WHERE id = :id");
+            $stmtCurso->execute([':id' => $cursoEscolhido]);
+
+            if (!$stmtCurso->fetch()) {
+                echo json_encode(['status' => 'error', 'message' => 'Curso inválido.']);
+                exit;
+            }
+
+            $cursoId = $cursoEscolhido;
+        }
+    }
+
+    // Comunicado do curso precisa de um curso.
+    // Sem isso ele seria salvo com curso_id NULL e apareceria como comunicado GERAL.
+    if ($tipoComunicado === 'curso' && empty($cursoId)) {
+        echo json_encode(['status' => 'error', 'message' => 'Selecione o curso do comunicado.']);
         exit;
     }
 

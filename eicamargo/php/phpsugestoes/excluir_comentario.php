@@ -3,6 +3,7 @@ session_start();
 header('Content-Type: application/json; charset=utf-8');
 
 include_once '../conexao.php';
+include_once '../moderador.php';
 
 try {
     $comentario_id = $_POST['comentario_id'] ?? null;
@@ -13,13 +14,20 @@ try {
         exit;
     }
 
-    // Verifica se o comentário pertence ao usuário logado
     $stmtCheck = $pdo->prepare("SELECT usuario_id FROM comentarios WHERE id = :id");
     $stmtCheck->execute([':id' => $comentario_id]);
     $comentario = $stmtCheck->fetch(PDO::FETCH_ASSOC);
 
-    if (!$comentario || $comentario['usuario_id'] != $usuario_id) {
-        echo json_encode(['status' => 'error', 'message' => 'Você só pode excluir seus próprios comentários.']);
+    if (!$comentario) {
+        echo json_encode(['status' => 'error', 'message' => 'Comentário não encontrado.']);
+        exit;
+    }
+
+    // Pode excluir: o próprio autor OU um moderador (diretor/coordenador)
+    $ehDono = ((int)$comentario['usuario_id'] === (int)$usuario_id);
+
+    if (!$ehDono && !ehModerador($pdo, $usuario_id)) {
+        echo json_encode(['status' => 'error', 'message' => 'Você não tem permissão para excluir este comentário.']);
         exit;
     }
 

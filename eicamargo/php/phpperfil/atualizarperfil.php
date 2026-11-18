@@ -54,28 +54,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $nome      = filter_input(INPUT_POST, 'nome', FILTER_SANITIZE_SPECIAL_CHARS);
         $biografia = filter_input(INPUT_POST, 'biografia', FILTER_SANITIZE_SPECIAL_CHARS);
-        $ano       = (int)($_POST['ano'] ?? 0);
-        $curso     = trim($_POST['curso'] ?? '');
 
         if (empty($nome)) {
             echo json_encode(['status' => 'error', 'message' => 'O nome não pode estar vazio.']);
             exit;
         }
 
-        // Ano e curso são obrigatórios; a biografia é opcional
-        if (!in_array($ano, [1, 2, 3], true)) {
-            echo json_encode(['status' => 'error', 'message' => 'Selecione o seu ano (1º, 2º ou 3º).']);
-            exit;
-        }
+        // Descobre o tipo do usuário no banco (não confia no que vem do navegador)
+        $stmtTipo = $pdo->prepare("SELECT tipo FROM usuarios WHERE id = :id");
+        $stmtTipo->execute([':id' => $usuario_id]);
+        $tipoUsuario = $stmtTipo->fetchColumn() ?: 'aluno';
+        $eAluno = ($tipoUsuario === 'aluno');
 
-        if ($curso === '') {
-            echo json_encode(['status' => 'error', 'message' => 'Informe o seu curso.']);
-            exit;
-        }
+        $ano    = null;
+        $curso  = null;
+        $funcao = null;
 
-        if (mb_strlen($curso) > 100) {
-            echo json_encode(['status' => 'error', 'message' => 'O nome do curso deve ter no máximo 100 caracteres.']);
-            exit;
+        if ($eAluno) {
+            // Aluno: ano e curso obrigatórios
+            $ano   = (int)($_POST['ano'] ?? 0);
+            $curso = trim($_POST['curso'] ?? '');
+
+            if (!in_array($ano, [1, 2, 3], true)) {
+                echo json_encode(['status' => 'error', 'message' => 'Selecione o seu ano (1º, 2º ou 3º).']);
+                exit;
+            }
+
+            if ($curso === '') {
+                echo json_encode(['status' => 'error', 'message' => 'Informe o seu curso.']);
+                exit;
+            }
+
+            if (mb_strlen($curso) > 100) {
+                echo json_encode(['status' => 'error', 'message' => 'O nome do curso deve ter no máximo 100 caracteres.']);
+                exit;
+            }
+        } else {
+            // Professor, coordenador e diretor: função na escola obrigatória
+            $funcao = trim($_POST['funcao'] ?? '');
+
+            if ($funcao === '') {
+                echo json_encode(['status' => 'error', 'message' => 'Informe a sua função na escola.']);
+                exit;
+            }
+
+            if (mb_strlen($funcao) > 100) {
+                echo json_encode(['status' => 'error', 'message' => 'A função deve ter no máximo 100 caracteres.']);
+                exit;
+            }
         }
 
         $diretorioUpload = __DIR__ . '/../../uploads/';
@@ -97,12 +123,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // 3. Atualização no Banco de Dados
-        $sql = "UPDATE usuarios SET nome = :nome, biografia = :biografia, ano = :ano, curso = :curso";
+        $sql = "UPDATE usuarios SET nome = :nome, biografia = :biografia, ano = :ano, curso = :curso, funcao = :funcao";
         $params = [
             ':nome'      => $nome,
             ':biografia' => $biografia ?? '',
             ':ano'       => $ano,
             ':curso'     => $curso,
+            ':funcao'    => $funcao,
             ':id'        => $usuario_id
         ];
 

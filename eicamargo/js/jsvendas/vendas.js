@@ -1,5 +1,15 @@
 let vendasCache = [];
 let usuarioLogadoId = 0;
+let ehModerador = false;
+
+function esc(texto) {
+    return String(texto ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     carregarVendas();
@@ -42,6 +52,7 @@ async function carregarVendas() {
         const data = await res.json();
 
         usuarioLogadoId = parseInt(data.usuario_logado_id) || 0;
+        ehModerador = data.eh_moderador === true;
 
         if (data.status === 'success' && data.vendas && data.vendas.length > 0) {
             // Os favoritos agora vêm do banco, separados por usuário
@@ -99,7 +110,7 @@ function criarHTMLProduto(venda) {
                 <h3 class="product-title">${venda.titulo}</h3>
                 <div class="product-price">${venda.preco}</div>
                 <div class="product-meta">
-                    <i class="fa-solid fa-location-dot"></i> ${localizacao} • ${venda.nome || 'Vendedor'}
+                    <i class="fa-solid fa-location-dot"></i> ${localizacao} • ${esc(venda.nome || 'Vendedor')}
                 </div>
             </div>
         </div>
@@ -175,7 +186,7 @@ function renderizarTopPopulares() {
                 <img src="${foto}" class="rank-img">
                 <div class="rank-info">
                     <strong>${venda.titulo}</strong>
-                    <span>por ${venda.nome || 'Aluno'}</span>
+                    <span>por ${esc(venda.nome || 'Aluno')}</span>
                 </div>
                 <div class="rank-hearts ${venda.favoritado ? 'active' : ''}">
                     <i class="${venda.favoritado ? 'fa-solid' : 'fa-regular'} fa-heart" style="${venda.favoritado ? 'color: #e63c3c;' : ''}"></i>
@@ -347,7 +358,8 @@ function removerMidia() {
 
 function abrirModalDetalhes(venda) {
     const eDono = parseInt(venda.usuario_id) === usuarioLogadoId;
-    const nomeSeguro = encodeURIComponent(venda.nome || 'Usuário');
+    const podeExcluir = eDono || ehModerador; // dono ou moderador
+    const nomeSeguro = encodeURIComponent(venda.nome || 'Usuário').replace(/'/g, '%27');
 
     // Avatar padrão com as iniciais
     let fotoPerfil = `https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff&size=128`;
@@ -379,11 +391,11 @@ function abrirModalDetalhes(venda) {
 
             <a href="perfil.php?id=${venda.usuario_id}" title="Ver perfil" style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; text-decoration: none; color: inherit;">
                 <img src="${fotoPerfil}"
-                     alt="${venda.nome || 'Vendedor'}"
+                     alt="${esc(venda.nome || 'Vendedor')}"
                      style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ddd;"
                      onerror="this.src='https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff&size=128';">
                 <div>
-                    <strong style="display: block; font-size: 14px; color: #1a1a1a;">${venda.nome || 'Aluno(a)'}</strong>
+                    <strong style="display: block; font-size: 14px; color: #1a1a1a;">${esc(venda.nome || 'Aluno(a)')}</strong>
                     <span style="font-size: 12px; color: #8c8c8c;"><i class="fa-solid fa-location-dot"></i> ${venda.local || 'Andar não informado'}</span>
                 </div>
             </a>
@@ -396,13 +408,13 @@ function abrirModalDetalhes(venda) {
     `,
         showCancelButton: true,
         showConfirmButton: !eDono,   // dono não reserva o próprio item
-        showDenyButton: eDono,       // dono vê o botão de excluir
+        showDenyButton: podeExcluir, // dono ou moderador vê o botão de excluir
         confirmButtonText: 'Reservar',
         denyButtonText: '<i class="fa-solid fa-trash"></i> Excluir venda',
         cancelButtonText: 'Fechar',
         confirmButtonColor: '#02d569',
         denyButtonColor: '#e63c3c',
-        cancelButtonColor: eDono ? '#8c8c8c' : '#e63c3c'
+        cancelButtonColor: podeExcluir ? '#8c8c8c' : '#e63c3c'
     }).then((result) => {
         if (result.isConfirmed) {
             const idVendedor = venda.usuario_id;

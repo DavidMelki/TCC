@@ -1,4 +1,14 @@
 let usuarioLogadoId = 0;
+let ehModerador = false;
+
+function esc(texto) {
+    return String(texto ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     carregarSugestoes();
@@ -262,9 +272,9 @@ function enviarComentario(cardPost) {
                 const novoComentarioHTML = `
                 <div class="item-comentario" data-comentario-id="${data.id}" style="background: #f8f9fa; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 13px; color: #333; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
                     <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                        <a href="perfil.php?id=${data.usuario_id}" title="Ver perfil" style="color: #1a1a1a; font-weight: 700; text-decoration: none;">${nomeExibir}</a>
-                        <span style="color: #777; font-size: 12px;">${tagExibir}</span>
-                        <span style="margin-left: 4px;">${comentarioTexto}</span>
+                        <a href="perfil.php?id=${data.usuario_id}" title="Ver perfil" style="color: #1a1a1a; font-weight: 700; text-decoration: none;">${esc(nomeExibir)}</a>
+                        <span style="color: #777; font-size: 12px;">${esc(tagExibir)}</span>
+                        <span style="margin-left: 4px;">${esc(comentarioTexto)}</span>
                     </div>
                     <button class="btn-excluir-comentario" title="Excluir comentário" style="border: none; background: transparent; color: #aaa; cursor: pointer; font-size: 14px;">
                         <i class="bi bi-trash"></i>
@@ -303,6 +313,7 @@ async function carregarSugestoes() {
 
         if (data.status === 'success') {
             usuarioLogadoId = parseInt(data.usuario_logado_id) || 0;
+            ehModerador = data.eh_moderador === true;
 
             if (data.sugestoes && data.sugestoes.length > 0) {
                 detalheBody.innerHTML = data.sugestoes.map(post => criarHTMLPost(post)).join('');
@@ -326,7 +337,7 @@ function criarHTMLPost(post) {
 
     // Checa se o usuário logado é o autor da sugestão
     const eDonoPost = (parseInt(post.usuario_id) === usuarioLogadoId);
-    const btnExcluirPostHTML = eDonoPost ? `
+    const btnExcluirPostHTML = (eDonoPost || ehModerador) ? `
         <button class="btn-excluir-post" title="Excluir sugestão" style="border: none; background: transparent; color: #aaa; cursor: pointer; font-size: 16px;">
             <i class="bi bi-trash"></i>
         </button>
@@ -342,7 +353,7 @@ function criarHTMLPost(post) {
 
             // Checa se o usuário logado é o autor deste comentário
             const eDonoComentario = (parseInt(c.usuario_id) === usuarioLogadoId);
-            const btnExcluirComentHTML = eDonoComentario ? `
+            const btnExcluirComentHTML = (eDonoComentario || ehModerador) ? `
                 <button class="btn-excluir-comentario" title="Excluir comentário" style="border: none; background: transparent; color: #aaa; cursor: pointer; font-size: 14px;">
                     <i class="bi bi-trash"></i>
                 </button>
@@ -351,9 +362,9 @@ function criarHTMLPost(post) {
             return `
                 <div class="item-comentario" data-comentario-id="${c.id}" style="background: #f8f9fa; padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; font-size: 13px; color: #333; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
                     <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                        <a href="perfil.php?id=${c.usuario_id}" title="Ver perfil" style="color: #1a1a1a; font-weight: 700; text-decoration: none;">${nome}</a>
-                        <span style="color: #777; font-size: 12px;">${userTag}</span>
-                        <span style="margin-left: 4px;">${c.comentario}</span>
+                        <a href="perfil.php?id=${c.usuario_id}" title="Ver perfil" style="color: #1a1a1a; font-weight: 700; text-decoration: none;">${esc(nome)}</a>
+                        <span style="color: #777; font-size: 12px;">${esc(userTag)}</span>
+                        <span style="margin-left: 4px;">${esc(c.comentario)}</span>
                     </div>
                     ${btnExcluirComentHTML}
                 </div>
@@ -361,7 +372,7 @@ function criarHTMLPost(post) {
         }).join('');
     }
 
-    const nomeSeguro = encodeURIComponent(post.nome || 'Usuário');
+    const nomeSeguro = encodeURIComponent(post.nome || 'Usuário').replace(/'/g, '%27');
     let fotoPerfil = `https://ui-avatars.com/api/?name=${nomeSeguro}&background=e63946&color=fff&size=128`;
 
     if (post.foto_perfil && post.foto_perfil.trim() !== '') {
@@ -384,8 +395,8 @@ function criarHTMLPost(post) {
                     
                     <div class="autor-dados" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center;">
                        <div style="display: flex; align-items: center; gap: 8px;">
-                         <h3 style="margin: 0; font-size: 15px; font-weight: 600;">${post.nome || 'Usuário'}</h3>
-                         <span class="autor-tag" style="color: #777; font-size: 13px; line-height: 1;">${post.usuario || '@usuario'}</span>
+                         <h3 style="margin: 0; font-size: 15px; font-weight: 600;">${esc(post.nome || 'Usuário')}</h3>
+                         <span class="autor-tag" style="color: #777; font-size: 13px; line-height: 1;">${esc(post.usuario || '@usuario')}</span>
                        </div>
 
                         <div class="meta-info" style="color: #aaa; font-size: 12px; margin-top: 3px;">
@@ -396,7 +407,7 @@ function criarHTMLPost(post) {
                 ${btnExcluirPostHTML}
             </div>
             <div class="secao-descricao" style="margin-bottom: 15px;">
-                <p style="color: #333; line-height: 1.5; font-size: 15px;">${post.descricao}</p>
+                <p style="color: #333; line-height: 1.5; font-size: 15px;">${esc(post.descricao)}</p>
             </div>
             <div class="curtidas-bar" style="display: flex; gap: 10px; margin-bottom: 15px;">
                 <button class="btn-like ${curtidoClasse}" style="border: 1px solid #ddd; padding: 5px 12px; border-radius: 15px; background: #fff; cursor: pointer;">
@@ -558,10 +569,10 @@ function atualizarFavoritas() {
                 <div class="avatar" style="background-image: url('${post.foto}'); background-size: cover; background-position: center;"></div>
                 <div class="item-info">
                     <div class="item-header">
-                        <span class="item-nome">${post.nome}</span>
+                        <span class="item-nome">${esc(post.nome)}</span>
                         <span class="item-tempo">${post.likes} <i class="bi bi-hand-thumbs-up-fill" style="font-size: 10px; color: #e63946;"></i></span>
                     </div>
-                    <p class="item-resumo">${resumoTexto}</p>
+                    <p class="item-resumo">${esc(resumoTexto)}</p>
                 </div>
             </div>
         `;
